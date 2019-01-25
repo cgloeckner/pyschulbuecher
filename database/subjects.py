@@ -4,13 +4,12 @@
 """CRUD module for Subjects using prepared statements
 
 Example:
-	cur.execute(readNameById, (153,))
+	cur.execute(read('*', 'rowid'), (153,))
 
 SQL-Statement   Paramters
 --------------------------------------
 create          Name, Short, Advanced
-readByName      fields, Name
-readById        fields, Rowid
+read(fetch,by)	corresponding to `by`
 update          Name, Rowid
 delete          Rowid
 """
