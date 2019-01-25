@@ -4,13 +4,14 @@
 """CRUD module for Subjects using prepared statements
 
 Example:
-	cur.execute(read('*', 'rowid'), (153,))
+	cur.execute(read, (153,))
 
 SQL-Statement   Paramters
 --------------------------------------
 create          Name, Short, Advanced
-read(fetch,by)	corresponding to `by`
-update          Name, Rowid
+search			Name
+read			Rowid
+update          Name, Short, Advanced, Rowid
 delete          Rowid
 """
 
@@ -24,15 +25,9 @@ setup = """create table Subjects (
 
 create = "insert into Subjects (name, short, advanced) values (?, ?, ?)"
 
-def read(fetch, by):
-	"""read(fetch, by)
-	
-	e.g. read('*', 'rowid')
-	
-	Provide an SQL statement for selecting the columns `fetch` by the column
-	value of `by`. NEVER let `fetch` or `by` be input strings - use hardcoded
-	string literals only to AVOID SQL INJECTIONS."""
-	return "select {0} from Subjects where {1} = ?".format(fetch, by)
+search = "select rowid from Subjects where name like ?"
+
+read = "select name, short, advanced from Subjects where rowid = ?"
 
 update = "update Subjects set name = ? where rowid = ?"
 
@@ -66,7 +61,7 @@ class CRUDTest(unittest.TestCase):
 		self.db.commit()
 		
 		# read
-		self.cur.execute(read('rowid', 'name'), ('chemistry',))
+		self.cur.execute(read, ('2',))
 		result = self.cur.fetchall()
 		self.assertEqual(len(result), 1)
 		
@@ -87,18 +82,13 @@ class CRUDTest(unittest.TestCase):
 		])
 		self.db.commit()
 		
-		# read id by name
-		self.cur.execute(read('rowid', 'name'), ('chemistry',))
+		# search id by name
+		self.cur.execute(search, ('%mist%',))
 		id = self.cur.fetchall()
 		self.assertEqual(id, [(2,)])
 		
-		# read multiple data by id
-		self.cur.execute(read('name, short', 'rowid'), (1,))
-		name = self.cur.fetchall()
-		self.assertEqual(name, [('maths', 'Ma',)])
-		
-		# read all data by id
-		self.cur.execute(read('*', 'rowid'), (1,))
+		# read data by id
+		self.cur.execute(read, (1,))
 		name = self.cur.fetchall()
 		self.assertEqual(name, [('maths', 'Ma', 1,)])
 
