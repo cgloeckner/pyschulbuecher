@@ -7,10 +7,10 @@ Example:
 	cur.execute(readNameById, (153,))
 
 SQL-Statement   Paramters
--------------------------	
-create          Name
-readNameById    Rowid
-readIdByName    Name
+--------------------------------------
+create          Name, Short, Advanced
+readByName      fields, Name
+readById        fields, Rowid
 update          Name, Rowid
 delete          Rowid
 """
@@ -18,13 +18,22 @@ delete          Rowid
 __author__ = "Christian Glöckner"
 
 setup = """create table Subjects (
-	name varchar(25) unique
+	name varchar(25) not null,
+	short varchar(5) not null,
+	advanced tinyint check (advanced in (0, 1))
 );"""
 
-create = "insert into Subjects (name) values (?)"
+create = "insert into Subjects (name, short, advanced) values (?, ?, ?)"
 
-readNameById = "select name from Subjects where rowid = ?"
-readIdByName = "select rowid from Subjects where name = ?"
+def read(fetch, by):
+	"""read(fetch, by)
+	
+	e.g. read('*', 'rowid')
+	
+	Provide an SQL statement for selecting the columns `fetch` by the column
+	value of `by`. NEVER let `fetch` or `by` be input strings - use hardcoded
+	string literals only to AVOID SQL INJECTIONS."""
+	return "select {0} from Subjects where {1} = ?".format(fetch, by)
 
 update = "update Subjects set name = ? where rowid = ?"
 
@@ -51,14 +60,14 @@ class CRUDTest(unittest.TestCase):
 	def test_lifecycle(self):
 		# create records
 		self.cur.executemany(create, [
-			('maths',),
-			('chemistry',),
-			('english',)
+			('maths', 'Ma', 1,),
+			('chemistry', 'che', None,),
+			('english', 'eng', 0,)
 		])
 		self.db.commit()
 		
 		# read
-		self.cur.execute(readIdByName, ('chemistry',))
+		self.cur.execute(read('rowid', 'name'), ('chemistry',))
 		result = self.cur.fetchall()
 		self.assertEqual(len(result), 1)
 		
@@ -70,37 +79,29 @@ class CRUDTest(unittest.TestCase):
 		])
 		self.db.commit()
 	
-	def test_uniqueNames(self):
-		# create records
-		self.cur.executemany(create, [
-			('maths',),
-			('chemistry',),
-			('english',)
-		])
-		self.db.commit()
-		
-		# force duplicates
-		with self.assertRaises(sqlite3.IntegrityError):
-			self.cur.execute(create, ('chemistry',),)
-	
 	def test_readRecords(self):
 		# create records
 		self.cur.executemany(create, [
-			('maths',),
-			('chemistry',),
-			('english',)
+			('maths', 'Ma', 1,),
+			('chemistry', 'che', None,),
+			('english', 'eng', 0,)
 		])
 		self.db.commit()
 		
 		# read id by name
-		self.cur.execute(readIdByName, ('chemistry',))
+		self.cur.execute(read('rowid', 'name'), ('chemistry',))
 		id = self.cur.fetchall()
 		self.assertEqual(id, [(2,)])
 		
-		# read name by id
-		self.cur.execute(readNameById, (1,))
+		# read multiple data by id
+		self.cur.execute(read('name, short', 'rowid'), (1,))
 		name = self.cur.fetchall()
-		self.assertEqual(name, [('maths',)])
+		self.assertEqual(name, [('maths', 'Ma',)])
+		
+		# read all data by id
+		self.cur.execute(read('*', 'rowid'), (1,))
+		name = self.cur.fetchall()
+		self.assertEqual(name, [('maths', 'Ma', 1,)])
 
 if __name__ == '__main__':
 	unittest.main()
