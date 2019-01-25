@@ -9,6 +9,7 @@ Example:
 SQL-Statement   Paramters
 --------------------------------------
 create          Name, Short, Advanced
+listing			-
 search			Name
 read			Rowid
 update          Name, Short, Advanced, Rowid
@@ -23,11 +24,12 @@ setup = """create table Subjects (
 	advanced tinyint check (advanced in (0, 1))
 );"""
 
-create = "insert into Subjects (name, short, advanced) values (?, ?, ?)"
-search = "select rowid from Subjects where name like ?"
-read   = "select name, short, advanced from Subjects where rowid = ?"
-update = "update Subjects set name = ?, short = ?, advanced = ? where rowid = ?"
-delete = "delete from Subjects where rowid = ?"
+create  = "insert into Subjects (name, short, advanced) values (?, ?, ?)"
+listing = "select rowid from Subjects"
+search  = "select rowid from Subjects where name like ?"
+read    = "select name, short, advanced from Subjects where rowid = ?"
+update  = "update Subjects set name = ?, short = ?, advanced = ? where rowid = ?"
+delete  = "delete from Subjects where rowid = ?"
 
 # -----------------------------------------------------------------------------
 
@@ -47,7 +49,7 @@ class CRUDTest(unittest.TestCase):
 		# reset database
 		self.db = None
 
-	def test_create_destroy(self):
+	def test_create_listing_destroy(self):
 		# create records
 		self.cur.executemany(create, [
 			('maths', 'Ma', 1,),
@@ -56,10 +58,10 @@ class CRUDTest(unittest.TestCase):
 		])
 		self.db.commit()
 		
-		# read
-		self.cur.execute(read, ('2',))
-		result = self.cur.fetchall()
-		self.assertEqual(len(result), 1)
+		# list
+		self.cur.execute(listing)
+		ids = self.cur.fetchall()
+		self.assertEqual(ids, [(1,), (2,), (3,),])
 		
 		# destroy records
 		self.cur.executemany(delete, [

@@ -10,6 +10,7 @@ which provide role-specific data.
 SQL-Statement   Paramters
 -------------------------	
 create          -
+listing			-
 delete          Rowid
 """
 
@@ -20,9 +21,9 @@ setup = """create table Persons (
 	stub tinyint
 );"""
 
-create = "insert into Persons values (0)"
-
-delete = "delete from Persons where rowid = ?"
+create  = "insert into Persons values (0)"
+listing = "select rowid from Persons"
+delete  = "delete from Persons where rowid = ?"
 
 # -----------------------------------------------------------------------------
 
@@ -42,13 +43,13 @@ class CRUDTest(unittest.TestCase):
 		# reset database
 		self.db = None
 
-	def test_lifecycle(self):
+	def test_create_listing_delete(self):
 		# create records
 		self.cur.executemany(create, [(), (), ()])
 		self.db.commit()
 		
-		# read
-		self.cur.execute("select rowid from Persons")
+		# list
+		self.cur.execute(listing)
 		ids = self.cur.fetchall()
 		self.assertEqual(ids, [(1,), (2,), (3,),])
 		

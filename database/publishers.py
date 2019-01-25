@@ -9,6 +9,7 @@ Example:
 SQL-Statement   Paramters
 -------------------------	
 create          Name
+listing			-
 search			Name
 read            Rowid
 update          Name, Rowid
@@ -21,11 +22,12 @@ setup = """create table Publishers (
 	name varchar(25) unique
 );"""
 
-create = "insert into Publishers (name) values (?)"
-search = "select rowid from Publishers where name like ?"
-read   = "select name from Publishers where rowid = ?"
-update = "update Publishers set name = ? where rowid = ?"
-delete = "delete from Publishers where rowid = ?"
+create  = "insert into Publishers (name) values (?)"
+listing = "select rowid from Publishers"
+search  = "select rowid from Publishers where name like ?"
+read    = "select name from Publishers where rowid = ?"
+update  = "update Publishers set name = ? where rowid = ?"
+delete  = "delete from Publishers where rowid = ?"
 
 # -----------------------------------------------------------------------------
 
@@ -45,7 +47,7 @@ class CRUDTest(unittest.TestCase):
 		# reset database
 		self.db = None
 
-	def test_create_delete(self):
+	def test_create_listing_delete(self):
 		# create records
 		self.cur.executemany(create, [
 			('Cornelsen',),
@@ -54,10 +56,10 @@ class CRUDTest(unittest.TestCase):
 		])
 		self.db.commit()
 		
-		# read
-		self.cur.execute(read, ('3',))
-		result = self.cur.fetchall()
-		self.assertEqual(len(result), 1)
+		# list
+		self.cur.execute(listing)
+		ids = self.cur.fetchall()
+		self.assertEqual(ids, [(1,), (2,), (3,),])
 		
 		# destroy records
 		self.cur.executemany(delete, [

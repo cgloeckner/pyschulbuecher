@@ -4,28 +4,29 @@
 """CRUD module for Teachers using prepared statements
 
 SQL-Statement   Paramters
--------------------------	
-create          Abrev
-readAbrevById   Rowid
-readIdByAbrev   Abrev
-update          Abrev, Rowid
+-------------------------------------
+create          Name, Sex, Short
+listing			-
+search			Short
+read			Rowid
+update          Name, Sex, Short, Rowid
 delete          Rowid
 """
 
 __author__ = "Christian Glöckner"
 
 setup = """create table Teachers (
-	abrev varchar(4) unique
+	name varchar(25) not null,
+	sex char check (sex in ('m', 'f')),
+	short varchar(4) unique
 );"""
 
-create = "insert into Teachers (abrev) values (?)"
-
-readAbrevById = "select abrev from Teachers where rowid = ?"
-readIdByAbrev = "select rowid from Teachers where abrev = ?"
-
-update = "update Teachers set abrev = ? where rowid = ?"
-
-delete = "delete from Teachers where rowid = ?"
+create  = "insert into Teachers (name, sex, short) values (?, ?, ?)"
+listing = "select rowid from Teachers"
+search  = "select rowid from Teachers where short like ?"
+read    = "select name, sex, short from Teachers where rowid = ?"
+update  = "update Teachers set name = ?, sex = ?, short = ? where rowid = ?"
+delete  = "delete from Teachers where rowid = ?"
 
 # -----------------------------------------------------------------------------
 
@@ -45,7 +46,77 @@ class CRUDTest(unittest.TestCase):
 		# reset database
 		self.db = None
 
-	# to be implemented
+	def test_create_listing_delete(self):
+		# create records
+		self.cur.executemany(create, [
+			('Smith', 'm', 'smi',),
+			('Winterbottom', 'f', 'win',),
+			('Undef-ined', None, 'und',)
+		])
+		self.db.commit()
+		
+		# list
+		self.cur.execute(listing)
+		ids = self.cur.fetchall()
+		self.assertEqual(set(ids), set([(1,), (2,), (3,),]))
+		
+		# destroy records
+		self.cur.executemany(delete, [
+			(1,),
+			(2,),
+			(3,) 
+		])
+		self.db.commit()
+
+	def test_uniqueShorts(self):
+		# create records
+		self.cur.executemany(create, [
+			('Smith', 'm', 'smi',),
+			('Winterbottom', 'f', 'win',),
+			('Undef-ined', None, 'und',)
+		])
+		self.db.commit()
+		
+		# force duplicates
+		with self.assertRaises(sqlite3.IntegrityError):
+			self.cur.execute(create, ('Foo', 'f', 'smi',),)
+	
+	def test_search_read(self):
+		# create records
+		self.cur.executemany(create, [
+			('Smith', 'm', 'smi',),
+			('Winterbottom', 'f', 'win',),
+			('Undef-ined', None, 'und',)
+		])
+		self.db.commit()
+		
+		# search id by name
+		self.cur.execute(search, ('%wi%',))
+		id = self.cur.fetchall()
+		self.assertEqual(id, [(2,)])
+		
+		# read data by id
+		self.cur.execute(read, (1,))
+		name = self.cur.fetchall()
+		self.assertEqual(name, [('Smith', 'm', 'smi',)])
+
+	def test_update(self):
+		# create records
+		self.cur.executemany(create, [
+			('Smith', 'm', 'smi',),
+			('Winterbottom', 'f', 'win',),
+			('Undef-ined', None, 'und',)
+		])
+		self.db.commit()
+		
+		# update data
+		self.cur.execute(update, ('Nobody', 'm', 'nob', 3,))
+		self.db.commit()
+		
+		# assert update
+		self.cur.execute(read, (3,))
+		name = self.cur.fetchall()
+		self.assertEqual(name, [('Nobody', 'm', 'nob',)])
 
 if __name__ == '__main__':
 	unittest.main()
