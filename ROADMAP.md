@@ -1,2 +1,3 @@
 - add tests against invalid foreign keys
-- implement students search (by person, by class)
+- test students' derive and lookup
+- test teachers' derive

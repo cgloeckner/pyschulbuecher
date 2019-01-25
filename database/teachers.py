@@ -8,6 +8,7 @@ SQL-Statement   Paramters
 create          Name, Sex, Short, PersonId
 listing			-
 search			Short
+derive			PersonId
 read			Rowid
 update          Name, Sex, Short, Rowid
 delete          Rowid
@@ -26,6 +27,7 @@ setup = """create table Teachers (
 create  = "insert into Teachers (name, sex, short, person_id) values (?, ?, ?, ?)"
 listing = "select rowid from Teachers"
 search  = "select rowid from Teachers where short like ?"
+derive  = "select rowid from Teachers where person_id = ?"
 read    = "select name, sex, short from Teachers where rowid = ?"
 update  = "update Teachers set name = ?, sex = ?, short = ? where rowid = ?"
 delete  = "delete from Teachers where rowid = ?"

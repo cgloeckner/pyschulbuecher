@@ -7,7 +7,9 @@ SQL-Statement   Paramters
 -------------------------------------
 create          Surname, FirstName, ClassId, PersonId 
 listing			-
-# TODO search
+search			Surname, FirstName
+lookup			ClassId
+derive			PersonId
 read			Rowid
 rename          Surname, FirstName
 move			ClassId
@@ -27,8 +29,9 @@ setup = """create table Students (
 
 create  = "insert into Students (surname, first_name, class_id, person_id) values (?, ?, ?, ?)"
 listing = "select rowid from Students"
-#search  = "select rowid from Students where surname like ? or first_name like ?"
-#TODO: search via ClassID / PersonID
+search  = "select rowid from Students where surname like ? or first_name like ?"
+lookup  = "select rowid from Students where class_id = ?"
+derive  = "select rowid from Students where person_id = ?"
 read    = "select surname, first_name, Classes.form, Classes.short, Teachers.Short from Students left join Classes on Students.class_id = Classes.rowid left join Teachers on Classes.teacher_id = Teachers.rowid where Students.rowid = ?"
 rename  = "update Students set surname = ?, first_name = ? where rowid = ?"
 move    = "update Students set class_id = ? where rowid = ?"
