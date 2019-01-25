@@ -25,7 +25,7 @@ setup = """create table Classes (
 create  = "insert into Classes (form, short, teacher_id) values (?, ?, ?)"
 listing = "select rowid from Classes"
 search  = "select rowid from Classes where form = ? and short like ?"
-read    = "select form, Classes.short, Teachers.Short from Classes inner join Teachers on Teachers.rowid = Classes.teacher_id where Classes.rowid = ?"
+read    = "select form, Classes.short, Teachers.Short from Classes left join Teachers on Teachers.rowid = Classes.teacher_id where Classes.rowid = ?"
 update  = "update Classes set form = ?, short = ?, teacher_id = ? where rowid = ?"
 delete  = "delete from Classes where rowid = ?"
 
@@ -60,19 +60,21 @@ class CRUDTest(unittest.TestCase):
 		# create records
 		self.cur.executemany(create, [
 			(10, 'b', 2,),
-			(8, 'a', 1, )
+			(8, 'a', 1,),
+			(7, 'c', None,)
 		])
 		self.db.commit()
 		
 		# list
 		self.cur.execute(listing)
 		ids = self.cur.fetchall()
-		self.assertEqual(set(ids), set([(1,), (2,),]))
+		self.assertEqual(set(ids), set([(1,), (2,), (3,)]))
 		
 		# destroy records
 		self.cur.executemany(delete, [
 			(1,),
-			(2,)
+			(2,),
+			(3,)
 		])
 		self.db.commit()
 
@@ -80,7 +82,8 @@ class CRUDTest(unittest.TestCase):
 		# create records
 		self.cur.executemany(create, [
 			(10, 'b', 2,),
-			(8, 'test', 1, )
+			(8, 'test', 1,),
+			(7, 'c', None,)
 		])
 		self.db.commit()
 		
@@ -91,14 +94,20 @@ class CRUDTest(unittest.TestCase):
 		
 		# read data by id
 		self.cur.execute(read, (1,))
-		name = self.cur.fetchall()
-		self.assertEqual(name, [(10, 'b', 'BA',)])
+		data = self.cur.fetchall()
+		self.assertEqual(data, [(10, 'b', 'BA',)])
+		
+		# read data by other id (but without teacher data)
+		self.cur.execute(read, (3,))
+		data = self.cur.fetchall()
+		self.assertEqual(data, [(7, 'c', None,)])
 
 	def test_update(self):
 		# create records
 		self.cur.executemany(create, [
 			(10, 'b', 2,),
-			(8, 'test', 1, )
+			(8, 'test', 1,),
+			(7, 'c', None,)
 		])
 		self.db.commit()
 		
