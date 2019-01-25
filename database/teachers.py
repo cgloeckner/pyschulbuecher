@@ -5,7 +5,7 @@
 
 SQL-Statement   Paramters
 -------------------------------------
-create          Name, Sex, Short
+create          Name, Sex, Short, PersonId
 listing			-
 search			Short
 read			Rowid
@@ -18,10 +18,12 @@ __author__ = "Christian Glöckner"
 setup = """create table Teachers (
 	name varchar(25) not null,
 	sex char check (sex in ('m', 'f')),
-	short varchar(4) unique
+	short varchar(4) unique,
+	person_id int unique,
+	foreign key (person_id) references Persons(rowid)
 );"""
 
-create  = "insert into Teachers (name, sex, short) values (?, ?, ?)"
+create  = "insert into Teachers (name, sex, short, person_id) values (?, ?, ?, ?)"
 listing = "select rowid from Teachers"
 search  = "select rowid from Teachers where short like ?"
 read    = "select name, sex, short from Teachers where rowid = ?"
@@ -35,11 +37,15 @@ import sqlite3, unittest
 class CRUDTest(unittest.TestCase):
 
 	def setUp(self):
+		import persons
+	
 		# create empty database
 		self.db  = sqlite3.connect('')
 		self.cur = self.db.cursor()
 		# setup tables
+		self.cur.execute(persons.setup)
 		self.cur.execute(setup)
+		self.cur.executemany(persons.create, [(), (), (), ()])
 		self.db.commit()
 	
 	def tearDown(self):
@@ -49,9 +55,9 @@ class CRUDTest(unittest.TestCase):
 	def test_create_listing_delete(self):
 		# create records
 		self.cur.executemany(create, [
-			('Smith', 'm', 'smi',),
-			('Winterbottom', 'f', 'win',),
-			('Undef-ined', None, 'und',)
+			('Smith', 'm', 'smi', 1,),
+			('Winterbottom', 'f', 'win', 3,),
+			('Undef-ined', None, 'und', 2,)
 		])
 		self.db.commit()
 		
@@ -71,22 +77,22 @@ class CRUDTest(unittest.TestCase):
 	def test_uniqueShorts(self):
 		# create records
 		self.cur.executemany(create, [
-			('Smith', 'm', 'smi',),
-			('Winterbottom', 'f', 'win',),
-			('Undef-ined', None, 'und',)
+			('Smith', 'm', 'smi', 1,),
+			('Winterbottom', 'f', 'win', 3,),
+			('Undef-ined', None, 'und', 2,)
 		])
 		self.db.commit()
 		
 		# force duplicates
 		with self.assertRaises(sqlite3.IntegrityError):
-			self.cur.execute(create, ('Foo', 'f', 'smi',),)
+			self.cur.execute(create, ('Foo', 'f', 'smi', 4),)
 	
 	def test_search_read(self):
 		# create records
 		self.cur.executemany(create, [
-			('Smith', 'm', 'smi',),
-			('Winterbottom', 'f', 'win',),
-			('Undef-ined', None, 'und',)
+			('Smith', 'm', 'smi', 1,),
+			('Winterbottom', 'f', 'win', 3,),
+			('Undef-ined', None, 'und', 2,)
 		])
 		self.db.commit()
 		
@@ -103,9 +109,9 @@ class CRUDTest(unittest.TestCase):
 	def test_update(self):
 		# create records
 		self.cur.executemany(create, [
-			('Smith', 'm', 'smi',),
-			('Winterbottom', 'f', 'win',),
-			('Undef-ined', None, 'und',)
+			('Smith', 'm', 'smi', 1,),
+			('Winterbottom', 'f', 'win', 3,),
+			('Undef-ined', None, 'und', 2,)
 		])
 		self.db.commit()
 		
