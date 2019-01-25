@@ -4,13 +4,13 @@
 """CRUD module for Publishers using prepared statements
 
 Example:
-	cur.execute(readNameById, (153,))
+	cur.execute(read, (153,))
 
 SQL-Statement   Paramters
 -------------------------	
 create          Name
-readNameById    Rowid
-readIdByName    Name
+search			Name
+read            Rowid
 update          Name, Rowid
 delete          Rowid
 """
@@ -22,12 +22,9 @@ setup = """create table Publishers (
 );"""
 
 create = "insert into Publishers (name) values (?)"
-
-readNameById = "select name from Publishers where rowid = ?"
-readIdByName = "select rowid from Publishers where name = ?"
-
+search = "select rowid from Publishers where name like ?"
+read   = "select name from Publishers where rowid = ?"
 update = "update Publishers set name = ? where rowid = ?"
-
 delete = "delete from Publishers where rowid = ?"
 
 # -----------------------------------------------------------------------------
@@ -48,7 +45,7 @@ class CRUDTest(unittest.TestCase):
 		# reset database
 		self.db = None
 
-	def test_lifecycle(self):
+	def test_create_delete(self):
 		# create records
 		self.cur.executemany(create, [
 			('Cornelsen',),
@@ -58,7 +55,7 @@ class CRUDTest(unittest.TestCase):
 		self.db.commit()
 		
 		# read
-		self.cur.execute(readIdByName, ('Klett',))
+		self.cur.execute(read, ('3',))
 		result = self.cur.fetchall()
 		self.assertEqual(len(result), 1)
 		
@@ -83,7 +80,7 @@ class CRUDTest(unittest.TestCase):
 		with self.assertRaises(sqlite3.IntegrityError):
 			self.cur.execute(create, ('Klett',),)
 	
-	def test_readRecords(self):
+	def test_search_read(self):
 		# create records
 		self.cur.executemany(create, [
 			('Cornelsen',),
@@ -92,15 +89,32 @@ class CRUDTest(unittest.TestCase):
 		])
 		self.db.commit()
 		
-		# read id by name
-		self.cur.execute(readIdByName, ('Klett',))
+		# search id by name
+		self.cur.execute(search, ('%kle%',))
 		id = self.cur.fetchall()
 		self.assertEqual(id, [(2,)])
 		
-		# read name by id
-		self.cur.execute(readNameById, (1,))
+		# read data by id
+		self.cur.execute(read, (1,))
 		name = self.cur.fetchall()
 		self.assertEqual(name, [('Cornelsen',)])
+
+	def test_update(self):
+		# create records
+		self.cur.executemany(create, [
+			('Cornelsen',),
+			('Klett',),
+			('Westermann',)
+		])
+		self.db.commit()
+		
+		# update data
+		self.cur.execute(update, ('Spam', 1,))
+		
+		# assert update
+		self.cur.execute(read, (1,))
+		name = self.cur.fetchall()
+		self.assertEqual(name, [('Spam',)])
 
 if __name__ == '__main__':
 	unittest.main()
