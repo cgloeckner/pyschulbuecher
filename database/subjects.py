@@ -8,7 +8,7 @@ Example:
 
 SQL-Statement   Paramters
 -------------------------	
-create          Rowid
+create          Name
 readNameById    Rowid
 readIdByName    Name
 update          Name, Rowid

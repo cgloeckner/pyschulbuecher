@@ -9,7 +9,7 @@ which provide role-specific data.
 
 SQL-Statement   Paramters
 -------------------------	
-create          Rowid
+create          -
 delete          Rowid
 """
 
