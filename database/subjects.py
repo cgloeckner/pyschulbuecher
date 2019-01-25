@@ -24,13 +24,9 @@ setup = """create table Subjects (
 );"""
 
 create = "insert into Subjects (name, short, advanced) values (?, ?, ?)"
-
 search = "select rowid from Subjects where name like ?"
-
-read = "select name, short, advanced from Subjects where rowid = ?"
-
-update = "update Subjects set name = ? where rowid = ?"
-
+read   = "select name, short, advanced from Subjects where rowid = ?"
+update = "update Subjects set name = ?, short = ?, advanced = ? where rowid = ?"
 delete = "delete from Subjects where rowid = ?"
 
 # -----------------------------------------------------------------------------
@@ -51,7 +47,7 @@ class CRUDTest(unittest.TestCase):
 		# reset database
 		self.db = None
 
-	def test_lifecycle(self):
+	def test_create_destroy(self):
 		# create records
 		self.cur.executemany(create, [
 			('maths', 'Ma', 1,),
@@ -73,7 +69,7 @@ class CRUDTest(unittest.TestCase):
 		])
 		self.db.commit()
 	
-	def test_readRecords(self):
+	def test_search_read(self):
 		# create records
 		self.cur.executemany(create, [
 			('maths', 'Ma', 1,),
@@ -91,6 +87,24 @@ class CRUDTest(unittest.TestCase):
 		self.cur.execute(read, (1,))
 		name = self.cur.fetchall()
 		self.assertEqual(name, [('maths', 'Ma', 1,)])
+
+	def test_update(self):
+		# create records
+		self.cur.executemany(create, [
+			('maths', 'Ma', 1,),
+			('chemistry', 'che', None,),
+			('english', 'eng', 0,)
+		])
+		self.db.commit()
+		
+		# update data
+		self.cur.execute(update, ('biology', 'bio', 0, 2,))
+		self.db.commit()
+		
+		# assert update
+		self.cur.execute(read, (2,))
+		name = self.cur.fetchall()
+		self.assertEqual(name, [('biology', 'bio', 0,)])
 
 if __name__ == '__main__':
 	unittest.main()
