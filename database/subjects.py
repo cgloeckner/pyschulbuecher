@@ -6,13 +6,13 @@
 Example:
 	cur.execute(readNameById, (153,))
 
-SQL Statement	Paramters
+SQL-Statement   Paramters
 -------------------------	
-create			Rowid
-readNameById	Rowid
-readIdByName	Name
-update			Name, Rowid
-delete			Rowid
+create          Rowid
+readNameById    Rowid
+readIdByName    Name
+update          Name, Rowid
+delete          Rowid
 """
 
 __author__ = "Christian Glöckner"
