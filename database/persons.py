@@ -61,6 +61,3 @@ class CRUDTest(unittest.TestCase):
 		])
 		self.db.commit()
 
-if __name__ == '__main__':
-	unittest.main()
-

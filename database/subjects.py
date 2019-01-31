@@ -107,7 +107,3 @@ class CRUDTest(unittest.TestCase):
 		self.cur.execute(read, (2,))
 		name = self.cur.fetchall()
 		self.assertEqual(name, [('biology', 'bio', 0,)])
-
-if __name__ == '__main__':
-	unittest.main()
-

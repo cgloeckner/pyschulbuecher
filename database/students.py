@@ -44,7 +44,7 @@ import sqlite3, unittest
 class CRUDTest(unittest.TestCase):
 
 	def setUp(self):
-		import persons, teachers, classes
+		from database import persons, teachers, classes
 	
 		# create empty database
 		self.db  = sqlite3.connect('')
@@ -158,7 +158,3 @@ class CRUDTest(unittest.TestCase):
 		self.cur.execute(read, (3,))
 		name = self.cur.fetchall()
 		self.assertEqual(name, [('Doe', 'John', None, None, None)])
-
-if __name__ == '__main__':
-	unittest.main()
-

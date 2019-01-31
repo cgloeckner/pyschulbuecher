@@ -118,6 +118,3 @@ class CRUDTest(unittest.TestCase):
 		name = self.cur.fetchall()
 		self.assertEqual(name, [('Spam',)])
 
-if __name__ == '__main__':
-	unittest.main()
-
