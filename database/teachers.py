@@ -5,12 +5,12 @@
 
 SQL-Statement   Paramters
 -------------------------------------
-create          Name, Sex, Short, PersonId
+create          Name, Sex, Tag, PersonId
 listing			-
-search			Short
+search			Tag
 derive			PersonId
 read			Rowid
-update          Name, Sex, Short, Rowid
+update          Name, Sex, Tag, Rowid
 delete          Rowid
 """
 
@@ -19,17 +19,17 @@ __author__ = "Christian Glöckner"
 setup = """create table Teachers (
 	name varchar(25) not null,
 	sex char check (sex in ('m', 'f')),
-	short varchar(4) unique,
+	tag varchar(4) unique,
 	person_id int unique,
 	foreign key (person_id) references Persons(rowid)
 );"""
 
-create  = "insert into Teachers (name, sex, short, person_id) values (?, ?, ?, ?)"
+create  = "insert into Teachers (name, sex, tag, person_id) values (?, ?, ?, ?)"
 listing = "select rowid from Teachers"
-search  = "select rowid from Teachers where short like ?"
+search  = "select rowid from Teachers where tag like ?"
 derive  = "select rowid from Teachers where person_id = ?"
-read    = "select name, sex, short from Teachers where rowid = ?"
-update  = "update Teachers set name = ?, sex = ?, short = ? where rowid = ?"
+read    = "select name, sex, tag from Teachers where rowid = ?"
+update  = "update Teachers set name = ?, sex = ?, tag = ? where rowid = ?"
 delete  = "delete from Teachers where rowid = ?"
 
 # -----------------------------------------------------------------------------
@@ -76,7 +76,7 @@ class CRUDTest(unittest.TestCase):
 		])
 		self.db.commit()
 
-	def test_uniqueShorts(self):
+	def test_uniqueTags(self):
 		# create records
 		self.cur.executemany(create, [
 			('Smith', 'm', 'smi', 1,),

@@ -32,7 +32,7 @@ listing = "select rowid from Students"
 search  = "select rowid from Students where surname like ? or first_name like ?"
 lookup  = "select rowid from Students where class_id = ?"
 derive  = "select rowid from Students where person_id = ?"
-read    = "select surname, first_name, Classes.form, Classes.short, Teachers.Short from Students left join Classes on Students.class_id = Classes.rowid left join Teachers on Classes.teacher_id = Teachers.rowid where Students.rowid = ?"
+read    = "select surname, first_name, Classes.form, Classes.tag, Teachers.Tag from Students left join Classes on Students.class_id = Classes.rowid left join Teachers on Classes.teacher_id = Teachers.rowid where Students.rowid = ?"
 rename  = "update Students set surname = ?, first_name = ? where rowid = ?"
 move    = "update Students set class_id = ? where rowid = ?"
 delete  = "delete from Students where rowid = ?"
@@ -59,9 +59,9 @@ class CRUDTest(unittest.TestCase):
 			('Foo', 'f', 'FO', 1,),
 			('Bar', 'm', 'BA', 2,)
 		])
-		self.cur.executemany(classes.create, [
-			(10, 'b', None,),
-			(8, 'a', 2,)
+		classes.create(self.cur, [
+			{'form': 10, 'tag': 'b'},
+			{'form':  8, 'tag': 'a', 'teacher_id': 2}
 		])
 		self.db.commit()
 	
