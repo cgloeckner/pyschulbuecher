@@ -6,12 +6,6 @@
 Note that the persons' table is only used for hierarchic structuring. Pure
 persons only be created and deleted. Other data is added by additional tables
 which provide role-specific data.
-
-SQL-Statement   Paramters
--------------------------	
-create          -
-listing			-
-delete          Rowid
 """
 
 __author__ = "Christian Glöckner"
@@ -21,9 +15,34 @@ setup = """create table Persons (
 	stub tinyint
 );"""
 
-create  = "insert into Persons values (0)"
-listing = "select rowid from Persons"
-delete  = "delete from Persons where rowid = ?"
+from typing import List
+
+def create(db):
+	"""Create a new person."""
+	# execute query
+	sql = "insert into Persons values (0)"
+	db.execute(sql)
+
+
+def readAllIds(db) -> List[int]:
+	"""Returns a full listing of all persons ids."""
+	# execute query
+	sql = "select rowid from Persons"
+	cursor = db.execute(sql)
+	raw = cursor.fetchall()
+	
+	# parse result
+	ids = list()
+	for item in raw:
+		ids.append(item[0])
+	return ids
+
+
+def delete(db, rowid: int):
+	"""Delete the given person (specified by `rowid`)."""
+	# execute query
+	sql = "delete from Persons where rowid = ?"
+	db.execute(sql, (rowid, ))
 
 # -----------------------------------------------------------------------------
 
@@ -43,21 +62,16 @@ class CRUDTest(unittest.TestCase):
 		# reset database
 		self.db = None
 
-	def test_create_listing_delete(self):
-		# create records
-		self.cur.executemany(create, [(), (), ()])
-		self.db.commit()
+	def test_create_list_delete(self):
+		for i in range(3):
+			create(self.cur)
 		
-		# list
-		self.cur.execute(listing)
-		ids = self.cur.fetchall()
-		self.assertEqual(ids, [(1,), (2,), (3,),])
+		ids = readAllIds(self.cur)
+		self.assertEqual(set(ids), set([1, 2, 3]))
 		
-		# destroy records
-		self.cur.executemany(delete, [
-			(1,),
-			(2,),
-			(3,) 
-		])
-		self.db.commit()
+		delete(self.cur, 2)
+		
+		ids = readAllIds(self.cur)
+		self.assertEqual(set(ids), set([1, 3]))
+
 

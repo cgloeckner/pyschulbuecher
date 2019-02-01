@@ -54,7 +54,8 @@ class CRUDTest(unittest.TestCase):
 		self.cur.execute(teachers.setup)
 		self.cur.execute(classes.setup)
 		self.cur.execute(setup)
-		self.cur.executemany(persons.create, [(), (), (), (), ()])
+		for i in range(5):
+			persons.create(self.cur)
 		self.cur.executemany(teachers.create, [
 			('Foo', 'f', 'FO', 1,),
 			('Bar', 'm', 'BA', 2,)

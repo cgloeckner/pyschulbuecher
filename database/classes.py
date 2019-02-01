@@ -2,15 +2,6 @@
 # -*- coding: utf-8 -*-
 
 """CRUD module for Classes using prepared statements
-
-SQL-Statement   Paramters
--------------------------------------
-create          Form, Short, TeacherId
-listing			-
-search			Form, Tag
-read			Rowid
-update          Form, Tag, TeacherId, Rowid
-delete          Rowid
 """
 
 __author__ = "Christian Glöckner"
@@ -23,14 +14,15 @@ setup = """create table Classes (
 		on delete set null
 );"""
 
+from typing import Iterable, Dict, List
 
-def create(db, data):
-	"""Create new classes using the given list of `data` objects."""
+def create(db, data: Iterable[dict]):
+	"""Create new classes using the given list of `data` objects.
+	Required information are a `form` int and a `tag` str. An optional
+	`teacher_id` int can be specified."""
 	# dump data to list of tuples
 	args = list()
-	assert(isinstance(data, list))
 	for obj in data:
-		assert(isinstance(obj, dict))
 		assert(isinstance(obj['form'], int))
 		assert(isinstance(obj['tag'], str))
 		if 'teacher_id' in obj:
@@ -46,8 +38,8 @@ def create(db, data):
 	db.executemany(sql, args)
 
 
-def readAllIds(db):
-	"""Returns a full listing of all classes ids."""
+def readAllIds(db) -> List[int]:
+	"""Returns a full listing of all classes rowids."""
 	# execute query
 	sql = "select rowid from Classes"
 	cursor = db.execute(sql)
@@ -60,7 +52,7 @@ def readAllIds(db):
 	return ids
 
 
-def readData(db, rowid):
+def readData(db, rowid: int) -> dict:
 	"""Returns the following information of the given class (specified by
 	`rowid`): form, tag, teacher's tag (if a teacher was assigned)
 	"""
@@ -76,12 +68,13 @@ def readData(db, rowid):
 	if raw is not None:
 		data['form']  = raw[0]
 		data['tag'] = raw[1]
-		data['teacher_tag'] = raw[2]
+		if raw[2] is not None:
+			data['teacher_tag'] = raw[2]
 	return data
 
 
-def readRowids(db, form=None, tag=None):
-	"""Return classes rowids specified by form and/or tag. At least one is
+def readRowids(db, form:int=None, tag:str=None) -> List[int]:
+	"""Return classes' rowids specified by `form` and/or `tag`. At least one is
 	required to be not None"""
 	# prepare query
 	sql   = "select rowid from Classes where "
@@ -112,7 +105,7 @@ def readRowids(db, form=None, tag=None):
 	return ids
 
 
-def rename(db, rowid, form, tag):
+def rename(db, rowid: int, form: int, tag: str):
 	"""Rename the given class (specified by `rowid`) using `form` and `tag`
 	tag."""
 	# execute query
@@ -120,7 +113,7 @@ def rename(db, rowid, form, tag):
 	db.execute(sql, (form, tag, rowid, ))
 
 
-def changeTeacher(db, rowid, teacher_id=None):
+def changeTeacher(db, rowid: int, teacher_id: int=None):
 	"""Change the given class' (specified by `rowid`) `teacher_id`. Not
 	specifying a `teacher_id` defaults to setting to no teacher being assigned.
 	"""
@@ -129,7 +122,7 @@ def changeTeacher(db, rowid, teacher_id=None):
 	db.execute(sql, (teacher_id, rowid, ))
 
 
-def delete(db, rowid):
+def delete(db, rowid: int):
 	"""Delete the given class (specified by `rowid`)."""
 	# execute query
 	sql = "delete from Classes where rowid = ?"
@@ -152,7 +145,8 @@ class CRUDTest(unittest.TestCase):
 		self.cur.execute(persons.setup)
 		self.cur.execute(teachers.setup)
 		self.cur.execute(setup)
-		self.cur.executemany(persons.create, [(), ()])
+		for i in range(2):
+			persons.create(self.cur)
 		self.cur.executemany(teachers.create, [
 			('Foo', 'f', 'FO', 1, ),
 			('Bar', 'm', 'BA', 2, )
@@ -186,10 +180,10 @@ class CRUDTest(unittest.TestCase):
 		])
 		
 		data = readData(self.cur, 2)
-		self.assertEqual(data, { 'form': 8, 'tag': 'a', 'teacher_tag': 'FO' })
+		self.assertEqual(data, {'form': 8, 'tag': 'a', 'teacher_tag': 'FO'})
 		
 		data = readData(self.cur, 3)
-		self.assertEqual(data, { 'form': 7, 'tag': 'c', 'teacher_tag': None })
+		self.assertEqual(data, {'form': 7, 'tag': 'c'})
 
 		data = readData(self.cur, 123)
 		self.assertEqual(data, {})
@@ -232,7 +226,7 @@ class CRUDTest(unittest.TestCase):
 		rename(self.cur, 2, 9, 'b')
 		
 		data = readData(self.cur, 2)
-		self.assertEqual(data, { 'form': 9, 'tag': 'b', 'teacher_tag': 'FO' })
+		self.assertEqual(data, {'form': 9, 'tag': 'b', 'teacher_tag': 'FO'})
 		
 		rename(self.cur, 123, 11, 'c') # ignored
 		
@@ -249,17 +243,17 @@ class CRUDTest(unittest.TestCase):
 		changeTeacher(self.cur, 2, 2)
 		
 		data = readData(self.cur, 2)
-		self.assertEqual(data, { 'form': 8, 'tag': 'a', 'teacher_tag': 'BA' })
+		self.assertEqual(data, {'form': 8, 'tag': 'a', 'teacher_tag': 'BA'})
 		
 		changeTeacher(self.cur, 2)
 		
 		data = readData(self.cur, 2)
-		self.assertEqual(data, { 'form': 8, 'tag': 'a', 'teacher_tag': None })
+		self.assertEqual(data, {'form': 8, 'tag': 'a'})
 		
 		changeTeacher(self.cur, 2, 123) # ignored
 		
 		data = readData(self.cur, 2)
-		self.assertEqual(data, { 'form': 8, 'tag': 'a', 'teacher_tag': None })
+		self.assertEqual(data, {'form': 8, 'tag': 'a'})
 
 
 

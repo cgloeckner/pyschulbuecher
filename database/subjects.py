@@ -2,34 +2,108 @@
 # -*- coding: utf-8 -*-
 
 """CRUD module for Subjects using prepared statements
-
-Example:
-	cur.execute(read, (153,))
-
-SQL-Statement   Paramters
---------------------------------------
-create          Name, Short, Advanced
-listing			-
-search			Name
-read			Rowid
-update          Name, Short, Advanced, Rowid
-delete          Rowid
 """
 
 __author__ = "Christian Glöckner"
 
 setup = """create table Subjects (
 	name varchar(25) not null,
-	short varchar(5) not null,
+	tag varchar(5) not null,
 	advanced tinyint check (advanced in (0, 1))
 );"""
 
-create  = "insert into Subjects (name, short, advanced) values (?, ?, ?)"
-listing = "select rowid from Subjects"
-search  = "select rowid from Subjects where name like ?"
-read    = "select name, short, advanced from Subjects where rowid = ?"
-update  = "update Subjects set name = ?, short = ?, advanced = ? where rowid = ?"
-delete  = "delete from Subjects where rowid = ?"
+from typing import Iterable, Dict, List
+
+def create(db, data: Iterable[Dict]):
+	"""Create new subjects using the given list of `data` objects.
+	Required information are a `name` str and a `tag` str. An optional
+	`advanced` bool can be specified."""
+	# dump data to list of tuples
+	args = list()
+	for obj in data:
+		assert(isinstance(obj['name'], str))
+		assert(isinstance(obj['tag'], str))
+		if 'advanced' in obj:
+			advanced = obj['advanced']	
+			assert(isinstance(advanced, bool))
+			advanced = int(advanced)
+		else:
+			advanced = None
+		raw = (obj['name'], obj['tag'], advanced, )
+		args.append(raw)
+		
+	# execute query
+	sql = "insert into Subjects (name, tag, advanced) values (?, ?, ?)"
+	db.executemany(sql, args)
+
+
+def readAllIds(db) -> List[int]:
+	"""Returns a full listing of all subject rowids."""
+	# execute query
+	sql = "select rowid from Subjects"
+	cursor = db.execute(sql)
+	raw = cursor.fetchall()
+	
+	# parse result
+	ids = list()
+	for item in raw:
+		ids.append(item[0])
+	return ids
+
+
+def readData(db, rowid: int) -> dict:
+	"""Returns the given subject's (specified by `rowid`) name and tag data,
+	as well whether it's advanced or not (if previously set).
+	"""
+	# prepare query
+	sql = "select name, tag, advanced from Subjects where rowid = ?"
+	cursor = db.execute(sql, (rowid, ))
+	raw = cursor.fetchone()
+	
+	# parse result
+	data = dict()
+	if raw is not None:
+		data['name'] = raw[0]
+		data['tag']  = raw[1]
+		if raw[2] is not None:
+			data['advanced'] = bool(raw[2])
+	return data
+
+
+def readRowids(db, name: str) -> List[int]:
+	"""Return subjects' rowids specified by its `name`."""
+	criteria = "%" + name + "%"
+	# execute query
+	sql = "select rowid from Subjects where name like ?"
+	cursor = db.execute(sql, (criteria, ))
+	raw = cursor.fetchall()
+	
+	# parse result
+	ids = list()
+	for item in raw:
+		ids.append(item[0])
+	return ids
+
+
+def rename(db, rowid: int, name: str, tag: str, advanced: bool=None):
+	"""Rename the given subject (specified by `rowid`) using the given `name`
+	and `tag`. It can optionally be flagged as advanced or not advanced (default
+	is not flagged at all).
+	"""
+	if advanced is not None:
+		advanced = int(advanced)
+		
+	# execute query
+	sql = "update Subjects set name = ?, tag = ?, advanced = ? where rowid = ?"
+	db.execute(sql, (name, tag, advanced, rowid, ))
+
+
+def delete(db, rowid: int):
+	"""Delete the given subject (specified by `rowid`)."""
+	# execute query
+	sql = "delete from Subjects where rowid = ?"
+	db.execute(sql, (rowid, ))
+
 
 # -----------------------------------------------------------------------------
 
@@ -49,61 +123,77 @@ class CRUDTest(unittest.TestCase):
 		# reset database
 		self.db = None
 
-	def test_create_listing_destroy(self):
-		# create records
-		self.cur.executemany(create, [
-			('maths', 'Ma', 1,),
-			('chemistry', 'che', None,),
-			('english', 'eng', 0,)
+	def test_create_list_delete(self):
+		create(self.cur, [
+			{'name': 'Maths',     'tag': 'Ma', 'advanced': True}, # advanced subject
+			{'name': 'Chemistry', 'tag': 'che'},				  # regular subject
+			{'name': 'English',   'tag': 'en', 'advanced': False} # basic subject
 		])
-		self.db.commit()
 		
-		# list
-		self.cur.execute(listing)
-		ids = self.cur.fetchall()
-		self.assertEqual(ids, [(1,), (2,), (3,),])
+		ids = readAllIds(self.cur)
+		self.assertEqual(set(ids), set([1, 2, 3]))
 		
-		# destroy records
-		self.cur.executemany(delete, [
-			(1,),
-			(2,),
-			(3,) 
-		])
-		self.db.commit()
-	
-	def test_search_read(self):
-		# create records
-		self.cur.executemany(create, [
-			('maths', 'Ma', 1,),
-			('chemistry', 'che', None,),
-			('english', 'eng', 0,)
-		])
-		self.db.commit()
+		delete(self.cur, 2)
 		
-		# search id by name
-		self.cur.execute(search, ('%mist%',))
-		id = self.cur.fetchall()
-		self.assertEqual(id, [(2,)])
-		
-		# read data by id
-		self.cur.execute(read, (1,))
-		name = self.cur.fetchall()
-		self.assertEqual(name, [('maths', 'Ma', 1,)])
+		ids = readAllIds(self.cur)
+		self.assertEqual(set(ids), set([1, 3]))
 
-	def test_update(self):
-		# create records
-		self.cur.executemany(create, [
-			('maths', 'Ma', 1,),
-			('chemistry', 'che', None,),
-			('english', 'eng', 0,)
+	def test_read_subject_data(self):
+		create(self.cur, [
+			{'name': 'Maths',     'tag': 'Ma', 'advanced': True},
+			{'name': 'Chemistry', 'tag': 'che'},
+			{'name': 'English',   'tag': 'en', 'advanced': False}
 		])
-		self.db.commit()
 		
-		# update data
-		self.cur.execute(update, ('biology', 'bio', 0, 2,))
-		self.db.commit()
+		data = readData(self.cur, 3)
+		self.assertEqual(data, {'name': 'English', 'tag': 'en', 'advanced': False})
 		
-		# assert update
-		self.cur.execute(read, (2,))
-		name = self.cur.fetchall()
-		self.assertEqual(name, [('biology', 'bio', 0,)])
+		data = readData(self.cur, 1)
+		self.assertEqual(data, {'name': 'Maths', 'tag': 'Ma', 'advanced': True})
+		
+		data = readData(self.cur, 2)
+		self.assertEqual(data, {'name': 'Chemistry', 'tag': 'che'})
+
+	def test_search_subjects(self):
+		create(self.cur, [
+			{'name': 'Maths',   'tag': 'Ma', 'advanced': True},  # advanced course
+			{'name': 'Maths',   'tag': 'Ma'},					 # regular maths subject
+			{'name': 'Maths',   'tag': 'Ma', 'advanced': False}, # basic course
+			{'name': 'English', 'tag': 'en', 'advanced': False}
+		])
+		
+		ids = readRowids(self.cur, 'Maths')
+		self.assertEqual(set(ids), set([1, 2, 3]))
+		
+		ids = readRowids(self.cur, 'ath')
+		self.assertEqual(set(ids), set([1, 2, 3]))
+		
+		ids = readRowids(self.cur, 'Eng')
+		self.assertEqual(set(ids), set([4]))
+		
+		ids = readRowids(self.cur, 'De')
+		self.assertEqual(set(ids), set([]))
+		
+	def test_rename_subject(self):
+		create(self.cur, [
+			{'name': 'Maths',     'tag': 'Ma', 'advanced': True},
+			{'name': 'Chemistry', 'tag': 'che'},
+			{'name': 'English',   'tag': 'en', 'advanced': False}
+		])
+		
+		# reset advanced-flag
+		rename(self.cur, 1, 'Biology', 'bio')
+		data = readData(self.cur, 1)
+		self.assertEqual(data, {'name': 'Biology', 'tag': 'bio'})
+		
+		# set advanced-flag
+		rename(self.cur, 1, 'Biology', 'bio', True)
+		data = readData(self.cur, 1)
+		self.assertEqual(data, {'name': 'Biology', 'tag': 'bio', 'advanced': True})
+		
+		rename(self.cur, 1, 'Biology', 'bio', False)
+		data = readData(self.cur, 1)
+		self.assertEqual(data, {'name': 'Biology', 'tag': 'bio', 'advanced': False})
+		
+		
+

@@ -47,7 +47,8 @@ class CRUDTest(unittest.TestCase):
 		# setup tables
 		self.cur.execute(persons.setup)
 		self.cur.execute(setup)
-		self.cur.executemany(persons.create, [(), (), (), ()])
+		for i in range(4):
+			persons.create(self.cur)
 		self.db.commit()
 	
 	def tearDown(self):
