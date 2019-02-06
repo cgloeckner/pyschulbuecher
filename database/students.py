@@ -50,6 +50,7 @@ class CRUDTest(unittest.TestCase):
 		self.db  = sqlite3.connect('')
 		self.cur = self.db.cursor()
 		# setup tables
+		self.cur.execute("PRAGMA foreign_keys=ON")
 		self.cur.execute(persons.setup)
 		self.cur.execute(teachers.setup)
 		self.cur.execute(classes.setup)

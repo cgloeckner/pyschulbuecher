@@ -143,5 +143,9 @@ class CRUDTest(unittest.TestCase):
 		data = readAll(self.cur)
 		self.assertEqual(data[2]['name'], 'Volk & Wissen')
 
-
+	def test_unique_name(self):
+		create(self.cur, ['Cornelsen', 'Klett', 'Volk und Wissen'])
+		
+		with self.assertRaises(sqlite3.IntegrityError):
+			rename(self.cur, 3, 'Klett')
 
