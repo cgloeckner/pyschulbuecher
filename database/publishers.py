@@ -22,12 +22,68 @@ setup = """create table Publishers (
 	name varchar(25) unique
 );"""
 
-create  = "insert into Publishers (name) values (?)"
-listing = "select rowid from Publishers"
-search  = "select rowid from Publishers where name like ?"
-read    = "select name from Publishers where rowid = ?"
-update  = "update Publishers set name = ? where rowid = ?"
-delete  = "delete from Publishers where rowid = ?"
+from typing import Iterable, Dict, List
+
+def create(db, names: Iterable[str]):
+	"""Create new publishers using the given list of `str` strings."""
+	# dump data to list of tuples
+	args = list()
+	for name in names:
+		args.append((name, ))
+	
+	# execute query
+	sql = "insert into Publishers (name) values (?)"
+	db.executemany(sql, args)
+
+
+def readAll(db) -> List[int]:
+	"""Returns a full listing of all publishers rowids and names."""
+	# execute query
+	sql = "select rowid, name from Publishers"
+	cursor = db.execute(sql)
+	raw = cursor.fetchall()
+	
+	# parse result
+	ret = list()
+	for item in raw:
+		data = dict()
+		data['rowid'] = item[0]
+		data['name']  = item[1]
+		ret.append(data)
+	return ret
+
+
+def readRowids(db, name: str) -> List[int]:
+	"""Return publishers' rowids specified by its `name`."""
+	criteria = "%" + name + "%"
+	# execute query
+	sql = "select rowid from Publishers where name like ?"
+	cursor = db.execute(sql, (criteria, ))
+	raw = cursor.fetchall()
+	
+	# parse result
+	ids = list()
+	for item in raw:
+		ids.append(item[0])
+	return ids
+
+
+def rename(db, rowid: int, name: str):
+	"""Rename the given publisher (specified by `rowid`) using the given `name`.
+	"""
+	# execute query
+	sql = "update Publishers set name = ? where rowid = ?"
+	db.execute(sql, (name, rowid, ))
+
+
+def delete(db, rowid: int):
+	"""Delete the given publisher (specified by `rowid`)."""
+	# execute query
+	sql = "delete from Publishers where rowid = ?"
+	db.execute(sql, (rowid, ))
+
+
+
 
 # -----------------------------------------------------------------------------
 
@@ -47,74 +103,45 @@ class CRUDTest(unittest.TestCase):
 		# reset database
 		self.db = None
 
-	def test_create_listing_delete(self):
-		# create records
-		self.cur.executemany(create, [
-			('Cornelsen',),
-			('Klett',),
-			('Westermann',)
+	def test_create_list_delete(self):
+		create(self.cur, ['Cornelsen', 'Klett', 'Volk und Wissen'])
+		
+		data = readAll(self.cur)
+		self.assertEqual(data, [
+			{'rowid': 1, 'name': 'Cornelsen'},
+			{'rowid': 2, 'name': 'Klett'},
+			{'rowid': 3, 'name': 'Volk und Wissen'}
 		])
-		self.db.commit()
 		
-		# list
-		self.cur.execute(listing)
-		ids = self.cur.fetchall()
-		self.assertEqual(ids, [(1,), (2,), (3,),])
+		delete(self.cur, 2)
 		
-		# destroy records
-		self.cur.executemany(delete, [
-			(1,),
-			(2,),
-			(3,) 
+		data = readAll(self.cur)
+		self.assertEqual(data, [
+			{'rowid': 1, 'name': 'Cornelsen'},
+			{'rowid': 3, 'name': 'Volk und Wissen'}
 		])
-		self.db.commit()
-	
-	def test_uniqueNames(self):
-		# create records
-		self.cur.executemany(create, [
-			('Cornelsen',),
-			('Klett',),
-			('Westermann',)
-		])
-		self.db.commit()
 		
-		# force duplicates
-		with self.assertRaises(sqlite3.IntegrityError):
-			self.cur.execute(create, ('Klett',),)
-	
-	def test_search_read(self):
-		# create records
-		self.cur.executemany(create, [
-			('Cornelsen',),
-			('Klett',),
-			('Westermann',)
-		])
-		self.db.commit()
+	def test_search_publishers(self):
+		create(self.cur, ['Cornelsen', 'Klett', 'Volk und Wissen'])
 		
-		# search id by name
-		self.cur.execute(search, ('%kle%',))
-		id = self.cur.fetchall()
-		self.assertEqual(id, [(2,)])
+		ids = readRowids(self.cur, 'en') # CornelsEN, Volk und WissEN
+		self.assertEqual(set(ids), set([1, 3]))
 		
-		# read data by id
-		self.cur.execute(read, (1,))
-		name = self.cur.fetchall()
-		self.assertEqual(name, [('Cornelsen',)])
+		ids = readRowids(self.cur, 'e')
+		self.assertEqual(set(ids), set([1, 2, 3]))
+		
+		ids = readRowids(self.cur, 'tt')
+		self.assertEqual(set(ids), set([2]))
+		
+		ids = readRowids(self.cur, 'mann')
+		self.assertEqual(set(ids), set([]))
+		
+	def test_rename_publishers(self):
+		create(self.cur, ['Cornelsen', 'Klett', 'Volk und Wissen'])
+		
+		rename(self.cur, 3, 'Volk & Wissen')
+		data = readAll(self.cur)
+		self.assertEqual(data[2]['name'], 'Volk & Wissen')
 
-	def test_update(self):
-		# create records
-		self.cur.executemany(create, [
-			('Cornelsen',),
-			('Klett',),
-			('Westermann',)
-		])
-		self.db.commit()
-		
-		# update data
-		self.cur.execute(update, ('Spam', 1,))
-		
-		# assert update
-		self.cur.execute(read, (1,))
-		name = self.cur.fetchall()
-		self.assertEqual(name, [('Spam',)])
+
 
