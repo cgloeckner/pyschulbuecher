@@ -5,7 +5,7 @@ __author__ = "Christian Glöckner"
 
 import unittest
 
-from database import classes, persons, publishers, students, subjects, teachers
+from db import orm
 
 def register(suite, class_):
 	"""Register all testcase methods of the given test case class to the given
@@ -19,12 +19,7 @@ def suite():
 	"""Create whole test suite
 	"""
 	suite = unittest.TestSuite()
-	register(suite, classes.CRUDTest)
-	register(suite, persons.CRUDTest)
-	register(suite, publishers.CRUDTest)
-	register(suite, students.CRUDTest)
-	register(suite, subjects.CRUDTest)
-	register(suite, teachers.CRUDTest)
+	register(suite, orm.Tests)
 	return suite
 
 if __name__ == '__main__':

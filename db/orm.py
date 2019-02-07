@@ -81,7 +81,7 @@ class Loan(db.Entity):
 
 import unittest
 
-class OrmTest(unittest.TestCase):
+class Tests(unittest.TestCase):
 
 	def setUp(self):
 		db.bind('sqlite', ':memory:', create_db=True)

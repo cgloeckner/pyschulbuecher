@@ -1,5 +1,8 @@
-- fix foreign key mismatch issue
-- refactor teachers API (create, readAllIds, readData, readRowids, rename, delete)
-- refactor students API (create, readAllIds, readData, readRowids, listByClass, rename, reassign, delete)
-- implement borrows API (create, readAllIds, readData, readRowids, listByPerson, listByClass, handOverBook, returnBook)
+Write Queries as Usecase Functions
+	db/orga.py --> organizational stuff (students, teachers, classes)
+	db/books.py --> librarian stuff (subjects, publishers, books)
+	db/loans.py --> loaning stuff (all about loans)
 
+Unit Test Usecase Functions
+
+Web API (further milestones tba)
