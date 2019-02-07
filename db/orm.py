@@ -131,15 +131,12 @@ class Tests(unittest.TestCase):
 			b for b in db.Book
 			if b.inGrade == 7
 		)
-		
-		#for e in result:
-		#	print(e.title)
-		
-		
-		#self.assertIn(self.b1, result)
-		#self.assertNotIn(self.b2, result)
-		#self.assertNotIn(self.b3, result)
-		#self.assertIn(   self.b4, result)
+				
+		self.assertIn(self.b1, result)
+		self.assertNotIn(self.b2, result)
+		self.assertNotIn(self.b3, result)
+		self.assertIn(   self.b4, result)
+
 
 		#l1 = db.Loan(person=p2, book=b1, given=date.today()) # one book
 		#l2 = db.Loan(person=p1, book=b3, given=date.today(), count=30) # class set
