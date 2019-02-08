@@ -19,6 +19,7 @@ def suite():
 	"""Create whole test suite
 	"""
 	suite = unittest.TestSuite()
+	register(suite, orm.Tests)
 	register(suite, orga.Tests)
 	register(suite, books.Tests)
 	register(suite, loans.Tests)

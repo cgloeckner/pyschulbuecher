@@ -193,6 +193,10 @@ class Tests(unittest.TestCase):
 		db.Class(grade=7, tag='a')
 		db.Class(grade=9, tag='a')
 		
+		# delete 12th grade students to avoid delete restriction
+		delete(s for s in db.Class[2].student)
+		delete(s for s in db.Class[3].student)
+		
 		# advance to a new year with three 5th grades
 		advanceSchoolYear(12, 5, ['a', 'b', 'c'])
 		
@@ -220,11 +224,12 @@ class Tests(unittest.TestCase):
 		# check existing students
 		self.assertEqual(db.Student[1].class_, c9a)
 		self.assertEqual(db.Student[2].class_, c9a)
-		self.assertEqual(db.Student[3].class_, None)
 
 	@db_session
 	def test_advanceMultipleSchoolYears(self):
 		Tests.prepare()
+		
+		delete(s for s in db.Student) # clear students to avoid delete restriction
 		
 		# 8a; 12glö, 12lip
 		

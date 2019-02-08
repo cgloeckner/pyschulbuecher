@@ -17,16 +17,16 @@ class Person(db.Entity):
 	name      = Required(str)
 	firstname = Required(str)
 	# reverse attributes
-	teacher   = Optional("Teacher")
-	student   = Optional("Student")
-	loan      = Set("Loan")
+	teacher   = Optional("Teacher", cascade_delete=True) # cascade to teacher
+	student   = Optional("Student", cascade_delete=True) # cascade to person
+	loan      = Set("Loan", cascade_delete=False) # restrict if loans assigned
 
 class Teacher(db.Entity):
 	id        = PrimaryKey(int, auto=True)
 	person    = Required("Person")
 	tag       = Required(str, unique=True)
 	# reverse attribute
-	class_    = Optional("Class")
+	class_    = Optional("Class", cascade_delete=False) # restrict if class assigned
 
 class Class(db.Entity):
 	id        = PrimaryKey(int, auto=True)
@@ -34,12 +34,12 @@ class Class(db.Entity):
 	tag       = Required(str)
 	teacher   = Optional(Teacher)
 	# reverse attribute
-	student   = Set("Student")
+	student   = Set("Student", cascade_delete=False) # restrict if students assigned
 
 class Student(db.Entity):
 	id        = PrimaryKey(int, auto=True)
 	person    = Required("Person")
-	class_    = Optional(Class)
+	class_    = Required(Class)
 
 class Subject(db.Entity):
 	id        = PrimaryKey(int, auto=True)
@@ -52,7 +52,7 @@ class Publisher(db.Entity):
 	id        = PrimaryKey(int, auto=True)
 	name      = Required(str, unique=True)
 	# reverse attribute
-	book      = Set("Book")
+	book      = Set("Book", cascade_delete=False) # restrict if books assigned
 
 class Book(db.Entity):
 	id        = PrimaryKey(int, auto=True)
@@ -67,7 +67,7 @@ class Book(db.Entity):
 	novices   = Required(bool, default=False) # suitable for novice courses?
 	advanced  = Required(bool, default=False) # suitable for advanced courses?
 	# reverse attribute
-	loan      = Set("Loan")
+	loan      = Set("Loan", cascade_delete=False) # restrict if loans assigned
 
 class Loan(db.Entity):
 	id        = PrimaryKey(int, auto=True)
@@ -77,79 +77,162 @@ class Loan(db.Entity):
 	count     = Required(int, default=1)
 
 
-"""
+
 # -----------------------------------------------------------------------------
 
 import unittest
 
 class Tests(unittest.TestCase):
-
+	
 	def setUp(self):
-		db.generate_mapping(create_tables=True)
+		db.create_tables()
 		
 	def tearDown(self):
 		db.drop_all_tables(with_all_data=True)
 
 	@db_session
-	def prepare(self):
-		ma = db.Subject(name='Mathematik', tag='Ma')
-		de = db.Subject(name='Deutsch', tag='De')
+	def test_canDeletePerson(self):	
+		p = db.Person(name='Foo', firstname='Bar')
 		
-		t1 = db.Teacher(
-			person=db.Person(name='Glöckner', firstname='Christian'),
-			tag='Glö'
-		)
-		t2 = db.Teacher(
-			person=db.Person(name='Lippmann', firstname='Iris'),
-			tag='Lip'
-		)
-		
-		for stufe in [5, 6, 7, 8, 9, 10]:
-			for gruppe in ['a', 'b', 'c']:
-				db.Class(grade=stufe, tag=gruppe)
-		db.Class(grade=11, tag='Glö', teacher=t1)
-		db.Class(grade=11, tag='Lip', teacher=t2)
+		p.delete()
 	
-		v1 = db.Publisher(name='Cornelsen')
-		v2 = db.Publisher(name='Klett')
+	@db_session
+	def test_cannotDeletePersonWithLoans(self):
+		p = db.Person(name='Foo', firstname='Bar')
 		
-		self.b1 = db.Book(title='Mathematik II', isbn='0815', price=Decimal('24.95'),
-			publisher=v1, inGrade=7, outGrade=9, subject=ma)
-		self.b2 = db.Book(title='Mathematik Oberstufe', publisher=v2, inGrade=10,
-			outGrade=12, subject=ma, novices=True, advanced=True)
+		db.Loan(person=p, given=date.today(),
+			book=db.Book(title='spam', publisher=db.Publisher(name='lol'),
+				inGrade=7, outGrade=9, subject=db.Subject(name='rofl', tag='xD')
+			)
+		)
+		
+		with self.assertRaises(core.ConstraintError):
+			p.delete()
 	
-		self.b3 = db.Book(title='Deutsch kompetent 9', publisher=v2, inGrade=9,
-			outGrade=9, subject=de)
-		self.b4 = db.Book(title='Tafelwerk', publisher=v1, inGrade=7, outGrade=12)
+	@db_session
+	def test_canDeletePersonAfterLoans(self):
+		p = db.Person(name='Foo', firstname='Bar')
 		
+		db.Loan(person=p, given=date.today(),
+			book=db.Book(title='spam', publisher=db.Publisher(name='lol'),
+				inGrade=7, outGrade=9, subject=db.Subject(name='rofl', tag='xD')
+			)
+		)
+		
+		for l in p.loan:
+			l.delete()
+		
+		p.delete()
+	
+	@db_session
+	def test_canDeleteEmptyClass(self):
+		c = db.Class(grade=5, tag='c')
+		
+		c.delete()
+	
+	@db_session
+	def test_cannotDeleteNonEmptyClass(self):
+		c = db.Class(grade=5, tag='c')
+		db.Student(person=db.Person(name='Foo', firstname='Bar'), class_=c)
+		
+		with self.assertRaises(core.ConstraintError):
+			c.delete()
+	
+	@db_session
+	def test_canDeleteClassAfterClearing(self):
+		c = db.Class(grade=5, tag='c')
+		s = db.Student(person=db.Person(name='Foo', firstname='Bar'), class_=c)
+		
+		s.delete()
+		c.delete()
 
 	@db_session
-	def test_queryNewBooksForClass(self):
-		self.prepare()
+	def test_canDeleteTeacherWithoutClass(self):
+		t = db.Teacher(person=db.Person(name='Foo', firstname='Bar'), tag='FoB')
+		
+		t.person.delete()
 	
-		result = select(
-			b for b in db.Book
-			if b.inGrade == 7
+	@db_session
+	def test_canDeleteTeacherWithClass(self):
+		t = db.Teacher(person=db.Person(name='Foo', firstname='Bar'), tag='FoB')
+		c = db.Class(grade=5, tag='c', teacher=t)
+		
+		t.person.delete()
+		
+		self.assertEqual(c.teacher, None)
+
+	@db_session
+	def test_canDeleteSubjectWithoutBook(self):
+		s = db.Subject(name='Foo', tag='Fo')
+		
+		s.delete()
+	
+	@db_session
+	def test_canDeleteSubjectWithBook(self):
+		s = db.Subject(name='Foo', tag='Fo')
+		b = db.Book(title='Bar', publisher=db.Publisher(name='lol'),
+			subject=s, inGrade=5, outGrade=6
 		)
-				
-		self.assertIn(self.b1, result)
-		self.assertNotIn(self.b2, result)
-		self.assertNotIn(self.b3, result)
-		self.assertIn(   self.b4, result)
-
-
-		#l1 = db.Loan(person=p2, book=b1, given=date.today()) # one book
-		#l2 = db.Loan(person=p1, book=b3, given=date.today(), count=30) # class set
-
-	print("All Books with at least 10 Books")
-	result = select(b for b in db.Book if b.stock >= 10)
-	for e in result:
-		print(e.title)
-		for s in e.subjects:
-			print("\t", s.name)
-
-if __name__ == '__main__':
-	db.bind('sqlite', ':memory:', create_db=True)
-	unittest.main()
-"""
+		
+		s.delete()
+		
+		self.assertEqual(b.subject, None)
+	
+	@db_session
+	def test_canDeletePublisherWithoutBook(self):
+		p = db.Publisher(name='Foo')
+		
+		p.delete()
+	
+	@db_session
+	def test_cannotDeletePublisherWithBook(self):
+		p = db.Publisher(name='Foo')
+		b = db.Book(title='Bar', publisher=p,
+			subject=db.Subject(name='Foo', tag='Fo'), inGrade=5, outGrade=6
+		)
+		
+		with self.assertRaises(core.ConstraintError):
+			p.delete()
+		
+	@db_session
+	def test_canDeletePublisherAfterBook(self):
+		p = db.Publisher(name='Foo')
+		b = db.Book(title='Bar', publisher=p,
+			subject=db.Subject(name='Foo', tag='Fo'), inGrade=5, outGrade=6
+		)
+		
+		b.delete()
+		p.delete()
+	
+	@db_session
+	def test_canDeleteBookWithoutLoan(self):
+		b = db.Book(title='Bar', publisher=db.Publisher(name='Foo'),
+			subject=db.Subject(name='Foo', tag='Fo'), inGrade=5, outGrade=6
+		)
+		
+		b.delete()
+	
+	@db_session
+	def test_cannotDeleteBookWithLoan(self):
+		b = db.Book(title='Bar', publisher=db.Publisher(name='Foo'),
+			subject=db.Subject(name='Foo', tag='Fo'), inGrade=5, outGrade=6
+		)
+		l = db.Loan(person=db.Person(name='lol', firstname='Bar'), book=b,
+			given=date.today()
+		)
+		
+		with self.assertRaises(core.ConstraintError):
+			b.delete()
+	
+	@db_session
+	def test_canDeleteBookAfterLoan(self):
+		b = db.Book(title='Bar', publisher=db.Publisher(name='Foo'),
+			subject=db.Subject(name='Foo', tag='Fo'), inGrade=5, outGrade=6
+		)
+		l = db.Loan(person=db.Person(name='lol', firstname='Bar'), book=b,
+			given=date.today()
+		)
+		
+		l.delete()
+		b.delete()
 
