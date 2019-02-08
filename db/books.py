@@ -50,10 +50,11 @@ def getBooksByTitle(title: str):
 
 def getBooksByIsbn(isbn: str):
 	"""Returns a list of books with this exact isbn.
-	Note that most commonly, only one or none will be returned.
+	Note that most commonly, only one or none will be returned. If an empty
+	string is given as isbn, all books without isbn are returned. Note that
+	this is mostly used for books which are not longer available in market.
 	"""
-	return select(b for b in db.Book if isbn in b.isbn)
-
+	return select(b for b in db.Book if isbn == b.isbn)
 
 # -----------------------------------------------------------------------------
 
@@ -227,8 +228,33 @@ class Tests(unittest.TestCase):
 		self.assertIn(db.Book[7], bs)
 		self.assertIn(db.Book[8], bs)
 
+	@db_session
+	def test_getBooksByTitle(self):
+		self.prepare()
+		
+		bs = getBooksByTitle('Maths')
+		self.assertEqual(len(bs), 5)
+		self.assertIn(db.Book[1], bs)
+		self.assertIn(db.Book[2], bs)
+		self.assertIn(db.Book[3], bs)
+		self.assertIn(db.Book[4], bs)
+		self.assertIn(db.Book[5], bs)
 
-#def getBooksByTitle(title: str):
-#def getBooksByIsbn(isbn: str):
+	@db_session
+	def test_getBooksByIsbn(self):
+		self.prepare()
+		
+		# single book
+		bs = getBooksByIsbn('236-7634-62')
+		self.assertEqual(len(bs), 1)
+		self.assertIn(db.Book[8], bs)
+		
+		# all not yet available books
+		bs = getBooksByIsbn('')
+		self.assertEqual(len(bs), 3)
+		self.assertIn(db.Book[4], bs)
+		self.assertIn(db.Book[5], bs)
+		self.assertIn(db.Book[9], bs)
+
 
 
