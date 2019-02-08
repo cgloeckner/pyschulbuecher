@@ -1,5 +1,4 @@
 Write Queries as Usecase Functions
-	db/books.py --> librarian stuff (subjects, publishers, books)
 	db/loans.py --> loaning stuff (all about loans)
 
 Unit Test Usecase Functions

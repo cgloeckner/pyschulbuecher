@@ -64,8 +64,8 @@ class Book(db.Entity):
 	inGrade   = Required(int) # first grade that uses the book
 	outGrade  = Required(int) # last grade that uses the book
 	subject   = Optional(Subject) # None for subject-independent
-	novices   = Optional(bool) # suitable for novice courses?
-	advanced  = Optional(bool) # suitable for advanced courses?
+	novices   = Required(bool, default=False) # suitable for novice courses?
+	advanced  = Required(bool, default=False) # suitable for advanced courses?
 	# reverse attribute
 	loan      = Set("Loan")
 
