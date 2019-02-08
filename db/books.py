@@ -9,44 +9,64 @@ __author__ = "Christian Glöckner"
 def getPublishers():
 	"""Return a list of all publishers.
 	"""
-	return select(p for p in db.Publisher)
+	return select(p
+		for p in db.Publisher
+	)
 
 def getSubjects():
 	"""Return a list of all subjects.
 	"""
-	return select(s for s in db.Subject)
+	return select(s
+		for s in db.Subject
+	)
 
 def getBooksWithoutSubject():
 	"""Return a list of books which are not assigned to a specific subject.
 	Those books are supposed to be used across subjects.
 	"""
-	return select(b for b in db.Book if b.subject is None)
+	return select(b
+		for b in db.Book
+			if b.subject is None
+	)
 
 def getBooksUsedIn(grade: int):
 	"""Return a list of books which are used in the given grade.
 	This includes books which are used across multiple grades, as well as books
 	that are only used by this grade.
 	"""
-	return select(b for b in db.Book if b.inGrade <= grade and grade <= b.outGrade)
+	return select(b
+		for b in db.Book
+			if b.inGrade <= grade
+			and grade <= b.outGrade
+	)
 
 def getBooksStartedIn(grade: int):
 	"""Return a list of books which are introduced in the given grade.
 	This includes books which are used across multiple grades (from that grade)
 	on, as well as books which are only used by this grade.
 	"""
-	return select(b for b in db.Book if b.inGrade == grade)
+	return select(b
+		for b in db.Book
+			if b.inGrade == grade
+	)
 
 def getBooksFinishedIn(grade: int):
 	"""Return a list of books which are used in the given grade for the last
 	time. This includes books which are used across multiple grades (up to this
 	grade), as well as books that are only used by this grade.
 	"""
-	return select(b for b in db.Book if b.outGrade == grade)
+	return select(b
+		for b in db.Book
+			if b.outGrade == grade
+	)
 
 def getBooksByTitle(title: str):
 	"""Return a list of books with similar titles.
 	"""
-	return select(b for b in db.Book if title in b.title)
+	return select(b
+		for b in db.Book
+			if title in b.title
+	)
 
 def getBooksByIsbn(isbn: str):
 	"""Returns a list of books with this exact isbn.
@@ -54,7 +74,10 @@ def getBooksByIsbn(isbn: str):
 	string is given as isbn, all books without isbn are returned. Note that
 	this is mostly used for books which are not longer available in market.
 	"""
-	return select(b for b in db.Book if isbn == b.isbn)
+	return select(b
+		for b in db.Book
+			if isbn == b.isbn
+	)
 
 # -----------------------------------------------------------------------------
 
@@ -67,8 +90,9 @@ from db.orm import db
 
 class Tests(unittest.TestCase):
 
+	@staticmethod
 	@db_session
-	def prepare(self):
+	def prepare():
 		# create subjects
 		db.Subject(name='Mathematics', tag='Ma')
 		db.Subject(name='Russian',     tag='Ru')
@@ -118,7 +142,7 @@ class Tests(unittest.TestCase):
 
 	@db_session
 	def test_getPublishers(self):
-		self.prepare()
+		Tests.prepare()
 		
 		ps = getPublishers()
 		self.assertEqual(len(ps), 2)
@@ -127,7 +151,7 @@ class Tests(unittest.TestCase):
 	
 	@db_session
 	def test_getSubjects(self):
-		self.prepare()
+		Tests.prepare()
 		
 		sb = getSubjects()
 		self.assertEqual(len(sb), 3)
@@ -137,7 +161,7 @@ class Tests(unittest.TestCase):
 	
 	@db_session
 	def test_getBooksWithoutSubject(self):
-		self.prepare()
+		Tests.prepare()
 		
 		bs = getBooksWithoutSubject()
 		self.assertEqual(len(bs), 1)
@@ -145,7 +169,7 @@ class Tests(unittest.TestCase):
 		
 	@db_session
 	def test_getBooksUsedIn(self):
-		self.prepare()
+		Tests.prepare()
 		
 		bs = getBooksUsedIn(5)
 		self.assertEqual(len(bs), 3)
@@ -182,7 +206,7 @@ class Tests(unittest.TestCase):
 
 	@db_session
 	def test_getBooksStartedIn(self):
-		self.prepare()
+		Tests.prepare()
 		
 		bs = getBooksStartedIn(5)
 		self.assertEqual(len(bs), 3)
@@ -206,7 +230,7 @@ class Tests(unittest.TestCase):
 		
 	@db_session
 	def test_getBooksFinishedIn(self):
-		self.prepare()
+		Tests.prepare()
 		
 		bs = getBooksFinishedIn(5)
 		self.assertEqual(len(bs), 1)
@@ -230,7 +254,7 @@ class Tests(unittest.TestCase):
 
 	@db_session
 	def test_getBooksByTitle(self):
-		self.prepare()
+		Tests.prepare()
 		
 		bs = getBooksByTitle('Maths')
 		self.assertEqual(len(bs), 5)
@@ -242,7 +266,7 @@ class Tests(unittest.TestCase):
 
 	@db_session
 	def test_getBooksByIsbn(self):
-		self.prepare()
+		Tests.prepare()
 		
 		# single book
 		bs = getBooksByIsbn('236-7634-62')

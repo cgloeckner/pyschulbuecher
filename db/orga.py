@@ -9,28 +9,42 @@ __author__ = "Christian Glöckner"
 def getClassGrades():
 	"""Return a list of grades for which classes exist.
 	"""
-	return select(c.grade for c in db.Class)
+	return select(c.grade
+		for c in db.Class
+	)
 
 def getClassTags(grade: int):
 	"""Return a list of tags for which classes exist in the given grade.
 	"""
-	return select(c.tag for c in db.Class if c.grade == grade)
+	return select(c.tag
+		for c in db.Class
+			if c.grade == grade
+	)
 
 def getClasses():
 	"""Return a list of all existing classes.
 	"""
-	return select(c for c in db.Class)
+	return select(c
+		for c in db.Class
+	)
 
 def getClassesByGrade(grade: int):
 	"""Return a list of classes which exist in the given grade.
 	"""
-	return select(c for c in db.Class if c.grade == grade)
+	return select(c
+		for c in db.Class
+			if c.grade == grade
+	)
 
 def getStudentsLike(name: str="", firstname: str=""):
 	"""Return a list of students by name and firstname using partial matching.
 	Both parameters default to an empty string if not specified.
 	"""
-	return select(s for s in db.Student if name in s.person.name and firstname in s.person.firstname)
+	return select(s
+		for s in db.Student
+			if name in s.person.name
+			and firstname in s.person.firstname
+	)
 
 def advanceSchoolYear(last_grade: int, first_grade: int, new_tags: list):
 	"""Advance all students and classes to the next school year.
@@ -62,8 +76,9 @@ from db.orm import db
 
 class Tests(unittest.TestCase):
 
+	@staticmethod
 	@db_session
-	def prepare(self):
+	def prepare():
 		# create teachers
 		t1 = db.Teacher(
 			person=db.Person(name='Glöckner', firstname='Christian'),
@@ -101,7 +116,7 @@ class Tests(unittest.TestCase):
 
 	@db_session
 	def test_getClassGrades(self):
-		self.prepare()
+		Tests.prepare()
 		
 		gs = getClassGrades()
 		self.assertEqual(len(gs), 2)
@@ -110,7 +125,7 @@ class Tests(unittest.TestCase):
 	
 	@db_session
 	def test_getClassTags(self):
-		self.prepare()
+		Tests.prepare()
 		
 		tgs = getClassTags(12)
 		self.assertEqual(len(tgs), 2)
@@ -123,7 +138,7 @@ class Tests(unittest.TestCase):
 
 	@db_session
 	def test_getClasses(self):
-		self.prepare()
+		Tests.prepare()
 		
 		cs = getClasses()
 		self.assertEqual(len(cs), 3)
@@ -133,7 +148,7 @@ class Tests(unittest.TestCase):
 	
 	@db_session
 	def test_getClassesByGrade(self):
-		self.prepare()
+		Tests.prepare()
 		
 		# single class
 		cs = getClassesByGrade(8)
@@ -152,7 +167,7 @@ class Tests(unittest.TestCase):
 	
 	@db_session
 	def test_getStudentsLike(self):
-		self.prepare()
+		Tests.prepare()
 		
 		# by name
 		st = getStudentsLike(name='ch')
@@ -173,7 +188,7 @@ class Tests(unittest.TestCase):
 
 	@db_session
 	def test_advanceSchoolYear(self):
-		self.prepare()
+		Tests.prepare()
 		
 		db.Class(grade=7, tag='a')
 		db.Class(grade=9, tag='a')
@@ -209,7 +224,7 @@ class Tests(unittest.TestCase):
 
 	@db_session
 	def test_advanceMultipleSchoolYears(self):
-		self.prepare()
+		Tests.prepare()
 		
 		# 8a; 12glö, 12lip
 		
