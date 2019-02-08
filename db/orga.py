@@ -32,6 +32,25 @@ def getStudentsLike(name: str="", firstname: str=""):
 	"""
 	return select(s for s in db.Student if name in s.person.name and firstname in s.person.firstname)
 
+def advanceSchoolYear(last_grade: int, first_grade: int, new_tags: list):
+	"""Advance all students and classes to the next school year.
+	All classes of the last_grade are dropped, so those students remain without
+	any class. All remaining classes advance one grade and a new set of classes
+	is created for the first_grade using a list of new_tags. Those classes are
+	created without a teacher being assigned.
+	"""
+	# drop last grade's classes
+	for c in getClassesByGrade(last_grade):
+		c.delete()
+	
+	# advance all classes' grades
+	for c in getClasses():
+		c.grade += 1
+	
+	# create new clases for first grade
+	for tag in new_tags:
+		db.Class(grade=first_grade, tag=tag)
+
 
 # -----------------------------------------------------------------------------
 
@@ -57,8 +76,8 @@ class Tests(unittest.TestCase):
 		
 		# create some classes
 		c1 = db.Class(grade=8, tag='a', teacher=t2)
-		c2 = db.Class(grade=11, tag=t1.tag, teacher=t1)
-		c3 = db.Class(grade=11, tag='Lip')
+		c2 = db.Class(grade=12, tag=t1.tag, teacher=t1)
+		c3 = db.Class(grade=12, tag='Lip')
 		
 		# create students
 		s1 = db.Student(
@@ -87,13 +106,13 @@ class Tests(unittest.TestCase):
 		gs = getClassGrades()
 		self.assertEqual(len(gs), 2)
 		self.assertIn(8, gs)
-		self.assertIn(11, gs)
+		self.assertIn(12, gs)
 	
 	@db_session
 	def test_getClassTags(self):
 		self.prepare()
 		
-		tgs = getClassTags(11)
+		tgs = getClassTags(12)
 		self.assertEqual(len(tgs), 2)
 		self.assertIn('Glö', tgs)
 		self.assertIn('Lip', tgs)
@@ -122,7 +141,7 @@ class Tests(unittest.TestCase):
 		self.assertIn(db.Class[1], cs)
 		
 		# multiple classes
-		cs = getClassesByGrade(11)
+		cs = getClassesByGrade(12)
 		self.assertEqual(len(cs), 2)
 		self.assertIn(db.Class[2], cs)
 		self.assertIn(db.Class[3], cs)
@@ -151,5 +170,82 @@ class Tests(unittest.TestCase):
 		st = getStudentsLike(name='ch', firstname='ia')
 		self.assertEqual(len(st), 1)
 		self.assertIn(db.Student[2], st)
+
+	@db_session
+	def test_advanceSchoolYear(self):
+		self.prepare()
+		
+		db.Class(grade=7, tag='a')
+		db.Class(grade=9, tag='a')
+		
+		# advance to a new year with three 5th grades
+		advanceSchoolYear(12, 5, ['a', 'b', 'c'])
+		
+		# check existing classes
+		c9a  = db.Class[1]
+		c8a  = db.Class[4]
+		c10a = db.Class[5]
+		c5a  = db.Class[6]
+		c5b  = db.Class[7]
+		c5c  = db.Class[8]
+		
+		self.assertEqual(c9a.grade,  9)
+		self.assertEqual(c8a.grade,  8)
+		self.assertEqual(c10a.grade, 10)
+		self.assertEqual(c5a.grade,  5)
+		self.assertEqual(c5b.grade,  5)
+		self.assertEqual(c5c.grade,  5)
+		self.assertEqual(c5a.tag, 'a')
+		self.assertEqual(c5b.tag, 'b')
+		self.assertEqual(c5c.tag, 'c')
+		
+		cs = getClasses()
+		self.assertEqual(len(cs), 6)
+		
+		# check existing students
+		self.assertEqual(db.Student[1].class_, c9a)
+		self.assertEqual(db.Student[2].class_, c9a)
+		self.assertEqual(db.Student[3].class_, None)
+
+	@db_session
+	def test_advanceMultipleSchoolYears(self):
+		self.prepare()
+		
+		# 8a; 12glö, 12lip
+		
+		advanceSchoolYear(12, 5, ['a', 'b', 'c'])
+		
+		cs = getClasses()
+		self.assertEqual(len(cs), 4)
+		
+		# 5a, 5b, 5c; 9a
+		
+		advanceSchoolYear(12, 5, ['a', 'b', 'c', 'd'])
+		
+		cs = getClasses()
+		self.assertEqual(len(cs), 8)
+		
+		# 5a, 5b, 5c, 5d; 6a, 6b, 6c; 10a
+		
+		advanceSchoolYear(12, 5, ['a', 'b'])
+		
+		cs = getClasses()
+		self.assertEqual(len(cs), 10)
+		
+		# 5a, 5b; 6a, 6b, 6c, 6d; 7a, 7b, 7c; 11a
+		
+		advanceSchoolYear(12, 5, ['a', 'b', 'c'])
+		
+		cs = getClasses()
+		self.assertEqual(len(cs), 13)
+		
+		# 5a, 5b, 5c; 6a, 6b; 7a, 7b, 7c, 7d; 8a, 8b, 8c; 12a
+
+		advanceSchoolYear(12, 5, ['a', 'b', 'c'])
+		
+		cs = getClasses()
+		self.assertEqual(len(cs), 15)
+		
+		# 5a, 5b, 5c; 6a, 6b, 6c; 7a, 7b; 8a, 8b, 8c, 8d; 9a, 9b, 9c
 
 
