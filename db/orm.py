@@ -77,6 +77,7 @@ class Loan(db.Entity):
 	count     = Required(int, default=1)
 
 
+"""
 # -----------------------------------------------------------------------------
 
 import unittest
@@ -84,7 +85,6 @@ import unittest
 class Tests(unittest.TestCase):
 
 	def setUp(self):
-		db.bind('sqlite', ':memory:', create_db=True)
 		db.generate_mapping(create_tables=True)
 		
 	def tearDown(self):
@@ -140,18 +140,16 @@ class Tests(unittest.TestCase):
 
 		#l1 = db.Loan(person=p2, book=b1, given=date.today()) # one book
 		#l2 = db.Loan(person=p1, book=b3, given=date.today(), count=30) # class set
-	
 
-"""
 	print("All Books with at least 10 Books")
 	result = select(b for b in db.Book if b.stock >= 10)
 	for e in result:
 		print(e.title)
 		for s in e.subjects:
 			print("\t", s.name)
-"""
 
 if __name__ == '__main__':
+	db.bind('sqlite', ':memory:', create_db=True)
 	unittest.main()
-
+"""
 
