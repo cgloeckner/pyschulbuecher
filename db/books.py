@@ -79,10 +79,65 @@ def getBooksByIsbn(isbn: str):
 			if isbn == b.isbn
 	)
 
+
+# -----------------------------------------------------------------------------
+
+def addSubjects(raw: str):
+	"""Add subjects from a given raw string dump, assuming subjects being
+	separated by newlines. Name and tag are assumed to be separated by a tab.
+	"""
+	for data in raw.split("\n"):
+		res = data.split("\t")
+		assert(len(res) == 2)
+		db.Subject(name=res[0], tag=res[1])
+
+def addPublishers(raw: str):
+	"""Add publishers from a given raw string dump, assuming publishers being
+	separated by newlines
+	"""
+	for data in raw.split("\n"):
+		db.Publisher(name=data)
+
+def addBook(raw: str):
+	"""Add book from a given raw string dump, assuming all information being
+	separated by tabs in the following order:
+		Title, ISBN, Price, Publisher, inGrade, outGrade,
+		Subject, Novices, Advanced.
+	Optional data (Price, Publisher, Subject) must be provided (at least as
+	empty strings).
+	"""
+	# split data
+	data = raw.split('\t')
+	title, isbn, price, publisher, inGrade, outGrade, subject, novices, advanced = data
+	
+	# fix parameters
+	price    = int(price) if price != "" else None
+	inGrade  = int(inGrade)
+	outGrade = int(outGrade)
+	
+	novices  = True if novices  == 'True' else False
+	advanced = True if advanced == 'True' else False
+	
+	# query referenced entities
+	publisher = db.Publisher.get(name=publisher)
+	subject   = db.Subject.get(tag=subject) if subject != "" else None
+	
+	# create actual book
+	db.Book(title=title, isbn=isbn, price=price, publisher=publisher,
+		inGrade=inGrade, outGrade=outGrade, subject=subject, novices=novices,
+		advanced=advanced)
+
+def addBooks(raw: str):
+	"""Add books from a given raw string dump, assuming all books being
+	separated by newlines. Each line is handled by addBook().
+	"""
+	for data in raw.split('\n'):
+		addBook(data)
+
+
 # -----------------------------------------------------------------------------
 
 import unittest
-from decimal import Decimal
 
 from pony.orm import *
 
@@ -103,13 +158,13 @@ class Tests(unittest.TestCase):
 		db.Publisher(name='Klett')
 		
 		# create maths books
-		db.Book(title='Maths I', isbn='000-001', price=Decimal('24.95'),
+		db.Book(title='Maths I', isbn='000-001', price=2495,
 			publisher=db.Publisher[1], inGrade=5, outGrade=6,
 			subject=db.Subject[1])
-		db.Book(title='Maths II', isbn='001-021', price=Decimal('29.99'),
+		db.Book(title='Maths II', isbn='001-021', price=2999,
 			publisher=db.Publisher[1], inGrade=7, outGrade=8,
 			subject=db.Subject[1])
-		db.Book(title='Maths III', isbn='914-721', price=Decimal('34.99'),
+		db.Book(title='Maths III', isbn='914-721', price=3499,
 			publisher=db.Publisher[1], inGrade=9, outGrade=10,
 			subject=db.Subject[1])
 		db.Book(title='Basic Maths', publisher=db.Publisher[1], inGrade=11,
@@ -118,15 +173,15 @@ class Tests(unittest.TestCase):
 			outGrade=12, subject=db.Subject[1], advanced=True)
 		
 		# create russian books
-		db.Book(title='Privjet', isbn='49322-6346', price=Decimal('59.99'),
+		db.Book(title='Privjet', isbn='49322-6346', price=5999,
 			publisher=db.Publisher[2], inGrade=5, outGrade=10,
 			subject=db.Subject[2])
-		db.Book(title='Dialog', isbn='43623-8485', price=Decimal('79.99'),
+		db.Book(title='Dialog', isbn='43623-8485', price=7999,
 			publisher=db.Publisher[2], inGrade=11, outGrade=12,
 			subject=db.Subject[2], novices=True, advanced=True)
 		
 		# create subject-independent books
-		db.Book(title='Formulary', isbn='236-7634-62', price=Decimal('22.95'),
+		db.Book(title='Formulary', isbn='236-7634-62', price=2295,
 			publisher=db.Publisher[1], inGrade=7, outGrade=12)
 			
 		# create english book
@@ -280,5 +335,94 @@ class Tests(unittest.TestCase):
 		self.assertIn(db.Book[5], bs)
 		self.assertIn(db.Book[9], bs)
 
+	@db_session
+	def test_addSubjects(self):
+		raw = """Mathematik\tMa
+Englisch\tEn
+Deutsch\tDe
+Sport\tSp"""
+		addSubjects(raw)
+		
+		s = select(s.name for s in db.Subject)
+		self.assertEqual(len(s), 4)
+		self.assertIn("Mathematik", s)
+		self.assertIn("Englisch", s)
+		self.assertIn("Deutsch", s)
+		self.assertIn("Sport", s)
+
+	@db_session
+	def test_addPublishers(self):
+		raw = """Cornelsen
+Klett
+Volk & Wissen
+C.C. Buchner"""
+		addPublishers(raw)
+		
+		p = select(s.name for s in db.Publisher)
+		self.assertEqual(len(p), 4)
+		self.assertIn("Cornelsen", p)
+		self.assertIn("Klett", p)
+		self.assertIn("Volk & Wissen", p)
+		self.assertIn("C.C. Buchner", p)
+
+	@db_session
+	def test_canAddBookWithFullInformation(self):
+		addSubjects("Mathematik\tMa")
+		addPublishers("Klett")
+		
+		raw = "Mathematik Live\t0815-1234\t2395\tKlett\t11\t12\tMa\tTrue\tFalse"
+		addBook(raw)
+		
+		b = db.Book[1]
+		self.assertEqual(b.title, "Mathematik Live")
+		self.assertEqual(b.isbn, "0815-1234")
+		self.assertEqual(b.price, 2395)
+		self.assertEqual(b.publisher, db.Publisher[1])
+		self.assertEqual(b.inGrade, 11)
+		self.assertEqual(b.outGrade, 12)
+		self.assertEqual(b.subject, db.Subject[1])
+		self.assertTrue(b.novices)
+		self.assertFalse(b.advanced)
+	
+	@db_session
+	def test_canAddBookWithMinimalInformation(self):
+		addPublishers("Klett")
+		
+		raw = "Das Große Tafelwerk\t\t\tKlett\t7\t12\t\t\t"
+		addBook(raw)
+		
+		b = db.Book[1]
+		self.assertEqual(b.title, "Das Große Tafelwerk")
+		self.assertEqual(b.isbn, "")
+		self.assertEqual(b.price, None)
+		self.assertEqual(b.publisher, db.Publisher[1])
+		self.assertEqual(b.inGrade, 7)
+		self.assertEqual(b.outGrade, 12)
+		self.assertFalse(b.novices)
+		self.assertFalse(b.advanced)
+
+	@db_session
+	def test_addBooks(self):
+		addPublishers("Klett\nCornelsen")
+		addSubjects("Mathemati\tMa\nEnglisch\tEng")
+		
+		raw = """Mathematik Live\t0815-1234\t2395\tKlett\t11\t12\tMa\tTrue\tFalse
+Tafelwerk\t12-52-6346\t1999\tKlett\t7\t12\t\t\t
+Englisch Oberstufe\t433-5213-6246\t4995\tCornelsen\t11\t12\tEng\tTrue\tTrue
+Das Große Tafelwerk\t\t\tKlett\t7\t12\t\t\t"""
+	
+		addBooks(raw)
+		
+		b1 = db.Book[1]
+		b2 = db.Book[2]
+		b3 = db.Book[3]
+		b4 = db.Book[4]
+		
+		self.assertEqual(b1.title, "Mathematik Live")
+		self.assertEqual(b2.title, "Tafelwerk")
+		self.assertEqual(b3.title, "Englisch Oberstufe")
+		self.assertEqual(b4.title, "Das Große Tafelwerk")
+		self.assertTrue(b3.novices)
+		self.assertTrue(b3.advanced)
 
 

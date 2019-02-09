@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-from decimal import Decimal
 from datetime import date
 
 from pony.orm import *
@@ -50,7 +49,7 @@ class Student(db.Entity):
 
 class Subject(db.Entity):
 	id        = PrimaryKey(int, auto=True)
-	name      = Required(str)
+	name      = Required(str, unique=True)
 	tag       = Required(str, unique=True)
 	# reverse attribute
 	book      = Set("Book")
@@ -65,7 +64,7 @@ class Book(db.Entity):
 	id        = PrimaryKey(int, auto=True)
 	title     = Required(str)
 	isbn      = Optional(str) # book could be out of the shops
-	price     = Optional(Decimal) # book could be out of the shops
+	price     = Optional(int) # in Euro Cents; book could be out of the shops
 	publisher = Required(Publisher)
 	stock     = Required(int, default=0)
 	inGrade   = Required(int) # first grade that uses the book
@@ -76,6 +75,23 @@ class Book(db.Entity):
 	# reverse attribute
 	loan      = Set("Loan", cascade_delete=False) # restrict if loans assigned
 	request   = Set("Request", cascade_delete=False) # restrict if request assigned
+
+
+class Currency(object):
+	@staticmethod
+	def toString(cents: int):
+		s = str(cents / 100.0).replace('.', ',')
+		if s.startswith(','):
+			s = '0' + s
+		dec = len(s.split(',')[1])
+		if dec < 2:
+			s += '0' * (2 - dec)
+		return s
+	
+	@staticmethod
+	def fromString(raw: str):
+		return int(float(raw.replace(',', '.')) * 100)
+
 
 class Loan(db.Entity):
 	id        = PrimaryKey(int, auto=True)
@@ -323,4 +339,48 @@ class Tests(unittest.TestCase):
 		
 		r.delete()
 		b.delete()
+
+	def test_canStringifyCurrency(self):
+		s = Currency.toString(0)
+		self.assertEqual(s, '0,00')
+		
+		s = Currency.toString(1)
+		self.assertEqual(s, '0,01')
+		
+		s = Currency.toString(12)
+		self.assertEqual(s, '0,12')
+		
+		s = Currency.toString(10)
+		self.assertEqual(s, '0,10')
+		
+		s = Currency.toString(123)
+		self.assertEqual(s, '1,23')
+		
+		s = Currency.toString(1234)
+		self.assertEqual(s, '12,34')
+		
+		s = Currency.toString(12345)
+		self.assertEqual(s, '123,45')
+	
+	def test_canParseCurrencyString(self):
+		i = Currency.fromString('123,45')
+		self.assertEqual(i, 12345)
+		
+		i = Currency.fromString('12,34')
+		self.assertEqual(i, 1234)
+		
+		i = Currency.fromString('1,23')
+		self.assertEqual(i, 123)
+		
+		i = Currency.fromString('0,12')
+		self.assertEqual(i, 12)
+		
+		i = Currency.fromString('0,10')
+		self.assertEqual(i, 10)
+		
+		i = Currency.fromString('0,01')
+		self.assertEqual(i, 1)
+		
+		i = Currency.fromString('0,00')
+		self.assertEqual(i, 0)
 
