@@ -28,6 +28,9 @@ class Teacher(db.Entity):
 	tag       = Required(str, unique=True)
 	# reverse attribute
 	class_    = Optional("Class", cascade_delete=False) # restrict if class assigned
+	
+	def delete(self):
+		self.person.delete()
 
 class Class(db.Entity):
 	id        = PrimaryKey(int, auto=True)
@@ -41,6 +44,9 @@ class Student(db.Entity):
 	id        = PrimaryKey(int, auto=True)
 	person    = Required("Person")
 	class_    = Required(Class)
+	
+	def delete(self):
+		self.person.delete()
 
 class Subject(db.Entity):
 	id        = PrimaryKey(int, auto=True)
@@ -112,6 +118,14 @@ class Tests(unittest.TestCase):
 		self.assertEqual(len(s), 0)
 	
 	@db_session
+	def test_canDeletePersonThroughStudent(self):
+		s = db.Student(person=db.Person(name='Foo', firstname='Bar'), class_=db.Class(grade=7, tag='b'))
+		
+		s.delete()
+		p = select(p for p in db.Person)
+		self.assertEqual(len(p), 0)
+	
+	@db_session
 	def test_canDeleteTeacherThroughPerson(self):
 		p = db.Person(name='Foo', firstname='Bar')
 		db.Teacher(person=p, tag='FooB')
@@ -119,6 +133,14 @@ class Tests(unittest.TestCase):
 		p.delete()
 		s = select(s for s in db.Teacher)
 		self.assertEqual(len(s), 0)
+	
+	@db_session
+	def test_canDeletePersonThroughThrough(self):
+		t = db.Teacher(person=db.Person(name='Foo', firstname='Bar'), tag='FooB')
+		
+		t.delete()
+		p = select(p for p in db.Person)
+		self.assertEqual(len(p), 0)
 	
 	@db_session
 	def test_cannotDeletePersonWithLoans(self):
