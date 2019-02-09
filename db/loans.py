@@ -55,15 +55,14 @@ class Tests(unittest.TestCase):
 		
 		ln = list(db.Student[3].person.loan)
 		self.assertEqual(len(ln), 3)
-		self.assertEqual(ln[0].book, db.Book[3])
-		self.assertEqual(ln[0].count, 1)
-		self.assertEqual(ln[0].given, date.today())
-		self.assertEqual(ln[1].book, db.Book[5])
-		self.assertEqual(ln[1].count, 1)
-		self.assertEqual(ln[1].given, date.today())
-		self.assertEqual(ln[2].book, db.Book[8])
-		self.assertEqual(ln[2].count, 1)
-		self.assertEqual(ln[2].given, date.today())
+		bs = set()
+		for l in ln:
+			self.assertEqual(l.count, 1)
+			self.assertEqual(l.given, date.today())
+			bs.add(l.book)
+		self.assertIn(db.Book[3], bs)
+		self.assertIn(db.Book[5], bs)
+		self.assertIn(db.Book[8], bs)
 		
 		# with 2nd set
 		db.Loan(person=db.Student[1].person, book=db.Book[3], given=date.today(), count=2)
@@ -72,15 +71,14 @@ class Tests(unittest.TestCase):
 
 		ln = list(db.Student[1].person.loan)
 		self.assertEqual(len(ln), 3)
-		self.assertEqual(ln[0].book, db.Book[3])
-		self.assertEqual(ln[0].count, 2)
-		self.assertEqual(ln[0].given, date.today())
-		self.assertEqual(ln[1].book, db.Book[5])
-		self.assertEqual(ln[1].count, 2)
-		self.assertEqual(ln[1].given, date.today())
-		self.assertEqual(ln[2].book, db.Book[8])
-		self.assertEqual(ln[2].count, 2)
-		self.assertEqual(ln[2].given, date.today())
+		bs = set()
+		for l in ln:
+			self.assertEqual(l.count, 2)
+			self.assertEqual(l.given, date.today())
+			bs.add(l.book)
+		self.assertIn(db.Book[3], bs)
+		self.assertIn(db.Book[5], bs)
+		self.assertIn(db.Book[8], bs)
 		
 		# giving 30 books to a teacher
 		db.Loan(person=db.Teacher[1].person, book=db.Book[3], given=date.today(), count=30)
@@ -103,9 +101,12 @@ class Tests(unittest.TestCase):
 		# expected returns for 12th grade
 		ln = list(getExpectedReturns(db.Student[3]))
 		self.assertEqual(len(ln), 3)
-		self.assertEqual(ln[0].book, db.Book[3])
-		self.assertEqual(ln[1].book, db.Book[5])
-		self.assertEqual(ln[2].book, db.Book[8])
+		bs = set()
+		for l in ln:
+			bs.add(l.book)
+		self.assertIn(db.Book[3], bs)
+		self.assertIn(db.Book[5], bs)
+		self.assertIn(db.Book[8], bs)
 		
 		# expected returns for 11th
 		db.Student[3].class_.grade = 11
