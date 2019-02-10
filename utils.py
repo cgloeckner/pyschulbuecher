@@ -22,3 +22,5 @@ def try_flush():
 def bool2str(b: bool):
 	return 'Ja' if b else 'Nein'
 
+def bool2checked(b: bool):
+	return 'checked' if b else ''

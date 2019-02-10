@@ -3,7 +3,7 @@
 
 from bottle import *
 from pony import orm
-from db.orm import db, db_session
+from db.orm import db, db_session, Currency
 from db import orga, books
 from utils import try_flush
 
@@ -81,4 +81,31 @@ def books_add_post():
 	books.addBooks(request.forms.data)
 	return try_flush()
 
+@get('/admin/books/edit/<id:int>')
+@view('admin/books_edit')
+def books_edit_form(id):
+	return dict(b=db.Book[id])
+
+@post('/admin/books/edit/<id:int>')
+def books_edit_post(id):
+	b = db.Book[id]
+	b.title   = request.forms.title
+	b.isbn    = request.forms.isbn
+	b.price   = Currency.fromString(request.forms.price)
+	b.publisher = db.Publisher[int(request.forms.publisher_id)]
+	b.stock     = int(request.forms.stock)
+	b.inGrade   = int(request.forms.inGrade)
+	b.outGrade  = int(request.forms.outGrade)
+	b.subject   = db.Subject[int(request.forms.subject_id)] if request.forms.subject_id != "" else None
+	b.novices   = True if request.forms.novices   == 'on' else False
+	b.advanced  = True if request.forms.advnaced  == 'on' else False
+	b.workbook  = True if request.forms.workbook  == 'on' else False
+	b.classsets = True if request.forms.classsets == 'on' else False
+	b.comment   = request.forms.comment
+	return try_flush()
+
+@post('/admin/books/delete/<id:int>')
+def books_delete(id):
+	db.Book[id].delete()
+	return try_flush()
 

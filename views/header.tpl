@@ -5,6 +5,9 @@
 <head>
 	<meta charset="UTF-8"> 
 	<title>Schulbuchverwaltung</title>
+<style>
+body {background-color: grey;}
+</style>
 </head>
 
 <body>

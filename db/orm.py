@@ -93,7 +93,7 @@ class Currency(object):
 	
 	@staticmethod
 	def fromString(raw: str):
-		return int(float(raw.replace(',', '.')) * 100)
+		return int(float(raw.split('€')[0].replace(',', '.')) * 100)
 
 
 class Loan(db.Entity):
@@ -388,7 +388,7 @@ class Tests(unittest.TestCase):
 		self.assertEqual(s, '123,45')
 	
 	def test_canParseCurrencyString(self):
-		i = Currency.fromString('123,45')
+		i = Currency.fromString('123,45 €')
 		self.assertEqual(i, 12345)
 		
 		i = Currency.fromString('12,34')

@@ -116,7 +116,6 @@ def addBook(raw: str):
 	"""
 	# split data
 	data = raw.split('\t')
-	print(data)
 	title, isbn, price, publisher, inGrade, outGrade = data[:6]
 	subject   = data[6]  if  6 < len(data) else ""
 	novices   = data[7]  if  7 < len(data) else ""
@@ -126,7 +125,7 @@ def addBook(raw: str):
 	comment   = data[11] if 11 < len(data) else ""
 	
 	# fix parameters
-	price    = Currency.fromString(price.split('€')[0].replace(',', '.')) if price != "" else None
+	price    = Currency.fromString(price) if price != "" else None
 	inGrade  = int(inGrade)
 	outGrade = int(outGrade)
 	
