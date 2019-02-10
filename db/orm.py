@@ -53,12 +53,14 @@ class Subject(db.Entity):
 	tag       = Required(str, unique=True)
 	# reverse attribute
 	book      = Set("Book")
+	workbook  = Set("Workbook")
 
 class Publisher(db.Entity):
 	id        = PrimaryKey(int, auto=True)
 	name      = Required(str, unique=True)
 	# reverse attribute
 	book      = Set("Book", cascade_delete=False) # restrict if books assigned
+	workbook  = Set("Workbook", cascade_delete=False) # restrict if workbooks assigned
 
 class Book(db.Entity):
 	id        = PrimaryKey(int, auto=True)
@@ -75,6 +77,18 @@ class Book(db.Entity):
 	# reverse attribute
 	loan      = Set("Loan", cascade_delete=False) # restrict if loans assigned
 	request   = Set("Request", cascade_delete=False) # restrict if request assigned
+
+class Workbook(db.Entity):
+	id        = PrimaryKey(int, auto=True)
+	title     = Required(str)
+	isbn      = Optional(str) # book could be out of the shops
+	price     = Optional(int) # in Euro Cents; book could be out of the shops
+	publisher = Required(Publisher)
+	inGrade   = Required(int) # first grade that uses the book
+	outGrade  = Required(int) # last grade that uses the book
+	subject   = Optional(Subject) # None for subject-independent
+	novices   = Required(bool, default=False) # suitable for novice courses?
+	advanced  = Required(bool, default=False) # suitable for advanced courses?
 
 
 class Currency(object):
@@ -255,6 +269,17 @@ class Tests(unittest.TestCase):
 		self.assertEqual(b.subject, None)
 	
 	@db_session
+	def test_canDeleteSubjectWithWorkook(self):
+		s = db.Subject(name='Foo', tag='Fo')
+		w = db.Workbook(title='Bar', publisher=db.Publisher(name='lol'),
+			subject=s, inGrade=5, outGrade=6
+		)
+		
+		s.delete()
+		
+		self.assertEqual(w.subject, None)
+	
+	@db_session
 	def test_canDeletePublisherWithoutBook(self):
 		p = db.Publisher(name='Foo')
 		
@@ -264,6 +289,16 @@ class Tests(unittest.TestCase):
 	def test_cannotDeletePublisherWithBook(self):
 		p = db.Publisher(name='Foo')
 		b = db.Book(title='Bar', publisher=p,
+			subject=db.Subject(name='Foo', tag='Fo'), inGrade=5, outGrade=6
+		)
+		
+		with self.assertRaises(core.ConstraintError):
+			p.delete()
+		
+	@db_session
+	def test_cannotDeletePublisherWithWorkbook(self):
+		p = db.Publisher(name='Foo')
+		w = db.Workbook(title='Bar', publisher=p,
 			subject=db.Subject(name='Foo', tag='Fo'), inGrade=5, outGrade=6
 		)
 		
