@@ -19,3 +19,6 @@ def try_flush():
 	else:
 		return template('success')
 
+def bool2str(b: bool):
+	return 'Ja' if b else 'Nein'
+

@@ -4,7 +4,7 @@
 from bottle import *
 from pony import orm
 from db.orm import db, db_session
-from db import orga
+from db import orga, books
 from utils import try_flush
 
 
@@ -49,9 +49,7 @@ def publishers_index():
 
 @post('/admin/publishers/add')
 def publishers_add_post():
-	print('data:', request.forms.data)
 	for name in request.forms.data.split('\n'):
-		print('name:', name)
 		db.Publisher(name=name)
 	return try_flush()
 
@@ -70,4 +68,17 @@ def publishers_edit_post(id):
 def publishers_delete(id):
 	db.Publisher[id].delete()
 	return try_flush()
+
+# -----------------------------------------------------------------------------
+
+@get('/admin/books')
+@view('admin/books_index')
+def books_index():
+	return dict()
+
+@post('/admin/books/add')
+def books_add_post():
+	books.addBooks(request.forms.data)
+	return try_flush()
+
 

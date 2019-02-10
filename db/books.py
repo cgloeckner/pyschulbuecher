@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-from db.orm import db
+from db.orm import db, Currency
+
 
 __author__ = "Christian Glöckner"
 
@@ -19,6 +20,13 @@ def getSubjects():
 	return select(s
 		for s in db.Subject
 	)
+
+def getAllBooks():
+	"""Return a list of all books sorted by subject.tag, inGrade and title.
+	"""
+	return select(b
+		for b in db.Book
+	).order_by(db.Book.title).order_by(db.Book.inGrade).order_by(db.Book.subject)
 
 def getBooksWithoutSubject():
 	"""Return a list of books which are not assigned to a specific subject.
@@ -101,22 +109,31 @@ def addPublishers(raw: str):
 def addBook(raw: str):
 	"""Add book from a given raw string dump, assuming all information being
 	separated by tabs in the following order:
-		Title, ISBN, Price, Publisher, inGrade, outGrade,
-		Subject, Novices, Advanced.
-	Optional data (Price, Publisher, Subject) must be provided (at least as
-	empty strings).
+		Title, ISBN, Price, Publisher, inGrade, outGrade
+	Optional: Subject, Novices, Advanced, Workbook, Classsets, Comment
+	Earlier optional data must be provided (at least as empty strings) if a
+	later parameter is given.
 	"""
 	# split data
 	data = raw.split('\t')
-	title, isbn, price, publisher, inGrade, outGrade, subject, novices, advanced = data
+	print(data)
+	title, isbn, price, publisher, inGrade, outGrade = data[:6]
+	subject   = data[6]  if  6 < len(data) else ""
+	novices   = data[7]  if  7 < len(data) else ""
+	advanced  = data[8]  if  8 < len(data) else ""
+	workbook  = data[9]  if  9 < len(data) else ""
+	classsets = data[10] if 10 < len(data) else ""
+	comment   = data[11] if 11 < len(data) else ""
 	
 	# fix parameters
-	price    = int(price) if price != "" else None
+	price    = Currency.fromString(price.split('€')[0].replace(',', '.')) if price != "" else None
 	inGrade  = int(inGrade)
 	outGrade = int(outGrade)
 	
-	novices  = True if novices  == 'True' else False
-	advanced = True if advanced == 'True' else False
+	novices   = True if novices   == 'True' else False
+	advanced  = True if advanced  == 'True' else False
+	workbook  = True if workbook  == 'True' else False
+	classsets = True if classsets == 'True' else False
 	
 	# query referenced entities
 	publisher = db.Publisher.get(name=publisher)
@@ -125,7 +142,8 @@ def addBook(raw: str):
 	# create actual book
 	db.Book(title=title, isbn=isbn, price=price, publisher=publisher,
 		inGrade=inGrade, outGrade=outGrade, subject=subject, novices=novices,
-		advanced=advanced)
+		advanced=advanced, workbook=workbook, classsets=classsets,
+		comment=comment)
 
 def addBooks(raw: str):
 	"""Add books from a given raw string dump, assuming all books being
@@ -213,6 +231,18 @@ class Tests(unittest.TestCase):
 		self.assertIn(db.Subject[1], sb)
 		self.assertIn(db.Subject[2], sb)
 		self.assertIn(db.Subject[3], sb)
+	
+	@db_session
+	def test_getAllBooks(self):
+		Tests.prepare()
+		
+		bs = list(getAllBooks())
+		self.assertEqual(len(bs), 9)
+		self.assertEqual(bs[0], db.Book[8]) # subject-independend
+		self.assertEqual(bs[1], db.Book[1]) # Math book since 5th grade
+		self.assertEqual(bs[2], db.Book[2]) # Math book since 7th grade
+		self.assertEqual(bs[4], db.Book[5]) # advanced Math book since 11th grade
+		self.assertEqual(bs[5], db.Book[4]) # basic book since 7th grade
 	
 	@db_session
 	def test_getBooksWithoutSubject(self):
@@ -370,7 +400,7 @@ C.C. Buchner"""
 		addSubjects("Mathematik\tMa")
 		addPublishers("Klett")
 		
-		raw = "Mathematik Live\t0815-1234\t2395\tKlett\t11\t12\tMa\tTrue\tFalse"
+		raw = "Mathematik Live\t0815-1234\t23,95 €\tKlett\t11\t12\tMa\tTrue\tFalse\tFalse\tFalse\tLehrbuch"
 		addBook(raw)
 		
 		b = db.Book[1]
@@ -383,12 +413,15 @@ C.C. Buchner"""
 		self.assertEqual(b.subject, db.Subject[1])
 		self.assertTrue(b.novices)
 		self.assertFalse(b.advanced)
+		self.assertFalse(b.workbook)
+		self.assertFalse(b.classsets)
+		self.assertEqual(b.comment, "Lehrbuch")
 	
 	@db_session
 	def test_canAddBookWithMinimalInformation(self):
 		addPublishers("Klett")
 		
-		raw = "Das Große Tafelwerk\t\t\tKlett\t7\t12\t\t\t"
+		raw = "Das Große Tafelwerk\t\t\tKlett\t7\t12\t\t\t\t\t\t"
 		addBook(raw)
 		
 		b = db.Book[1]
@@ -406,10 +439,10 @@ C.C. Buchner"""
 		addPublishers("Klett\nCornelsen")
 		addSubjects("Mathemati\tMa\nEnglisch\tEng")
 		
-		raw = """Mathematik Live\t0815-1234\t2395\tKlett\t11\t12\tMa\tTrue\tFalse
-Tafelwerk\t12-52-6346\t1999\tKlett\t7\t12\t\t\t
-Englisch Oberstufe\t433-5213-6246\t4995\tCornelsen\t11\t12\tEng\tTrue\tTrue
-Das Große Tafelwerk\t\t\tKlett\t7\t12\t\t\t"""
+		raw = """Mathematik Live\t0815-1234\t2395\tKlett\t11\t12\tMa\tTrue\tFalse\tFalse\tFalse\t
+Tafelwerk\t12-52-6346\t1999\tKlett\t7\t12\t\tFalse\tFalse\tFalse\tFalse\tfächerübergreifend
+Englisch Oberstufe\t433-5213-6246\t4995\tCornelsen\t11\t12\tEng\tTrue\tTrue\tFalse\tFalse\t
+Das Große Tafelwerk\t\t\tKlett\t7\t12\t\tFalse\tFalse\tFalse\tFalse\tfächerübergreifend"""
 	
 		addBooks(raw)
 		

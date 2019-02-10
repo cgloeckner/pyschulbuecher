@@ -17,7 +17,7 @@
 
 %if len(books.getPublishers()) == 0:
 	<tr>
-		<td colspan="2">keine Verläge vorhanden</td>
+		<td colspan="2">keine Verlage vorhanden</td>
 	</tr>
 %end
 </table>
