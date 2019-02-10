@@ -19,17 +19,6 @@ app = default_app()
 app.catchall = not debug
 app.install(db_session)
 
-@db_session
-def try_flush():
-	try:
-		db.flush()
-	except orm.core.TransactionIntegrityError as e:
-		db.rollback()
-		return template('error', error=str(e))
-	else:
-		return template('success')
-
-
 @get('/')
 @view('home')
 def landingpage():
