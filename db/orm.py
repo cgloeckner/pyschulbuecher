@@ -73,6 +73,8 @@ class Book(db.Entity):
 	novices   = Required(bool, default=False) # suitable for novice courses?
 	advanced  = Required(bool, default=False) # suitable for advanced courses?
 	workbook  = Required(bool, default=False)
+	classsets = Required(bool, default=False) # hence no loan
+	comment   = Optional(str)
 	# reverse attribute (not used for workbooks)
 	loan      = Set("Loan", cascade_delete=False) # restrict if loans assigned
 	request   = Set("Request", cascade_delete=False) # restrict if request assigned
