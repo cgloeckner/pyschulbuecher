@@ -77,7 +77,7 @@
 		</tr>
 		<tr>
 			<td>Kommentare:</td>
-			<td><textarea rows="5" cols="50" name="comment" form="books"></textarea></td>
+			<td><input type="text" name="comment" value="{{b.comment}}" /></td>
 		</tr>
 		<tr>
 			<td></td>

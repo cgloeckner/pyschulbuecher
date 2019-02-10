@@ -3,6 +3,8 @@
 
 from bottle import *
 from pony import orm
+from latex import build_pdf
+
 from db.orm import db, db_session, Currency
 from db import orga, books
 from utils import try_flush
@@ -108,4 +110,36 @@ def books_edit_post(id):
 def books_delete(id):
 	db.Book[id].delete()
 	return try_flush()
+
+# -----------------------------------------------------------------------------
+
+@get('/admin/booklist/generate')
+def booklist_generate():
+	with open('docs/header.tpl') as f:
+		header = f.read()
+	
+	with open('docs/footer.tpl') as f:
+		footer = f.read()
+
+	with open('docs/book_select.tpl') as f:
+		book_select = f.read()
+	
+	#for g in orga.getClassGrades():
+	for g in [11]:#, 6, 7, 8, 9, 10, 11, 12]:
+		bs=list(books.getBooksStartedIn(g).order_by(db.Book.title).order_by(db.Book.subject))
+		
+		tex =  header
+		tex += template(book_select, grade=g, bs=bs, workbook=False)
+		tex += template(book_select, grade=g, bs=bs, workbook=True)
+		tex += footer
+		with open('/tmp/test.tex', 'w') as h:
+			h.write(tex)
+		
+		pdf = build_pdf(tex)
+		pdf.save_to('export/Bücherzettel{0}.pdf'.format(g))
+
+		print('PDF rendered')	
+
+	return "erledigt"
+
 

@@ -26,7 +26,10 @@ body {background-color: grey;}
 			<li><a href="/admin/subjects">Fächer</a></li>
 			<li><a href="/admin/publishers">Verlage</a></li>
 			<li><a href="/admin/books">Bücher</a></li>
-			<li><a href="/admin/generate_booklist">Bücherzettel erstellen</a></li>
+			<li>Bücherzettel<ul>
+				<li><a href="/admin/booklist/generate">generieren</a></li>
+				<li><a href="/admin/booklist/import">importieren</a></li>
+			</ul></li>
 		</ul>
 	</span>
 </div>

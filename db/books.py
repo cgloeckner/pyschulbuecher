@@ -237,7 +237,7 @@ class Tests(unittest.TestCase):
 		
 		bs = list(getAllBooks())
 		self.assertEqual(len(bs), 9)
-		self.assertEqual(bs[0], db.Book[8]) # subject-independend
+		self.assertEqual(bs[0], db.Book[8]) # subject-independend book
 		self.assertEqual(bs[1], db.Book[1]) # Math book since 5th grade
 		self.assertEqual(bs[2], db.Book[2]) # Math book since 7th grade
 		self.assertEqual(bs[4], db.Book[5]) # advanced Math book since 11th grade
