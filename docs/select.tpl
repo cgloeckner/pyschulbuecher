@@ -1,21 +1,23 @@
 %from db.orm import Currency
 %from utils import tex_escape
 
+{\large
 %if workbook:
 	Arbeitshefte
 %else:
 	Lehrbücher
 %end
+}
 
-\begin{tabular}{ | c | p{5cm} | l | c | c |
+\begin{longtable}{ | c | p{5cm} | c | c | r |
 %if not workbook:
  r | r |
 %end
 }
     \hline
-		Fach & Titel & Verlag & ISBN & Preis
+		\textbf{Fach} & \textbf{Titel} & \textbf{Verlag} & \textbf{ISBN} & \textbf{Preis}
 %if not workbook:
- & V & F
+ & \textbf{V} & \textbf{F}
 %end
 \\ \hline
 %for b in bs:
@@ -28,14 +30,16 @@
 				\makecell{
 			%end
 			{{!tex_escape(b.subject.tag)}}
-			%if ea and ga:
-				\\eA+gA
-			%else:
-				%if ea:
-					\\eA
-				%end
-				%if ga:
-					\\gA
+			%if grade > 10:
+				%if ea and ga:
+					\\eA+gA
+				%else:
+					%if ea:
+						\\eA
+					%end
+					%if ga:
+						\\gA
+					%end
 				%end
 			%end
 			%if cmt:
@@ -52,6 +56,6 @@
 \\ \hline
 	%end
 %end
-\end{tabular}
-\vspace{0.2cm}
+\end{longtable}
+
 

@@ -37,7 +37,7 @@ def tex_escape(text):
 def errorhandler(func):
 	def wrapper(*args, **kwargs):
 		try:
-			func(*args, **kwargs)
+			return func(*args, **kwargs)
 		except orm.core.OrmError as e:
 			db.rollback()
 			abort(400, str(e))

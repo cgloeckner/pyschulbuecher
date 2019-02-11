@@ -1,6 +1,9 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+import os, json
+from datetime import datetime
+
 from bottle import *
 from pony import orm
 from latex import build_pdf
@@ -136,34 +139,121 @@ def books_delete(id):
 
 # -----------------------------------------------------------------------------
 
+def loadSettings():
+	try:
+		with open('settings.json') as h:
+			return json.load(h)
+	except FileNotFoundError:
+		return {
+			'year': 2019,
+			'planner_price': 600,
+			'deadline_changes': '19.06.2017',
+			'deadline_booklist': '17.03.2017'
+		}
+
+@get('/admin/settings')
+@view('admin/settings')
+def settings_form():
+	return dict(settings=loadSettings())
+
+@post('/admin/settings')
+@view('success')
+def settings_form_post():
+	settings = {
+		'year'              : int(request.forms.year),
+		'planner_price'     : Currency.fromString(request.forms.planner_price),
+		'deadline_changes'  : request.forms.deadline_changes,
+		'deadline_booklist' : request.forms.deadline_booklist
+	}
+	with open('settings.json', 'w') as h:
+		json.dump(settings, h)
+	return dict()
+
+# -----------------------------------------------------------------------------
+
+class BooklistPdf(object):
+	def __init__(self):
+		# load LaTeX templates
+		with open('docs/header.tpl') as f:
+			self.header = f.read()
+		with open('docs/footer.tpl') as f:
+			self.footer = f.read()
+		with open('docs/info.tpl') as f:
+			self.info = f.read()
+		with open('docs/select.tpl') as f:
+			self.select = f.read()
+		with open('docs/planner.tpl') as f:
+			self.planner = f.read()
+		# prepare output directory
+		if not os.path.isdir('export'):
+			os.mkdir('export')
+		# load settings
+		self.settings = loadSettings()
+	
+	def __call__(self, grade: int, new_students: bool=False):
+		"""Generate booklist pdf file for the given grade. A separate booklist
+		can be generated for new_students, which include additional books other
+		students already have from earlier classes.
+		"""
+		# fetch and order books
+		if new_students:
+			bks    = books.getBooksUsedIn(grade)
+			suffix = '_Neuzugänge'
+		else:
+			bks    = books.getBooksStartedIn(grade)
+			suffix = ''
+		bks = list(bks.order_by(db.Book.title).order_by(db.Book.subject))
+		
+		# render templates
+		tex  = template(self.header)
+		tex += template(self.info, grade=grade, new_students=new_students,
+			settings=self.settings)
+		tex += template(self.select, grade=grade, bs=bks, workbook=False)
+		tex += template(self.select, grade=grade, bs=bks, workbook=True)
+		tex += template(self.planner, grade=grade, settings=self.settings)
+		tex += template(self.footer)
+		
+		# export PDF
+		fname = os.path.join('export', 'Bücherzettel%d%s.pdf' % (grade, suffix))
+		pdf = build_pdf(tex)
+		pdf.save_to(fname)
+
+
+@get('/admin/booklist/download/<fname>')
+def admin_booklist_download(fname):
+	return static_file(fname, root='./export')
+
+@get('/admin/booklist')
+@view('admin/booklist_index')
+def booklist_index():
+	# fetch data
+	data = list()
+	for f in os.listdir('export'):
+		grade = int(f.split('Bücherzettel')[1].split('_')[0].split('.pdf')[0])
+		stat  = os.stat(os.path.join('export', f))
+		data.append({
+			"grade" : grade,
+			"name"  : f,
+			"new"   : '_Neuzugänge' in f,
+			"size"  : stat.st_size,
+			"date"  : datetime.utcfromtimestamp(int(stat.st_mtime)).strftime('%Y-%m-%d %H:%M:%S')
+		})
+	# sort by grade
+	data.sort(key=lambda d: d["grade"])
+	return dict(data=data)
+
 @get('/admin/booklist/generate')
 def booklist_generate():
-	with open('docs/header.tpl') as f:
-		header = f.read()
-	
-	with open('docs/footer.tpl') as f:
-		footer = f.read()
-
-	with open('docs/book_select.tpl') as f:
-		book_select = f.read()
+	booklist = BooklistPdf()
 	
 	#for g in orga.getClassGrades():
-	for g in [11]:#, 6, 7, 8, 9, 10, 11, 12]:
-		bs=list(books.getBooksStartedIn(g).order_by(db.Book.title).order_by(db.Book.subject))
-		
-		tex =  header
-		tex += template(book_select, grade=g, bs=bs, workbook=False)
-		tex += template(book_select, grade=g, bs=bs, workbook=True)
-		tex += footer
-		with open('/tmp/test.tex', 'w') as h:
-			h.write(tex)
-		
-		pdf = build_pdf(tex)
-		pdf.save_to('export/Bücherzettel{0}.pdf'.format(g))
-
-		print('PDF rendered')	
-
-	return "erledigt"
+	for g in [5, 6]:#, 7, 8, 9, 10, 11, 12]:
+		booklist(g)
+		if g > 5:
+			booklist(g, new_students=True)
+		yield '.'
+	
+	yield 'Abgeschlossen'
 
 # -----------------------------------------------------------------------------
 

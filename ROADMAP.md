@@ -1,5 +1,7 @@
-Fix PDF Creation
-	escape & (not like HTML using &amp; but as TeX-conform \&)
+Booklist Creation Test Coverage
+Settings Test Coverage
+
+Booklist Layout (long pages MUST fit on one single page)
 
 Write Queries as Usecase Functions
 	db/loans.py --> loaning stuff (all about loans)
