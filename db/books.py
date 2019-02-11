@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+from pony import orm
+
 from db.orm import db, Currency
 
 
@@ -125,9 +127,12 @@ def addBook(raw: str):
 	comment   = data[11] if 11 < len(data) else ""
 	
 	# fix parameters
-	price    = Currency.fromString(price) if price != "" else None
-	inGrade  = int(inGrade)
-	outGrade = int(outGrade)
+	try:
+		price    = Currency.fromString(price) if price != "" else None
+		inGrade  = int(inGrade)
+		outGrade = int(outGrade)
+	except ValueError as e:
+		raise orm.core.ConstraintError(e)
 	
 	novices   = True if novices   == 'True' else False
 	advanced  = True if advanced  == 'True' else False
@@ -138,18 +143,22 @@ def addBook(raw: str):
 	publisher = db.Publisher.get(name=publisher)
 	subject   = db.Subject.get(tag=subject) if subject != "" else None
 	
-	# create actual book
-	db.Book(title=title, isbn=isbn, price=price, publisher=publisher,
-		inGrade=inGrade, outGrade=outGrade, subject=subject, novices=novices,
-		advanced=advanced, workbook=workbook, classsets=classsets,
-		comment=comment)
+	try:
+		# create actual book
+		db.Book(title=title, isbn=isbn, price=price, publisher=publisher,
+			inGrade=inGrade, outGrade=outGrade, subject=subject, novices=novices,
+			advanced=advanced, workbook=workbook, classsets=classsets,
+			comment=comment)
+	except ValueError as e:
+		raise orm.core.ConstraintError(e)
 
 def addBooks(raw: str):
 	"""Add books from a given raw string dump, assuming all books being
 	separated by newlines. Each line is handled by addBook().
 	"""
 	for data in raw.split('\n'):
-		addBook(data)
+		if len(data) > 0:
+			addBook(data)
 
 
 # -----------------------------------------------------------------------------

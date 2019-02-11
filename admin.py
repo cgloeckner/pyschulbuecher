@@ -62,7 +62,8 @@ def publishers_index():
 @view('success')
 def publishers_add_post():
 	for name in request.forms.data.split('\n'):
-		db.Publisher(name=name)
+		if len(name) > 0:
+			db.Publisher(name=name)
 	return dict()
 
 @get('/admin/publishers/edit/<id:int>')
@@ -254,7 +255,7 @@ class Tests(unittest.TestCase):
 	def test_subjects_add_invalid(self):
 		Tests.prepare()
 	
-		# add subjects
+		# add subjects (Ma-tag already used)
 		args = {
 			"data": "Fr\tFranzösisch\nMa\tMathematik\nDe\tDeutsch"
 		}
@@ -340,4 +341,325 @@ class Tests(unittest.TestCase):
 		# delete subject
 		ret = self.app.post('/admin/subjects/delete/1337', expect_errors=True)
 		self.assertEqual(ret.status_int, 400)
+
+	# -------------------------------------------------------------------------
+	
+	@db_session
+	def test_publishers_gui(self):
+		Tests.prepare()
+		
+		# show publishers gui
+		ret = self.app.get('/admin/publishers')
+		self.assertEqual(ret.status_int, 200)
+	
+	@db_session
+	def test_publishers_add_new(self):
+		Tests.prepare()
+	
+		# add subjects
+		args = {
+			"data": "C. C. Buchner\nWestermann"
+		}
+		ret = self.app.post('/admin/publishers/add', args)
+		self.assertEqual(ret.status_int, 200)
+		
+		# show subjects list
+		ret = self.app.get('/admin/publishers')
+		self.assertEqual(ret.status_int, 200)
+	
+	@db_session
+	def test_publishers_add_invalid(self):
+		Tests.prepare()
+	
+		# add subjects (2nd already used)
+		args = {
+			"data": "C. C. Buchner\nKlett\nWestermann"
+		}
+		ret = self.app.post('/admin/publishers/add', args, expect_errors=True)
+		self.assertEqual(ret.status_int, 400)
+		
+		# show publishers list
+		ret = self.app.get('/admin/publishers')
+		self.assertEqual(ret.status_int, 200)
+	
+	@db_session
+	def test_publishers_add_ignore_empty_lines(self):
+		Tests.prepare()
+	
+		# add subjects
+		args = { "data": "C. C. Buchner\n\nWestermann\n" }
+		ret = self.app.post('/admin/publishers/add', args)
+		self.assertEqual(ret.status_int, 200)
+		
+		# show subjects gui
+		ret = self.app.get('/admin/publishers')
+		self.assertEqual(ret.status_int, 200)
+	
+	@db_session
+	def test_publishers_edit_gui(self):
+		Tests.prepare()
+		
+		# show valid publisher's edit gui
+		ret = self.app.get('/admin/publishers/edit/1')
+		self.assertEqual(ret.status_int, 200)
+		
+		# show invalid publisher's edit gui
+		ret = self.app.get('/admin/publishers/edit/1337', expect_errors=True)
+		self.assertEqual(ret.status_int, 400)
+	
+	@db_session
+	def test_publishers_edit_post(self):
+		Tests.prepare()
+		
+		# edit subject
+		args = { 'name': 'Volk und Wissen' }
+		ret = self.app.post('/admin/publishers/edit/1', args)
+		self.assertEqual(ret.status_int, 200)
+		
+		# show publishers gui
+		ret = self.app.get('/admin/publishers')
+		self.assertEqual(ret.status_int, 200)
+
+	@db_session
+	def test_publishers_edit_invalid_post(self):
+		Tests.prepare()
+		
+		# edit publisher (name is used by #1)
+		args = { 'name': 'Cornelsen' }
+		ret = self.app.post('/admin/publishers/edit/2', args, expect_errors=True)
+		self.assertEqual(ret.status_int, 400)
+		
+		# show publishers gui
+		ret = self.app.get('/admin/publishers')
+		self.assertEqual(ret.status_int, 200)
+		
+		# edit publisher (invalid target id)
+		args = { 'name' : 'Volk und Wissen' }
+		ret = self.app.post('/admin/publishers/edit/1337', args, expect_errors=True)
+		self.assertEqual(ret.status_int, 400)
+		
+		# show publishers gui (once again)
+		ret = self.app.get('/admin/publishers')
+		self.assertEqual(ret.status_int, 200)
+
+	@db_session
+	def test_publishers_delete(self):
+		Tests.prepare()
+		
+		p = db.Publisher(name='dummy to delete')
+		db.flush()
+		
+		# delete publisher
+		ret = self.app.post('/admin/publishers/delete/{0}'.format(p.id))
+		self.assertEqual(ret.status_int, 200)
+	
+	@db_session
+	def test_publishers_delete_invalid(self):
+		Tests.prepare()
+		
+		# delete publisher
+		ret = self.app.post('/admin/publishers/delete/1337', expect_errors=True)
+		self.assertEqual(ret.status_int, 400)
+
+	# -------------------------------------------------------------------------
+	
+	@db_session
+	def test_books_gui(self):
+		Tests.prepare()
+		
+		# show books gui
+		ret = self.app.get('/admin/books')
+		self.assertEqual(ret.status_int, 200)
+	
+	@db_session
+	def test_books_add_new(self):
+		Tests.prepare()
+	
+		# add books
+		args = { "data": """Titel\t0815-000\t1234\tKlett\t39\t10\t12\tMa\tTrue\tFalse\tFalse\tFalse\t
+Titel2\t0815-001\t1234\tKlett\t39\t10\t12\tEn\tTrue\tFalse\tFalse\tFalse\t
+Titel3\t0815-002\t1234\tKlett\t39\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\t"""
+		}
+		ret = self.app.post('/admin/books/add', args)
+		self.assertEqual(ret.status_int, 200)
+		
+		# show books list
+		ret = self.app.get('/admin/books')
+		self.assertEqual(ret.status_int, 200)
+	
+	@db_session
+	def test_books_add_ignore_newlines(self):
+		Tests.prepare()
+	
+		# add books
+		args = { "data": """Titel\t0815-000\t1234\tKlett\t39\t10\t12\tMa\tTrue\tFalse\tFalse\tFalse\t
+
+
+Titel2\t0815-001\t1234\tKlett\t39\t10\t12\tEn\tTrue\tFalse\tFalse\tFalse\t
+
+Titel3\t0815-002\t1234\tKlett\t39\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\t
+"""
+		}
+		ret = self.app.post('/admin/books/add', args)
+		self.assertEqual(ret.status_int, 200)
+		
+		# show books list
+		ret = self.app.get('/admin/books')
+		self.assertEqual(ret.status_int, 200)
+	
+	@db_session
+	def test_books_add_minimal_data(self):
+		Tests.prepare()
+	
+		# add book (invalid publisher)
+		args = { "data": "Titel\t\t\tKlett\t39\t10\t12" }
+		ret = self.app.post('/admin/books/add', args)
+		self.assertEqual(ret.status_int, 200)
+		
+		# show books list
+		ret = self.app.get('/admin/books')
+		self.assertEqual(ret.status_int, 200)
+	
+	@db_session
+	def test_books_add_invalid_data(self):
+		Tests.prepare()
+	
+		# add book (invalid publisher)
+		args = { "data": "Titel\t0815-000\t1234\tUnbekannt\t39\t10\t12\tMa\tTrue\tFalse\tFalse\tFalse\t" }
+		ret = self.app.post('/admin/books/add', args, expect_errors=True)
+		self.assertEqual(ret.status_int, 400)
+		
+		# show books list
+		ret = self.app.get('/admin/books')
+		self.assertEqual(ret.status_int, 200)
+	
+		# add book (invalid subject)
+		args = { "data": "Titel\t0815-000\t1234\tKlett\t39\t10\t12\tFoo\tTrue\tFalse\tFalse\tFalse\t" }
+		ret = self.app.post('/admin/books/add', args, expect_errors=True)
+		self.assertEqual(ret.status_int, 400)
+		
+		# add book (invalid price)
+		args = { "data": "Titel\t0815-000\tabc\tKlett\t39\t10\t12\tMa\tTrue\tFalse\tFalse\tFalse\t" }
+		ret = self.app.post('/admin/books/add', args, expect_errors=True)
+		self.assertEqual(ret.status_int, 400)
+		
+		# add books (invalid inGrade)
+		args = { "data": "Titel\t0815-000\t1234\tKlett\t39\tZehn\t12\tMa\tTrue\tFalse\tFalse\tFalse\t" }
+		ret = self.app.post('/admin/books/add', args, expect_errors=True)
+		self.assertEqual(ret.status_int, 400)
+		
+		# add books (invalid outGrade)
+		args = { "data": "Titel\t0815-000\t1234\tKlett\t39\t10\tAbi\tMa\tTrue\tFalse\tFalse\tFalse\t" }
+		ret = self.app.post('/admin/books/add', args, expect_errors=True)
+		self.assertEqual(ret.status_int, 400)
+		
+		# show books list (again)
+		ret = self.app.get('/admin/books')
+		self.assertEqual(ret.status_int, 200)
+	
+	@db_session
+	def test_books_edit_gui(self):
+		Tests.prepare()
+		
+		# show valid book's edit gui
+		ret = self.app.get('/admin/books/edit/1')
+		self.assertEqual(ret.status_int, 200)
+		
+		# show invalid book's edit gui
+		ret = self.app.get('/admin/books/edit/1337', expect_errors=True)
+		self.assertEqual(ret.status_int, 400)
+	
+	@db_session
+	def test_books_edit_post(self):
+		Tests.prepare()
+		
+		# edit book
+		args = {
+			"title"        : "Biologie Hautnah",
+			"isbn"         : "0815-346465-7-346",
+			"price"        : "1234",
+			"publisher_id" : "1",
+			"stock"        : "39",
+			"inGrade"      : "10",
+			"outGrade"     : "12",
+			"subject_id"   : "2",
+			"novices"      : "on",
+			"advanced"     : "off", # @NOTE: empty str?
+			"workbook"     : "off", # @NOTE: empty str?
+			"classsets"    : "off",
+			"comment"      : ""
+		}
+		ret = self.app.post('/admin/books/edit/1', args)
+		self.assertEqual(ret.status_int, 200)
+		
+		# show books gui
+		ret = self.app.get('/admin/books')
+		self.assertEqual(ret.status_int, 200)
+
+	@db_session
+	def test_books_edit_invalid_post(self):
+		Tests.prepare()
+		
+		# edit book (invalid publisher, invalid subject)
+		args = {
+			"title"        : "Biologie Hautnah",
+			"isbn"         : "0815-346465-7-346",
+			"price"        : "1234",
+			"publisher_id" : "1337",
+			"stock"        : "39",
+			"inGrade"      : "10",
+			"outGrade"     : "12",
+			"subject_id"   : "2346345",
+			"novices"      : "on",
+			"advanced"     : "off", # @NOTE: empty str?
+			"workbook"     : "off", # @NOTE: empty str?
+			"classsets"    : "off",
+			"comment"      : ""
+		}
+		ret = self.app.post('/admin/books/edit/2', args, expect_errors=True)
+		self.assertEqual(ret.status_int, 400)
+		
+		# show books gui
+		ret = self.app.get('/admin/books')
+		self.assertEqual(ret.status_int, 200)
+		
+		# edit book (invalid target id)
+		args = {
+			"title"        : "Biologie Hautnah",
+			"isbn"         : "0815-346465-7-346",
+			"price"        : "1234",
+			"publisher_id" : "1",
+			"stock"        : "39",
+			"inGrade"      : "10",
+			"outGrade"     : "12",
+			"subject_id"   : "2",
+			"novices"      : "on",
+			"advanced"     : "off", # @NOTE: empty str?
+			"workbook"     : "off", # @NOTE: empty str?
+			"classsets"    : "off",
+			"comment"      : ""
+		}
+		ret = self.app.post('/admin/books/edit/1337', args, expect_errors=True)
+		self.assertEqual(ret.status_int, 400)
+		
+		# show books gui (once again)
+		ret = self.app.get('/admin/books')
+		self.assertEqual(ret.status_int, 200)
+
+	@db_session
+	def test_books_delete(self):
+		Tests.prepare()
+		
+		# delete book
+		ret = self.app.post('/admin/books/delete/1')
+		self.assertEqual(ret.status_int, 200)
+	
+	@db_session
+	def test_books_delete_invalid(self):
+		Tests.prepare()
+		
+		# delete book
+		ret = self.app.post('/admin/books/delete/1337', expect_errors=True)
+		self.assertEqual(ret.status_int, 400)
+
 
