@@ -3,7 +3,7 @@
 
 import re
 
-from bottle import template
+from bottle import template, abort
 from pony import orm
 from db.orm import db, db_session
 
@@ -33,15 +33,17 @@ def tex_escape(text):
 	regex = re.compile('|'.join(re.escape(str(key)) for key in sorted(conv.keys(), key = lambda item: - len(item))))
 	return regex.sub(lambda match: conv[match.group()], text)
 
-@db_session
-def try_flush():
-	try:
-		db.flush()
-	except orm.core.TransactionIntegrityError as e:
-		db.rollback()
-		return template('error', error=str(e))
-	else:
-		return template('success')
+
+def errorhandler(func):
+	def wrapper(*args, **kwargs):
+		try:
+			func(*args, **kwargs)
+		except orm.core.OrmError as e:
+			db.rollback()
+			abort(400, str(e))
+	return wrapper
+
+
 
 def bool2str(b: bool):
 	return 'Ja' if b else 'Nein'
