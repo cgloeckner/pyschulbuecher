@@ -138,7 +138,7 @@ def addBook(raw: str):
 	advanced  = True if advanced  == 'True' else False
 	workbook  = True if workbook  == 'True' else False
 	classsets = True if classsets == 'True' else False
-	
+		
 	# query referenced entities
 	publisher = db.Publisher.get(name=publisher)
 	subject   = db.Subject.get(tag=subject) if subject != "" else None
@@ -194,9 +194,9 @@ class Tests(unittest.TestCase):
 			publisher=db.Publisher[1], inGrade=9, outGrade=10,
 			subject=db.Subject[1])
 		db.Book(title='Basic Maths', publisher=db.Publisher[1], inGrade=11,
-			outGrade=12, subject=db.Subject[1], novices=True)
+			outGrade=12, subject=db.Subject[1], novices=True, classsets=True)
 		db.Book(title='Advanced Maths', publisher=db.Publisher[1], inGrade=11,
-			outGrade=12, subject=db.Subject[1], advanced=True)
+			outGrade=12, subject=db.Subject[1], advanced=True, classsets=True)
 		
 		# create russian books
 		db.Book(title='Privjet', isbn='49322-6346', price=5999,
@@ -212,7 +212,7 @@ class Tests(unittest.TestCase):
 			
 		# create english book
 		db.Book(title='English 5th grade', publisher=db.Publisher[2],
-			inGrade=5, outGrade=5, subject=db.Subject[3])
+			inGrade=5, outGrade=5, subject=db.Subject[3], classsets=True)
 
 	
 	def setUp(self):
@@ -443,7 +443,7 @@ C.C. Buchner"""
 		self.assertFalse(b.advanced)
 
 	@db_session
-	def test_addBooks(self):
+	def test_addBooks(self):		
 		addPublishers("Klett\nCornelsen")
 		addSubjects("Mathemati\tMa\nEnglisch\tEng")
 		

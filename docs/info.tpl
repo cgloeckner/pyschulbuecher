@@ -19,6 +19,9 @@
 
 \begin{tabular}{ r p{4cm} r p{4cm} r c}
 	Name: & \rule[-4pt]{4cm}{0.1mm} & Vorname: & \rule[-4pt]{4cm}{0.1mm} & Klasse: & {{grade}}
+	%if grade > 5 and not new_students:
+		\rule[-4pt]{1.5cm}{0.1mm}
+	%end
 \end{tabular}
 
 \vspace{0.5cm}
@@ -29,8 +32,12 @@ bitte f\"ullen Sie nach Ihren M\"oglichkeiten und W\"unschen den B\"ucherzettel 
 
 \begin{enumerate}
 	\item Die Arbeitshefte werden nicht aus Landesmitteln bezahlt und m\"ussen von Ihnen finanziell selbst getragen \textbf{und} bestellt werden.
-	\item Wir \textbf{empfehlen} B\"ucher, die \"uber viele Schuljahre hinweg verwendet werden (z.B. \textbf{Atlas}, \textbf{Liederbuch}, \textbf{Tafelwerk}) oder in die zu \"Ubersetzungszwecken hineingeschrieben wird (Fremdsprachen) zu \textbf{kaufen}, da sie einem starken Verschleiß unterliegen.
-	\item Bitte setzen Sie in jeder Zeile \textbf{genau ein Kreuz} (nicht mit Bleistift!).
+	\item Wir \textbf{empfehlen} B\"ucher, die \"uber viele Schuljahre hinweg verwendet werden (z.B. \textbf{Atlas}, \textbf{Liederbuch}, \textbf{Tafelwerk}) oder in die zu \"Ubersetzungszwecken hineingeschrieben wird (Fremdsprachen), zu \textbf{kaufen}, da sie einem starken Verschleiß unterliegen.
+	\item Bitte setzen Sie in jeder Zeile \textbf{genau ein Kreuz} (nicht mit Bleistift!). Erklärung der Abkürzungen:
+	\begin{description}
+		\item[V] Vorhanden (Dieses Buch ist bereits in Ihrem Besitz oder Sie m\"ochten es kaufen. Bitte beachten Sie die angegebene ISBN.)
+		\item[F] Freiexemplar (Dieses Buch m\"ochten Sie von der Schule, nach den geltenden Bestimmungen des Landes Thüringen, ausleihen.)
+	\end{description}
 	\item Bitte \textbf{streichen} Sie die Zeilen der Kurse oder F\"acher, die \textbf{nicht belegt werden} (z.B. Wahlkurse, Ethik / Religion, Fremdsprache).
 	\item Der Erwerb der Kaufexemplare und Arbeitshefte erfolgt in den f\"ur den Schulbuchverkauf zust\"andigen Verkaufsstellen (nicht im Gymnasium) durch die Eltern. Bitte den B\"ucherzettel erst nach dem {{s.deadline_changes}} dort abgeben, falls \"Anderungen eintreten sollten.
 	\item Wir bitte Sie den \textbf{ausgef\"ullten B\"ucherzettel} zwecks sp\"aterer Kontrolle und Buchkauf unbedingt mehrfach zu \textbf{kopieren}.
@@ -44,13 +51,8 @@ bitte f\"ullen Sie nach Ihren M\"oglichkeiten und W\"unschen den B\"ucherzettel 
 %if grade == 5:
 	\item Die 5. Klassen erhalten einen \textbf{Schulplaner} (HA, Termine, Noten\"ubersicht uvm.) \textbf{kostenlos} von der Schule. Kreuzen Sie dies bitte an, wenn Sie einen solchen Schulplaner w\"unschen.
 %else:
-	\item Es besteht die M\"oglichkeit einen \textbf{Schulplaner} (HA, Termine, Noten\"ubersicht uvwm.) von der Schule k\"auflich zu erwerben. Kreuzen Sie dies bitte an, wenn Sie einen solchen Schulplaner erwerben m\"ochten.
+	\item Es besteht die M\"oglichkeit einen \textbf{Schulplaner} (HA, Termine, Noten\"ubersicht uvm.) von der Schule k\"auflich zu erwerben. Kreuzen Sie dies bitte an, wenn Sie einen solchen Schulplaner erwerben m\"ochten.
 %end
-	\item Abkürzungen:
-	\begin{description}
-		\item[V] Vorhanden (Dieses Buch ist bereits in Ihrem Besitz oder Sie m\"ochten es kaufen. Bitte beachten Sie die angegebene ISBN.)
-		\item[F] Freiexemplar (Dieses Buch m\"ochten Sie von der Schule, nach den geltenden Bestimmungen des Landes Thüringen, ausleihen.)
-	\end{description}
 \end{enumerate}
 
 \vspace{1cm}
@@ -75,5 +77,13 @@ Wir best\"atigen hiermit den B\"ucherzettel und alle Hinweise gelesen und ordnun
 
 \newpage
 
-\def\arraystretch{2}
+\def\arraystretch{1.5}
+
+\fancyfoot[L]{Schuljahr {{s.school_year}}/{{s.school_year + 1}}}
+\fancyfoot[C]{Bücherzettel}
+\fancyfoot[R]{Klasse {{grade}}
+%if new_students:
+	(Neuzugang)
+%end
+}
 

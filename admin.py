@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+import os, time
 from datetime import datetime
 
 from bottle import *
 from pony import orm
-from latex import build_pdf
 
 from db.orm import db, db_session, Currency
 from db import orga, books
@@ -170,6 +170,8 @@ def settings_form_post():
 
 @get('/admin/booklist/download/<fname>')
 def admin_booklist_download(fname):
+	"""Note that this callback is NOT covered by the test suite.
+	"""
 	return static_file(fname, root='./export')
 
 @get('/admin/booklist')
@@ -178,6 +180,9 @@ def booklist_index():
 	# fetch data
 	data = list()
 	for f in os.listdir('export'):
+		if not f.endswith('.pdf'):
+			# ignore everything else (including tex/ subdir)
+			continue
 		grade = int(f.split('Bücherzettel')[1].split('_')[0].split('.pdf')[0])
 		stat  = os.stat(os.path.join('export', f))
 		data.append({
@@ -193,16 +198,23 @@ def booklist_index():
 
 @get('/admin/booklist/generate')
 def booklist_generate():
-	booklist = BooklistPdf()
+	with open('settings.json') as h:
+		booklist = BooklistPdf(h)
 	
+	print('Generating Booklists')
+	d = time.time()
+	yield 'Bitte warten...'
 	#for g in orga.getClassGrades():
-	for g in [5, 6, 7, 8, 9, 10, 11, 12]:
+	for g in range(5, 12+1):
+		yield '<br>Klasse %d' % g
 		booklist(g)
 		if g > 5:
+			yield ' und Neuzugänge'
 			booklist(g, new_students=True)
-		yield '.'
+	print('Done')
+	d = time.time() - d
 	
-	yield 'Abgeschlossen'
+	yield '<hr /><br />Erledigt in %f Sekunden' % (d)
 
 # -----------------------------------------------------------------------------
 
@@ -214,7 +226,7 @@ class Tests(unittest.TestCase):
 	@staticmethod
 	@db_session
 	def prepare():
-		import db.orga, db.books, db.orga
+		import db.orga, db.books
 		
 		db.orga.Tests.prepare()
 		db.books.Tests.prepare()
@@ -697,42 +709,17 @@ Titel3\t0815-002\t1234\tKlett\t39\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\t
 		self.assertEqual(ret.status_int, 200)
 
 	# -------------------------------------------------------------------------
-
-"""
-@get('/admin/booklist/download/<fname>')
-def admin_booklist_download(fname):
-	return static_file(fname, root='./export')
-
-@get('/admin/booklist')
-@view('admin/booklist_index')
-def booklist_index():
-	# fetch data
-	data = list()
-	for f in os.listdir('export'):
-		grade = int(f.split('Bücherzettel')[1].split('_')[0].split('.pdf')[0])
-		stat  = os.stat(os.path.join('export', f))
-		data.append({
-			"grade" : grade,
-			"name"  : f,
-			"new"   : '_Neuzugänge' in f,
-			"size"  : stat.st_size,
-			"date"  : datetime.utcfromtimestamp(int(stat.st_mtime)).strftime('%Y-%m-%d %H:%M:%S')
-		})
-	# sort by grade
-	data.sort(key=lambda d: d["grade"])
-	return dict(data=data)
-
-@get('/admin/booklist/generate')
-def booklist_generate():
-	booklist = BooklistPdf()
 	
-	#for g in orga.getClassGrades():
-	for g in [5, 6, 7, 8, 9, 10, 11, 12]:
-		booklist(g)
-		if g > 5:
-			booklist(g, new_students=True)
-		yield '.'
-	
-	yield 'Abgeschlossen'
-"""
+	@db_session
+	def test_booklist_creation(self):
+		Tests.prepare()
+		
+		# create all booklists (some even without books)
+		# note: this may take some seconds
+		ret = self.app.get('/admin/booklist/generate')
+		self.assertEqual(ret.status_code, 200)
+		
+		# show booklist index
+		ret = self.app.get('/admin/booklist')
+		self.assertEqual(ret.status_code, 200)
 

@@ -1,7 +1,5 @@
-Booklist Creation Test Coverage
-Settings Test Coverage
+Booklist: sort subjects alphabetically
 
-Booklist Layout (long pages MUST fit on one single page)
 
 Write Queries as Usecase Functions
 	db/loans.py --> loaning stuff (all about loans)

@@ -3,6 +3,9 @@
 
 import os, json
 
+from bottle import template
+from latex import build_pdf
+
 from db import books
 
 
@@ -35,7 +38,7 @@ class Settings(object):
 # -----------------------------------------------------------------------------
 
 class BooklistPdf(object):
-	def __init__(self):
+	def __init__(self, settings_handle, export='export'):
 		# load LaTeX templates
 		with open('docs/header.tpl') as f:
 			self.header = f.read()
@@ -45,14 +48,20 @@ class BooklistPdf(object):
 			self.info = f.read()
 		with open('docs/select.tpl') as f:
 			self.select = f.read()
+		with open('docs/empty.tpl') as f:
+			self.empty = f.read()
 		with open('docs/planner.tpl') as f:
 			self.planner = f.read()
 		# prepare output directory
-		if not os.path.isdir('export'):
-			os.mkdir('export')
+		self.export = export
+		self.texdir = os.path.join(export, 'tex')
+		if not os.path.isdir(self.export):
+			os.mkdir(self.export)
+		if not os.path.isdir(self.texdir):
+			os.mkdir(self.texdir)
 		# load settings
 		self.s = Settings()
-		self.s.load_from()
+		self.s.load_from(settings_handle)
 	
 	def __call__(self, grade: int, new_students: bool=False):
 		"""Generate booklist pdf file for the given grade. A separate booklist
@@ -68,17 +77,30 @@ class BooklistPdf(object):
 			suffix = ''
 		bks = list(bks.order_by(db.Book.title).order_by(db.Book.subject))
 		
+		# determine number of books
+		num_books  = sum(1 for b in bks if not b.workbook)
+		
 		# render templates
-		tex  = template(self.header)
-		tex += template(self.info, grade=grade, new_students=new_students,
-			settings=self.settings)
-		tex += template(self.select, grade=grade, bs=bks, workbook=False)
-		tex += template(self.select, grade=grade, bs=bks, workbook=True)
+		tex  = template(self.header, s=self.s, grade=grade, new_students=new_students)
+		tex += template(self.info, grade=grade, new_students=new_students, s=self.s)
+		if num_books > 0:
+			tex += template(self.select, grade=grade, bs=bks, workbook=False)
+		else:
+			tex += template(self.empty, workbook=False)
+		if num_books < len(bks):
+			tex += template(self.select, grade=grade, bs=bks, workbook=True)
+		else:
+			tex += template(self.empty, workbook=True)
 		tex += template(self.planner, grade=grade, s=self.s)
 		tex += template(self.footer)
 		
+		# export tex (debug purpose)
+		dbg_fname = os.path.join(self.texdir, '%d%s.tex' % (grade, suffix))
+		with open(dbg_fname, 'w') as h:
+			h.write(tex)
+		
 		# export PDF
-		fname = os.path.join('export', 'Bücherzettel%d%s.pdf' % (grade, suffix))
+		fname = os.path.join(self.export, 'Bücherzettel%d%s.pdf' % (grade, suffix))
 		pdf = build_pdf(tex)
 		pdf.save_to(fname)
 
@@ -134,5 +156,24 @@ class Tests(unittest.TestCase):
 		self.assertEqual(s.planner_price    , 2)
 		self.assertEqual(s.deadline_booklist, '3')
 		self.assertEqual(s.deadline_changes , '4')
+
+	@db_session
+	def test_create_custom_booklist(self):
+		# create custom database content (real work example)
+		books.addSubjects("Mathematik	Ma\nDeutsch	De\nEnglisch	En\nPhysik	Ph")
+		books.addPublishers("Klett\nCornelsen")
+		books.addBooks("""Ein Mathe-Buch	978-3-7661-5000-4	32,80 €	Cornelsen	5	12	Ma	True	True	False	False
+Mathe AH	978-3-7661-5007-3	8,80 €	Cornelsen	5	12	Ma	True	True	True	False
+Deutsch-Buch mit sehr langam Titel und damit einigen Zeilenumbrüchen .. ach und Umlaute in größeren Mengen öÖäÄüÜß sowie Sonderzeichen !"§$%&/()=?.:,;-_@	978-3-12-104104-6	35,95 €	Klett	11	12	De	True	True	False	False
+Old English Book			Klett	5	12	En	True	True	False	True
+Grundlagen der Physik			Cornelsen	5	12	Ph	True	True	False	False
+Tafelwerk	978-3-06-001611-2	13,50 €	Cornelsen	7	12		False	False	False	False""")
+
+		# create booklist
+		with open('settings.json') as h:
+			booklist = BooklistPdf(h, export='/tmp/export')
+		booklist(11, new_students=True)
+		print('PLEASE MANUALLY VIEW /tmp/export/Buecherzettel11.pdf')
+
 
 
