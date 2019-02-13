@@ -124,7 +124,7 @@ def books_edit_post(id):
 	b.outGrade  = int(request.forms.outGrade)
 	b.subject   = db.Subject[int(request.forms.subject_id)] if request.forms.subject_id != "" else None
 	b.novices   = True if request.forms.novices   == 'on' else False
-	b.advanced  = True if request.forms.advnaced  == 'on' else False
+	b.advanced  = True if request.forms.advanced  == 'on' else False
 	b.workbook  = True if request.forms.workbook  == 'on' else False
 	b.classsets = True if request.forms.classsets == 'on' else False
 	b.comment   = request.forms.comment
