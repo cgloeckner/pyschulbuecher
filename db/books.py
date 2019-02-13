@@ -23,12 +23,20 @@ def getSubjects():
 		for s in db.Subject
 	)
 
+def orderBooksIndex(bks):
+	# 1st: subject, 2nd: inGrade, 3rd: title
+	return bks.order_by(db.Book.title).order_by(db.Book.inGrade).order_by(lambda b: b.subject.tag)
+
+def orderBooksList(bks):
+	# 1st: subject, 2rd: title, 3rd: publisher
+	return bks.order_by(lambda b: b.publisher.name).order_by(db.Book.title).order_by(lambda b: b.subject.tag)
+
 def getAllBooks():
 	"""Return a list of all books sorted by subject.tag, inGrade and title.
 	"""
 	return select(b
 		for b in db.Book
-	).order_by(db.Book.title).order_by(db.Book.inGrade).order_by(db.Book.subject)
+	)
 
 def getBooksWithoutSubject():
 	"""Return a list of books which are not assigned to a specific subject.
@@ -244,13 +252,18 @@ class Tests(unittest.TestCase):
 	def test_getAllBooks(self):
 		Tests.prepare()
 		
-		bs = list(getAllBooks())
+		bs = set(getAllBooks())
 		self.assertEqual(len(bs), 9)
-		self.assertEqual(bs[0], db.Book[8]) # subject-independend book
-		self.assertEqual(bs[1], db.Book[1]) # Math book since 5th grade
-		self.assertEqual(bs[2], db.Book[2]) # Math book since 7th grade
-		self.assertEqual(bs[4], db.Book[5]) # advanced Math book since 11th grade
-		self.assertEqual(bs[5], db.Book[4]) # basic book since 7th grade
+		self.assertIn(db.Book[8], bs)
+		self.assertIn(db.Book[1], bs)
+		self.assertIn(db.Book[2], bs)
+		self.assertIn(db.Book[3], bs)
+		self.assertIn(db.Book[4], bs)
+		self.assertIn(db.Book[5], bs)
+		self.assertIn(db.Book[6], bs)
+		self.assertIn(db.Book[7], bs)
+		self.assertIn(db.Book[8], bs)
+		self.assertIn(db.Book[9], bs)
 	
 	@db_session
 	def test_getBooksWithoutSubject(self):

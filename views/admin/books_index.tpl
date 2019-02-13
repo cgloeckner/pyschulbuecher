@@ -21,7 +21,7 @@
 		<th>Kommentar</th>
 		<th></th>
 	</tr>
-%bs = books.getAllBooks()
+%bs = books.orderBooksIndex(books.getAllBooks())
 %for b in bs:
 	<tr>
 		<td>{{b.title}}</td>
