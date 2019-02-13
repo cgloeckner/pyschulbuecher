@@ -1,6 +1,3 @@
-Booklist: sort subjects alphabetically
-
-
 Write Queries as Usecase Functions
 	db/loans.py --> loaning stuff (all about loans)
 

@@ -75,7 +75,7 @@ class BooklistPdf(object):
 		else:
 			bks    = books.getBooksStartedIn(grade)
 			suffix = ''
-		bks = list(bks.order_by(db.Book.title).order_by(db.Book.subject))
+		bks = list(bks.order_by(db.Book.title).order_by(lambda b: b.subject.tag))
 		
 		# determine number of books
 		num_books  = sum(1 for b in bks if not b.workbook)
