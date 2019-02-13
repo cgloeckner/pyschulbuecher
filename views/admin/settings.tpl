@@ -8,19 +8,19 @@
 <table>
 	<tr>
 		<td>Schuljahr</td>
-		<td><input type="text" name="year" value="{{settings["year"]}}" /></td>
+		<td><input type="text" name="school_year" value="{{s.school_year}}" /></td>
 	</tr>
 	<tr>
 		<td>Preis Schulplaner</td>
-		<td><input type="text" name="planner_price" value="{{Currency.toString(settings["planner_price"])}}" />€</td>
-	</tr>
-	<tr>
-		<td>Letzter Änderungstermin Bücherzettel</td>
-		<td><input type="text" name="deadline_changes" value="{{settings["deadline_changes"]}}" /></td>
+		<td><input type="text" name="planner_price" value="{{Currency.toString(s.planner_price)}}" />€</td>
 	</tr>
 	<tr>
 		<td>Spätester Abgabetermin Bücherzettel</td>
-		<td><input type="text" name="deadline_booklist" value="{{settings["deadline_booklist"]}}" /></td>
+		<td><input type="text" name="deadline_booklist" value="{{s.deadline_booklist}}" /></td>
+	</tr>
+	<tr>
+		<td>Letzter Änderungstermin Bücherzettel</td>
+		<td><input type="text" name="deadline_changes" value="{{s.deadline_changes}}" /></td>
 	</tr>
 	<tr>
 		<td></td>

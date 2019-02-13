@@ -7,7 +7,7 @@
 	%if grade == 5:
 		kostenlos
 	%else:
-		{{Currency.toString(settings["planner_price"])}} \euro
+		{{Currency.toString(s.planner_price)}} \euro
 	%end
 	& & \\ \hline
 \end{longtable}
