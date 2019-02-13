@@ -5,17 +5,22 @@
 %include("header")
 <h1>Übersicht Bücher</h1>
 
+%for s in books.getSubjects():
+<a href="#{{s.tag}}">{{s.tag}}</a> &nbsp;
+%end
+
 <table>
 %old = None
 %bs = books.orderBooksIndex(books.getAllBooks())
 %for b in bs:
-	%if old is None or old != b.subject.tag:
+	%tag = b.subject.tag if b.subject is not None else 'versch.'
+	%if old is None or old != tag:
 		%if old is not None:
 	<tr>
-		<td colspan="13"><hr /></td>
+		<td colspan="13"><hr /><a name="{{tag}}"></a></td>
 	</tr>
 		%end
-		%old = b.subject.tag
+		%old = tag
 	<tr>
 		<th>Titel</th>
 		<th>ISBN</th>
@@ -50,7 +55,7 @@
 	%if b.subject is None:
 		<td>-</td>
 	%else:
-		<td>{{b.subject.tag}}</td>
+		<td>{{tag}}</td>
 	%end
 		<td>{{bool2str(b.novices)}}</td>
 		<td>{{bool2str(b.advanced)}}</td>

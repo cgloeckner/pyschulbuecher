@@ -14,22 +14,26 @@ def getPublishers():
 	"""
 	return select(p
 		for p in db.Publisher
-	)
+	).order_by(db.Publisher.name)
 
 def getSubjects():
 	"""Return a list of all subjects.
 	"""
 	return select(s
 		for s in db.Subject
-	)
+	).order_by(db.Subject.tag)
 
 def orderBooksIndex(bks):
 	# 1st: subject, 2nd: inGrade, 3rd: title
-	return bks.order_by(db.Book.title).order_by(db.Book.inGrade).order_by(lambda b: b.subject.tag)
+	bks = list(bks.order_by(db.Book.title).order_by(db.Book.inGrade))
+	bks.sort(key=lambda b: b.subject.tag if b.subject is not None else '')
+	return bks
 
 def orderBooksList(bks):
 	# 1st: subject, 2rd: title, 3rd: publisher
-	return bks.order_by(lambda b: b.publisher.name).order_by(db.Book.title).order_by(lambda b: b.subject.tag)
+	bks = list(bks.order_by(lambda b: b.publisher.name).order_by(db.Book.title))
+	bks.sort(key=lambda b: b.subject.tag if b.subject is not None else '')
+	return bks
 
 def getAllBooks():
 	"""Return a list of all books sorted by subject.tag, inGrade and title.
@@ -253,6 +257,40 @@ class Tests(unittest.TestCase):
 		Tests.prepare()
 		
 		bs = set(getAllBooks())
+		self.assertEqual(len(bs), 9)
+		self.assertIn(db.Book[8], bs)
+		self.assertIn(db.Book[1], bs)
+		self.assertIn(db.Book[2], bs)
+		self.assertIn(db.Book[3], bs)
+		self.assertIn(db.Book[4], bs)
+		self.assertIn(db.Book[5], bs)
+		self.assertIn(db.Book[6], bs)
+		self.assertIn(db.Book[7], bs)
+		self.assertIn(db.Book[8], bs)
+		self.assertIn(db.Book[9], bs)
+	
+	@db_session
+	def test_getAllBooks_ordered_for_booklist(self):
+		Tests.prepare()
+		
+		bs = set(orderBooksList(getAllBooks()))
+		self.assertEqual(len(bs), 9)
+		self.assertIn(db.Book[8], bs)
+		self.assertIn(db.Book[1], bs)
+		self.assertIn(db.Book[2], bs)
+		self.assertIn(db.Book[3], bs)
+		self.assertIn(db.Book[4], bs)
+		self.assertIn(db.Book[5], bs)
+		self.assertIn(db.Book[6], bs)
+		self.assertIn(db.Book[7], bs)
+		self.assertIn(db.Book[8], bs)
+		self.assertIn(db.Book[9], bs)
+	
+	@db_session
+	def test_getAllBooks_ordered_for_booksindex(self):
+		Tests.prepare()
+		
+		bs = set(orderBooksIndex(getAllBooks()))
 		self.assertEqual(len(bs), 9)
 		self.assertIn(db.Book[8], bs)
 		self.assertIn(db.Book[1], bs)

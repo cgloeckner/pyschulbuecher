@@ -46,6 +46,11 @@
 		<tr>
 			<td>Fach</td>
 			<td><select name="subject_id">
+				<option value=""\\
+%if b.subject is None:
+ selected\\
+%end
+>verschiedene</option>
 %for s in books.getSubjects():
 				<option value="{{s.id}}"\\
 %if b.subject is not None and b.subject.id == s.id:
