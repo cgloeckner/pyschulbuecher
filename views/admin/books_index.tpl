@@ -6,13 +6,23 @@
 <h1>Übersicht Bücher</h1>
 
 <table>
+%old = None
+%bs = books.orderBooksIndex(books.getAllBooks())
+%for b in bs:
+	%if old is None or old != b.subject.tag:
+		%if old is not None:
+	<tr>
+		<td colspan="13"><hr /></td>
+	</tr>
+		%end
+		%old = b.subject.tag
 	<tr>
 		<th>Titel</th>
 		<th>ISBN</th>
 		<th>Preis</th>
 		<th>Verlag</th>
 		<th>Bestand</th>
-		<th>Klassen-<br />stufe</th>
+		<th>Klassen-<br />stufen</th>
 		<th>Fach</th>
 		<th>für gA</th>
 		<th>für eA</th>
@@ -20,9 +30,8 @@
 		<th>Klassen-<br />satz?</th>
 		<th>Kommentar</th>
 		<th></th>
-	</tr>
-%bs = books.orderBooksIndex(books.getAllBooks())
-%for b in bs:
+	</tr>	
+	%end
 	<tr>
 		<td>{{b.title}}</td>
 		<td>{{b.isbn}}</td>

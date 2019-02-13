@@ -6,7 +6,7 @@
 	<meta charset="UTF-8"> 
 	<title>Schulbuchverwaltung</title>
 <style>
-body {background-color: grey;}
+body {background-color: white;}
 </style>
 </head>
 
