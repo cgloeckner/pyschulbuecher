@@ -70,10 +70,10 @@ class BooklistPdf(object):
 		"""
 		# fetch and order books
 		if new_students:
-			bks    = books.getBooksUsedIn(grade)
+			bks    = books.getBooksUsedIn(grade, booklist=True)
 			suffix = '_Neuzugänge'
 		else:
-			bks    = books.getBooksStartedIn(grade)
+			bks    = books.getBooksStartedIn(grade, booklist=True)
 			suffix = ''
 		bks = books.orderBooksList(bks)
 		
@@ -162,12 +162,12 @@ class Tests(unittest.TestCase):
 		# create custom database content (real work example)
 		books.addSubjects("Mathematik	Ma\nDeutsch	De\nEnglisch	En\nPhysik	Ph")
 		books.addPublishers("Klett\nCornelsen")
-		books.addBooks("""Ein Mathe-Buch	978-3-7661-5000-4	32,80 €	Cornelsen	5	12	Ma	True	True	False	False
-Mathe AH	978-3-7661-5007-3	8,80 €	Cornelsen	5	12	Ma	True	True	True	False
-Deutsch-Buch mit sehr langam Titel und damit einigen Zeilenumbrüchen .. ach und Umlaute in größeren Mengen öÖäÄüÜß sowie Sonderzeichen !"§$%&/()=?.:,;-_@	978-3-12-104104-6	35,95 €	Klett	11	12	De	True	True	False	False
-Old English Book			Klett	5	12	En	True	True	False	True
-Grundlagen der Physik			Cornelsen	5	12	Ph	True	True	False	False
-Tafelwerk	978-3-06-001611-2	13,50 €	Cornelsen	7	12		False	False	False	False""")
+		books.addBooks("""Ein Mathe-Buch	978-3-7661-5000-4	32,80 €	Cornelsen	5	12	Ma	True	True	False	False	True
+Mathe AH	978-3-7661-5007-3	8,80 €	Cornelsen	5	12	Ma	True	True	True	False	True
+Deutsch-Buch mit sehr langam Titel und damit einigen Zeilenumbrüchen .. ach und Umlaute in größeren Mengen öÖäÄüÜß sowie Sonderzeichen !"§$%&/()=?.:,;-_@	978-3-12-104104-6	35,95 €	Klett	11	12	De	True	True	False	False	True
+Old English Book			Klett	5	12	En	True	True	False	True	False
+Grundlagen der Physik			Cornelsen	5	12	Ph	True	True	False	False	True
+Tafelwerk	978-3-06-001611-2	13,50 €	Cornelsen	7	12		False	False	False	False	True""")
 
 		# create booklist
 		with open('settings.json') as h:

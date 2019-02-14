@@ -127,6 +127,7 @@ def books_edit_post(id):
 	b.advanced  = True if request.forms.advanced  == 'on' else False
 	b.workbook  = True if request.forms.workbook  == 'on' else False
 	b.classsets = True if request.forms.classsets == 'on' else False
+	b.for_loan  = True if request.forms.for_loan  == 'on' else False
 	b.comment   = request.forms.comment
 	return dict()
 
@@ -315,6 +316,10 @@ class Tests(unittest.TestCase):
 		ret = self.app.post('/admin/subjects/edit/1', args)
 		self.assertEqual(ret.status_int, 200)
 		
+		sj = db.Subject[1]
+		self.assertEqual(sj.tag,  args['tag'])
+		self.assertEqual(sj.name, args['name'])
+		
 		# show subjects gui
 		ret = self.app.get('/admin/subjects')
 		self.assertEqual(ret.status_int, 200)
@@ -378,6 +383,9 @@ class Tests(unittest.TestCase):
 		ret = self.app.post('/admin/publishers/add', args)
 		self.assertEqual(ret.status_int, 200)
 		
+		self.assertEqual(db.Publisher[3].name, 'C. C. Buchner')
+		self.assertEqual(db.Publisher[4].name, 'Westermann')
+		
 		# show subjects list
 		ret = self.app.get('/admin/publishers')
 		self.assertEqual(ret.status_int, 200)
@@ -430,6 +438,8 @@ class Tests(unittest.TestCase):
 		args = { 'name': 'Volk und Wissen' }
 		ret = self.app.post('/admin/publishers/edit/1', args)
 		self.assertEqual(ret.status_int, 200)
+		
+		self.assertEqual(db.Publisher[1].name, args['name'])
 		
 		# show publishers gui
 		ret = self.app.get('/admin/publishers')
@@ -491,12 +501,17 @@ class Tests(unittest.TestCase):
 		Tests.prepare()
 	
 		# add books
-		args = { "data": """Titel\t0815-000\t1234\tKlett\t39\t10\t12\tMa\tTrue\tFalse\tFalse\tFalse\t
-Titel2\t0815-001\t1234\tKlett\t39\t10\t12\tEn\tTrue\tFalse\tFalse\tFalse\t
-Titel3\t0815-002\t1234\tKlett\t39\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\t"""
+		args = { "data": """Titel\t0815-000\t1234\tKlett\t10\t12\tMa\tTrue\tFalse\tFalse\tFalse\tTrue\t
+Titel2\t0815-001\t1234\tKlett\t10\t12\tEn\tTrue\tFalse\tFalse\tFalse\tTrue\t
+Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\tBla"""
 		}
 		ret = self.app.post('/admin/books/add', args)
 		self.assertEqual(ret.status_int, 200)
+		
+		# shhhh, I'm to lazy to test all three books completely .__.
+		self.assertEqual(db.Book[10].title, 'Titel')
+		self.assertEqual(db.Book[11].subject.tag, 'En')
+		self.assertEqual(db.Book[12].comment, 'Bla')
 		
 		# show books list
 		ret = self.app.get('/admin/books')
@@ -507,12 +522,12 @@ Titel3\t0815-002\t1234\tKlett\t39\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\t"""
 		Tests.prepare()
 	
 		# add books
-		args = { "data": """Titel\t0815-000\t1234\tKlett\t39\t10\t12\tMa\tTrue\tFalse\tFalse\tFalse\t
+		args = { "data": """Titel\t0815-000\t1234\tKlett\t10\t12\tMa\tTrue\tFalse\tFalse\tFalse\tTrue\t
 
 
-Titel2\t0815-001\t1234\tKlett\t39\t10\t12\tEn\tTrue\tFalse\tFalse\tFalse\t
+Titel2\t0815-001\t1234\tKlett\t10\t12\tEn\tTrue\tFalse\tFalse\tFalse\tTrue\t
 
-Titel3\t0815-002\t1234\tKlett\t39\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\t
+Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 """
 		}
 		ret = self.app.post('/admin/books/add', args)
@@ -527,9 +542,16 @@ Titel3\t0815-002\t1234\tKlett\t39\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\t
 		Tests.prepare()
 	
 		# add book (invalid publisher)
-		args = { "data": "Titel\t\t\tKlett\t39\t10\t12" }
+		args = { "data": "Titel\t\t\tKlett\t10\t12" }
 		ret = self.app.post('/admin/books/add', args)
 		self.assertEqual(ret.status_int, 200)
+		
+		bk = db.Book[10]
+		self.assertEqual(bk.title, 'Titel')
+		self.assertEqual(bk.publisher.name, 'Klett')
+		self.assertEqual(bk.inGrade, 10)
+		self.assertEqual(bk.outGrade, 12)
+		self.assertTrue(bk.for_loan)
 		
 		# show books list
 		ret = self.app.get('/admin/books')
@@ -540,7 +562,7 @@ Titel3\t0815-002\t1234\tKlett\t39\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\t
 		Tests.prepare()
 	
 		# add book (invalid publisher)
-		args = { "data": "Titel\t0815-000\t1234\tUnbekannt\t39\t10\t12\tMa\tTrue\tFalse\tFalse\tFalse\t" }
+		args = { "data": "Titel\t0815-000\t1234\tUnbekannt\t39\t10\t12\tMa\tTrue\tFalse\tFalse\tFalse\tTrue\t" }
 		ret = self.app.post('/admin/books/add', args, expect_errors=True)
 		self.assertEqual(ret.status_int, 400)
 		
@@ -549,22 +571,22 @@ Titel3\t0815-002\t1234\tKlett\t39\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\t
 		self.assertEqual(ret.status_int, 200)
 	
 		# add book (invalid subject)
-		args = { "data": "Titel\t0815-000\t1234\tKlett\t39\t10\t12\tFoo\tTrue\tFalse\tFalse\tFalse\t" }
+		args = { "data": "Titel\t0815-000\t1234\tKlett\t39\t10\t12\tFoo\tTrue\tFalse\tFalse\tFalse\tTrue\t" }
 		ret = self.app.post('/admin/books/add', args, expect_errors=True)
 		self.assertEqual(ret.status_int, 400)
 		
 		# add book (invalid price)
-		args = { "data": "Titel\t0815-000\tabc\tKlett\t39\t10\t12\tMa\tTrue\tFalse\tFalse\tFalse\t" }
+		args = { "data": "Titel\t0815-000\tabc\tKlett\t39\t10\t12\tMa\tTrue\tFalse\tFalse\tFalse\tTrue\t" }
 		ret = self.app.post('/admin/books/add', args, expect_errors=True)
 		self.assertEqual(ret.status_int, 400)
 		
 		# add books (invalid inGrade)
-		args = { "data": "Titel\t0815-000\t1234\tKlett\t39\tZehn\t12\tMa\tTrue\tFalse\tFalse\tFalse\t" }
+		args = { "data": "Titel\t0815-000\t1234\tKlett\t39\tZehn\t12\tMa\tTrue\tFalse\tFalse\tFalse\tTrue\t" }
 		ret = self.app.post('/admin/books/add', args, expect_errors=True)
 		self.assertEqual(ret.status_int, 400)
 		
 		# add books (invalid outGrade)
-		args = { "data": "Titel\t0815-000\t1234\tKlett\t39\t10\tAbi\tMa\tTrue\tFalse\tFalse\tFalse\t" }
+		args = { "data": "Titel\t0815-000\t1234\tKlett\t39\t10\tAbi\tMa\tTrue\tFalse\tFalse\tFalse\tTrue\t" }
 		ret = self.app.post('/admin/books/add', args, expect_errors=True)
 		self.assertEqual(ret.status_int, 400)
 		
@@ -592,20 +614,37 @@ Titel3\t0815-002\t1234\tKlett\t39\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\t
 		args = {
 			"title"        : "Biologie Hautnah",
 			"isbn"         : "0815-346465-7-346",
-			"price"        : "1234",
+			"price"        : "123",
 			"publisher_id" : "1",
 			"stock"        : "39",
 			"inGrade"      : "10",
 			"outGrade"     : "12",
 			"subject_id"   : "2",
 			"novices"      : "on",
-			"advanced"     : "off", # @NOTE: empty str?
-			"workbook"     : "off", # @NOTE: empty str?
-			"classsets"    : "off",
+			"advanced"     : "on", # @NOTE: empty str?
+			"workbook"     : "on", # @NOTE: empty str?
+			"classsets"    : "on",
+			"for_loan"     : "off",
 			"comment"      : ""
 		}
 		ret = self.app.post('/admin/books/edit/1', args)
 		self.assertEqual(ret.status_int, 200)
+		
+		bk = db.Book[1]
+		self.assertEqual(bk.title,        args['title'])
+		self.assertEqual(bk.isbn,         args['isbn'])
+		self.assertEqual(bk.price,        12300) # as cents
+		self.assertEqual(bk.publisher.id, 1)
+		self.assertEqual(bk.stock,        39)
+		self.assertEqual(bk.inGrade,      10)
+		self.assertEqual(bk.outGrade,     12)
+		self.assertEqual(bk.subject.id,   2)
+		self.assertTrue(bk.novices)
+		self.assertTrue(bk.advanced)
+		self.assertTrue(bk.workbook)
+		self.assertTrue(bk.classsets)
+		self.assertFalse(bk.for_loan)
+		self.assertEqual(bk.comment, args['comment'])
 		
 		# show books gui
 		ret = self.app.get('/admin/books')
@@ -629,6 +668,7 @@ Titel3\t0815-002\t1234\tKlett\t39\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\t
 			"advanced"     : "off", # @NOTE: empty str?
 			"workbook"     : "off", # @NOTE: empty str?
 			"classsets"    : "off",
+			"for_loan"     : "off",
 			"comment"      : ""
 		}
 		ret = self.app.post('/admin/books/edit/2', args, expect_errors=True)
@@ -652,6 +692,7 @@ Titel3\t0815-002\t1234\tKlett\t39\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\t
 			"advanced"     : "off", # @NOTE: empty str?
 			"workbook"     : "off", # @NOTE: empty str?
 			"classsets"    : "off",
+			"for_loan"     : "off",
 			"comment"      : ""
 		}
 		ret = self.app.post('/admin/books/edit/1337', args, expect_errors=True)

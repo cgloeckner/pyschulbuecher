@@ -33,6 +33,7 @@
 		<th>für eA</th>
 		<th>AH?</th>
 		<th>Klassen-<br />satz?</th>
+		<th>auf Bücher-<br>zettel?</th>
 		<th>Kommentar</th>
 		<th></th>
 	</tr>	
@@ -61,6 +62,7 @@
 		<td>{{bool2str(b.advanced)}}</td>
 		<td>{{bool2str(b.workbook)}}</td>
 		<td>{{bool2str(b.classsets)}}</td>
+		<td>{{bool2str(b.for_loan)}}</td>
 		<td>{{b.comment}}</td>
 		<td><a href="/admin/books/edit/{{b.id}}">Bearbeiten</a></td>
 	</tr>

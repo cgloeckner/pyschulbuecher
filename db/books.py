@@ -51,36 +51,64 @@ def getBooksWithoutSubject():
 			if b.subject is None
 	)
 
-def getBooksUsedIn(grade: int):
+def getBooksUsedIn(grade: int, booklist: bool=False):
 	"""Return a list of books which are used in the given grade.
 	This includes books which are used across multiple grades, as well as books
 	that are only used by this grade.
+	The optional booklist parameter specifies if only books which are for loan
+	are queried.
 	"""
-	return select(b
-		for b in db.Book
-			if b.inGrade <= grade
-			and grade <= b.outGrade
-	)
+	if booklist:
+		return select(b
+			for b in db.Book
+				if b.inGrade <= grade
+				and grade <= b.outGrade
+				and b.for_loan
+		)
+	else:
+		return select(b
+			for b in db.Book
+				if b.inGrade <= grade
+				and grade <= b.outGrade
+		)
 
-def getBooksStartedIn(grade: int):
+def getBooksStartedIn(grade: int, booklist: bool=False):
 	"""Return a list of books which are introduced in the given grade.
 	This includes books which are used across multiple grades (from that grade)
 	on, as well as books which are only used by this grade.
+	The optional booklist parameter specifies if only books which are for loan
+	are queried.
 	"""
-	return select(b
-		for b in db.Book
-			if b.inGrade == grade
-	)
+	if booklist:
+		return select(b
+			for b in db.Book
+				if b.inGrade == grade
+				and b.for_loan
+		)
+	else:
+		return select(b
+			for b in db.Book
+				if b.inGrade == grade
+		)
 
-def getBooksFinishedIn(grade: int):
+def getBooksFinishedIn(grade: int, booklist: bool=False):
 	"""Return a list of books which are used in the given grade for the last
 	time. This includes books which are used across multiple grades (up to this
 	grade), as well as books that are only used by this grade.
+	The optional booklist parameter specifies if only books which are for loan
+	are queried.
 	"""
-	return select(b
-		for b in db.Book
-			if b.outGrade == grade
-	)
+	if booklist:
+		return select(b
+			for b in db.Book
+				if b.outGrade == grade
+				and b.for_loan
+		)
+	else:
+		return select(b
+			for b in db.Book
+				if b.outGrade == grade
+		)
 
 def getBooksByTitle(title: str):
 	"""Return a list of books with similar titles.
@@ -127,6 +155,7 @@ def addBook(raw: str):
 	Optional: Subject, Novices, Advanced, Workbook, Classsets, Comment
 	Earlier optional data must be provided (at least as empty strings) if a
 	later parameter is given.
+	Note that the stock is always set to zero and must be specified later.
 	"""
 	# split data
 	data = raw.split('\t')
@@ -136,7 +165,8 @@ def addBook(raw: str):
 	advanced  = data[8]  if  8 < len(data) else ""
 	workbook  = data[9]  if  9 < len(data) else ""
 	classsets = data[10] if 10 < len(data) else ""
-	comment   = data[11] if 11 < len(data) else ""
+	for_loan  = data[11] if 11 < len(data) else ""
+	comment   = data[12] if 12 < len(data) else ""
 	
 	# fix parameters
 	try:
@@ -146,10 +176,12 @@ def addBook(raw: str):
 	except ValueError as e:
 		raise orm.core.ConstraintError(e)
 	
-	novices   = True if novices   == 'True' else False
-	advanced  = True if advanced  == 'True' else False
-	workbook  = True if workbook  == 'True' else False
-	classsets = True if classsets == 'True' else False
+	# interpret boolean values (based on entity's default values)
+	novices   = True  if novices   == 'True'  else False
+	advanced  = True  if advanced  == 'True'  else False
+	workbook  = True  if workbook  == 'True'  else False
+	classsets = True  if classsets == 'True'  else False
+	for_loan  = False if for_loan  == 'False' else True
 		
 	# query referenced entities
 	publisher = db.Publisher.get(name=publisher)
@@ -160,7 +192,7 @@ def addBook(raw: str):
 		db.Book(title=title, isbn=isbn, price=price, publisher=publisher,
 			inGrade=inGrade, outGrade=outGrade, subject=subject, novices=novices,
 			advanced=advanced, workbook=workbook, classsets=classsets,
-			comment=comment)
+			for_loan=for_loan, comment=comment)
 	except ValueError as e:
 		raise orm.core.ConstraintError(e)
 
@@ -206,7 +238,8 @@ class Tests(unittest.TestCase):
 			publisher=db.Publisher[1], inGrade=9, outGrade=10,
 			subject=db.Subject[1])
 		db.Book(title='Basic Maths', publisher=db.Publisher[1], inGrade=11,
-			outGrade=12, subject=db.Subject[1], novices=True, classsets=True)
+			outGrade=12, subject=db.Subject[1], novices=True, classsets=True,
+			for_loan=False)
 		db.Book(title='Advanced Maths', publisher=db.Publisher[1], inGrade=11,
 			outGrade=12, subject=db.Subject[1], advanced=True, classsets=True)
 		
@@ -224,7 +257,8 @@ class Tests(unittest.TestCase):
 			
 		# create english book
 		db.Book(title='English 5th grade', publisher=db.Publisher[2],
-			inGrade=5, outGrade=5, subject=db.Subject[3], classsets=True)
+			inGrade=5, outGrade=5, subject=db.Subject[3], classsets=True,
+			for_loan=False)
 
 	
 	def setUp(self):
@@ -321,6 +355,11 @@ class Tests(unittest.TestCase):
 		self.assertIn(db.Book[6], bs)
 		self.assertIn(db.Book[9], bs)
 		
+		bs = getBooksUsedIn(5, booklist=True)
+		self.assertEqual(len(bs), 2)
+		self.assertIn(db.Book[1], bs)
+		self.assertIn(db.Book[6], bs)
+		
 		bs = getBooksUsedIn(6)
 		self.assertEqual(len(bs), 2)
 		self.assertIn(db.Book[1], bs)
@@ -345,6 +384,12 @@ class Tests(unittest.TestCase):
 		self.assertIn(db.Book[7], bs)
 		self.assertIn(db.Book[8], bs)
 		
+		bs = getBooksUsedIn(11, booklist=True)
+		self.assertEqual(len(bs), 3)
+		self.assertIn(db.Book[5], bs)
+		self.assertIn(db.Book[7], bs)
+		self.assertIn(db.Book[8], bs)
+		
 		bs = getBooksUsedIn(13)
 		self.assertEqual(len(bs), 0)
 
@@ -357,6 +402,11 @@ class Tests(unittest.TestCase):
 		self.assertIn(db.Book[1], bs)
 		self.assertIn(db.Book[6], bs)
 		self.assertIn(db.Book[9], bs)
+		
+		bs = getBooksStartedIn(5, booklist=True)
+		self.assertEqual(len(bs), 2)
+		self.assertIn(db.Book[1], bs)
+		self.assertIn(db.Book[6], bs)
 		
 		bs = getBooksStartedIn(6)
 		self.assertEqual(len(bs), 0)
@@ -372,6 +422,11 @@ class Tests(unittest.TestCase):
 		self.assertIn(db.Book[5], bs)
 		self.assertIn(db.Book[7], bs)
 		
+		bs = getBooksStartedIn(11, booklist=True)
+		self.assertEqual(len(bs), 2)
+		self.assertIn(db.Book[5], bs)
+		self.assertIn(db.Book[7], bs)
+		
 	@db_session
 	def test_getBooksFinishedIn(self):
 		Tests.prepare()
@@ -379,6 +434,9 @@ class Tests(unittest.TestCase):
 		bs = getBooksFinishedIn(5)
 		self.assertEqual(len(bs), 1)
 		self.assertIn(db.Book[9], bs)
+		
+		bs = getBooksFinishedIn(5, booklist=True)
+		self.assertEqual(len(bs), 0)
 		
 		bs = getBooksFinishedIn(6)
 		self.assertEqual(len(bs), 1)
@@ -392,6 +450,12 @@ class Tests(unittest.TestCase):
 		bs = getBooksFinishedIn(12)
 		self.assertEqual(len(bs), 4)
 		self.assertIn(db.Book[4], bs)
+		self.assertIn(db.Book[5], bs)
+		self.assertIn(db.Book[7], bs)
+		self.assertIn(db.Book[8], bs)
+		
+		bs = getBooksFinishedIn(12, booklist=True)
+		self.assertEqual(len(bs), 3)
 		self.assertIn(db.Book[5], bs)
 		self.assertIn(db.Book[7], bs)
 		self.assertIn(db.Book[8], bs)
@@ -459,7 +523,7 @@ C.C. Buchner"""
 		addSubjects("Mathematik\tMa")
 		addPublishers("Klett")
 		
-		raw = "Mathematik Live\t0815-1234\t23,95 €\tKlett\t11\t12\tMa\tTrue\tFalse\tFalse\tFalse\tLehrbuch"
+		raw = "Mathematik Live\t0815-1234\t23,95 €\tKlett\t11\t12\tMa\tTrue\tFalse\tFalse\tFalse\tFalse\tLehrbuch"
 		addBook(raw)
 		
 		b = db.Book[1]
@@ -474,13 +538,14 @@ C.C. Buchner"""
 		self.assertFalse(b.advanced)
 		self.assertFalse(b.workbook)
 		self.assertFalse(b.classsets)
+		self.assertFalse(b.for_loan)
 		self.assertEqual(b.comment, "Lehrbuch")
 	
 	@db_session
 	def test_canAddBookWithMinimalInformation(self):
 		addPublishers("Klett")
 		
-		raw = "Das Große Tafelwerk\t\t\tKlett\t7\t12\t\t\t\t\t\t"
+		raw = "Das Große Tafelwerk\t\t\tKlett\t7\t12\t\t\t\t\t\t\t"
 		addBook(raw)
 		
 		b = db.Book[1]
@@ -492,16 +557,17 @@ C.C. Buchner"""
 		self.assertEqual(b.outGrade, 12)
 		self.assertFalse(b.novices)
 		self.assertFalse(b.advanced)
+		self.assertTrue(b.for_loan)
 
 	@db_session
 	def test_addBooks(self):		
 		addPublishers("Klett\nCornelsen")
 		addSubjects("Mathemati\tMa\nEnglisch\tEng")
 		
-		raw = """Mathematik Live\t0815-1234\t2395\tKlett\t11\t12\tMa\tTrue\tFalse\tFalse\tFalse\t
+		raw = """Mathematik Live\t0815-1234\t2395\tKlett\t11\t12\tMa\tTrue\tFalse\tFalse\tFalse\tTrue\t
 Tafelwerk\t12-52-6346\t1999\tKlett\t7\t12\t\tFalse\tFalse\tFalse\tFalse\tfächerübergreifend
-Englisch Oberstufe\t433-5213-6246\t4995\tCornelsen\t11\t12\tEng\tTrue\tTrue\tFalse\tFalse\t
-Das Große Tafelwerk\t\t\tKlett\t7\t12\t\tFalse\tFalse\tFalse\tFalse\tfächerübergreifend"""
+Englisch Oberstufe\t433-5213-6246\t4995\tCornelsen\t11\t12\tEng\tTrue\tTrue\tFalse\tFalse\tTrue\t
+Das Große Tafelwerk\t\t\tKlett\t7\t12\t\tFalse\tFalse\tFalse\tFalse\tTrue\tfächerübergreifend"""
 	
 		addBooks(raw)
 		

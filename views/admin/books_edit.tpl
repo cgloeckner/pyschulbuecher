@@ -81,6 +81,11 @@
 				<label for="classsets">als Klassensätze</label></td>
 		</tr>
 		<tr>
+			<td></td>
+			<td><input type="checkbox" name="for_loan" id="for_loan" {{bool2checked(b.for_loan)}} />
+				<label for="for_loan">auf Bücherzettel</label></td>
+		</tr>
+		<tr>
 			<td>Kommentare:</td>
 			<td><input type="text" name="comment" value="{{b.comment}}" /></td>
 		</tr>
