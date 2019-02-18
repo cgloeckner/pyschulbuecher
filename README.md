@@ -1,12 +1,23 @@
 # schoollib
 Python-based school book library software
 
-pip3 install pony
-pip3 install bottle
-pip3 install latex
-might need pip3 install six --upgrade
+## Requirements
 
-Test suite requires pip3 install webtest
+Note that the current version is only tested on Linux-based systems. Especially the test suite (at least at the moment) won't function on Windows-based Systems.
 
-Requires eurosym package (ubuntu: texlive-fonts-recommended)
-Requires makecell package (ubuntu: texlive-latex-extra)
+### Running the System
+
+Required Python Modules (e.g. through `pip`)
+* pony
+* bottle
+* latex
+(might need `pip install six --upgrade`)
+
+Also a LaTeX-installation is required including
+* Requires eurosym package (ubuntu: texlive-fonts-recommended)
+* Requires makecell package (ubuntu: texlive-latex-extra)
+
+### Running the Test Suite
+
+Required Python Modules (e.g. through `pip`)
+* webtest
