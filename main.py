@@ -19,6 +19,10 @@ app = default_app()
 app.catchall = not debug
 app.install(db_session)
 
+@get('/static/<fname>')
+def static_files(fname):
+	return static_file(fname, root='./static')
+
 @get('/')
 @view('home')
 def landingpage():

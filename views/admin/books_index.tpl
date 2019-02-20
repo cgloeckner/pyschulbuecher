@@ -5,6 +5,12 @@
 %include("header")
 <h1>Übersicht Bücher</h1>
 
+<input type="checkbox" id="show_regular" onClick="showBooks('regular');" checked /><label for="show_regular">Lehrbücher</label>
+<input type="checkbox" id="show_workbooks" onClick="showBooks('workbook');" checked /><label for="show_workbooks">Arbeitshefte</label>
+<input type="checkbox" id="show_classsets" onClick="showBooks('classsets');" checked /><label for="show_classsets">Klassensätze</label>
+
+<br /><br />
+
 %for s in books.getSubjects():
 <a href="#{{s.tag}}">{{s.tag}}</a> &nbsp;
 %end
@@ -38,7 +44,15 @@
 		<th></th>
 	</tr>	
 	%end
-	<tr>
+	%if b.workbook:
+	<tr class="workbook">
+	%else:
+		%if b.classsets:
+	<tr class="classsets">
+		%else:
+	<tr class="regular">
+		%end
+	%end
 		<td>{{b.title}}</td>
 		<td>{{b.isbn}}</td>
 	%if b.price is not None:

@@ -4,6 +4,8 @@
 <html>
 <head>
 	<meta charset="UTF-8"> 
+	<script src="/static/jquery-3.3.1.min.js"></script>
+	<script src="/static/admin.js"></script> 
 	<title>Schulbuchverwaltung</title>
 <style>
 body {background-color: white;}
