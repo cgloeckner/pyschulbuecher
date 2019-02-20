@@ -1,17 +1,18 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+from pony import orm
+
 from db.orm import db
 
 __author__ = "Christian Glöckner"
-
 
 def getClassGrades():
 	"""Return a list of grades for which classes exist.
 	"""
 	return select(c.grade
 		for c in db.Class
-	)
+	).order_by(lambda g: g)
 
 def getClassTags(grade: int):
 	"""Return a list of tags for which classes exist in the given grade.
@@ -19,7 +20,7 @@ def getClassTags(grade: int):
 	return select(c.tag
 		for c in db.Class
 			if c.grade == grade
-	)
+	).order_by(lambda t: t)
 
 def getClasses():
 	"""Return a list of all existing classes.
@@ -36,15 +37,102 @@ def getClassesByGrade(grade: int):
 			if c.grade == grade
 	)
 
+def getClassesCount():
+	"""Return total number of classes."
+	"""
+	return db.Class.select().count()
+
+def getStudentsIn(grade: int, tag: str):
+	"""Return all students in the given grade.
+	"""
+	return db.Class.get(grade=grade, tag=tag).student.order_by(lambda s: s.person.firstname).order_by(lambda s: s.person.name)
+
+def parseClass(raw: str):
+	"""Parse class grade and tag from a raw string.
+	"""
+	grade = raw[:2]
+	tag   = raw.split(grade)[1].lower()
+	return int(grade), tag
+
+def addClass(raw: str):
+	"""Add a new class from a ggiven raw string. This string contains the
+	grade (with ALWAYS two characters, like '08') followed by the class tag
+	(e.g. '08a'), where uppercase characters are ignored. No teacher is
+	assigned to this class.
+	"""
+	# split data
+	grade, tag = parseClass(raw)
+	
+	existing = select(c for c in db.Class if c.grade == grade and c.tag == tag)
+	if existing.count() > 0:
+		raise orm.core.ConstraintError('Class %s aready existing' % raw)
+	
+	db.Class(grade=grade, tag=tag)
+
+def addClasses(raw: str):
+	"""Add classes from a given raw string dump, assuming all students being
+	separated by newlines. Each line is handled by addClass().
+	"""
+	for data in raw.split('\n'):
+		if len(data) > 0:
+			addClass(data)
+
+def updateClass(id: int, grade: int, tag: str, teacher_id: int):
+	# try to query class with grade and tag
+	cs = select(c for c in db.Class if c.grade == grade and c.tag == tag)
+	if cs.count() > 0:
+		raise orm.core.ConstraintError('Ambiguous class %d%s' % (grade, tag))
+	
+	# update class
+	c = db.Class[id]
+	c.grade = grade
+	c.tag   = tag
+	print("TODO: orga.py -> updateClass() -> c.teacher = ... using teacher_id")
+
+def getStudentCount():
+	"""Return total number of students.
+	"""
+	return db.Student.select().count()
+
+def addStudent(raw: str):
+	"""Add a new students from a given raw string dump, assuming all
+	information being separated by tabs in the following order:
+		Class, Name, FirstName
+	Note that the Class must contain both, grade and tag (e.g. `08A` or
+	`11ABC`). If a class does not exist, it needs to be added in the first
+	place. Uppercase class tags are ignored.
+	"""
+	# split data
+	data = raw.split('\t')
+	grade, tag = parseClass(data[0])
+	name, firstname = data[1], data[2]
+	
+	# query referenced class
+	class_ = db.Class.get(grade=grade, tag=tag)
+	
+	try:
+		# create actual student
+		db.Student(person=db.Person(name=name, firstname=firstname), class_=class_)
+	except ValueError as e:
+		raise orm.core.ConstraintError(e)
+
+def addStudents(raw: str):
+	"""Add students from a given raw string dump, assuming all students being
+	separated by newlines. Each line is handled by addStudent().
+	"""
+	for data in raw.split('\n'):
+		if len(data) > 0:
+			addStudent(data)
+
 def getStudentsLike(name: str="", firstname: str=""):
 	"""Return a list of students by name and firstname using partial matching.
 	Both parameters default to an empty string if not specified.
 	"""
 	return select(s
 		for s in db.Student
-			if name in s.person.name
-			and firstname in s.person.firstname
-	)
+			if name.lower() in s.person.name.lower()
+			and firstname.lower() in s.person.firstname.lower()
+	).order_by(lambda s: s.person.firstname).order_by(lambda s: s.person.name).order_by(lambda s: s.class_.tag).order_by(lambda s: s.class_.grade)
 
 def advanceSchoolYear(last_grade: int, first_grade: int, new_tags: list):
 	"""Advance all students and classes to the next school year.
@@ -82,17 +170,17 @@ class Tests(unittest.TestCase):
 		# create teachers
 		t1 = db.Teacher(
 			person=db.Person(name='Glöckner', firstname='Christian'),
-			tag='Glö'
+			tag='glö'
 		)
 		t2 = db.Teacher(
 			person=db.Person(name='Thiele', firstname='Felix'),
-			tag='Thi'
+			tag='THI'
 		)
 		
 		# create some classes
 		c1 = db.Class(grade=8, tag='a', teacher=t2)
 		c2 = db.Class(grade=12, tag=t1.tag, teacher=t1)
-		c3 = db.Class(grade=12, tag='Lip')
+		c3 = db.Class(grade=12, tag='lip')
 		
 		# create students
 		s1 = db.Student(
@@ -115,6 +203,73 @@ class Tests(unittest.TestCase):
 		db.drop_all_tables(with_all_data=True)
 
 	@db_session
+	def test_getClassesCount(self):
+		Tests.prepare()
+		
+		n = getClassesCount()
+		self.assertEqual(n, 3)
+
+	@db_session
+	def test_addClasses_regular_case(self):
+		Tests.prepare()
+		
+		raw = "10b\n05a\n12Foo\n\n"
+		addClasses(raw)
+		
+		sds = list(db.Class.select())
+		self.assertEqual(len(sds), 6)
+		self.assertEqual(sds[3].grade, 10)
+		self.assertEqual(sds[4].grade, 5)
+		self.assertEqual(sds[5].grade, 12)
+		self.assertEqual(sds[3].tag, 'b')
+		self.assertEqual(sds[4].tag, 'a')
+		self.assertEqual(sds[5].tag, 'foo')
+		
+	@db_session
+	def test_addClasses_already_existing(self):
+		Tests.prepare()
+		
+		raw = "10B\n08a\n12Foo\n\n"
+		with self.assertRaises(orm.core.ConstraintError):
+			addClasses(raw)
+
+	@db_session
+	def test_getStudentCount(self):
+		Tests.prepare()
+		
+		n = getStudentCount()
+		self.assertEqual(n, 3)
+
+	@db_session
+	def test_addStudents_for_existing_classes(self):
+		Tests.prepare()
+		
+		raw = """08A	Schneider	Petra
+12LIP	Mustermann	Thomas
+"""
+		addStudents(raw)
+		
+		sds = list(db.Student.select())
+		self.assertEqual(len(sds), 5)
+		self.assertEqual(sds[3].class_,    db.Class.get(grade=8, tag='a'))
+		self.assertEqual(sds[4].class_,    db.Class.get(grade=12, tag='lip'))
+		self.assertEqual(sds[3].person.name,      'Schneider')
+		self.assertEqual(sds[3].person.firstname, 'Petra')
+		self.assertEqual(sds[4].person.name,      'Mustermann')
+		self.assertEqual(sds[4].person.firstname, 'Thomas')
+
+	@db_session
+	def test_addStudents_for_invalid_class(self):
+		Tests.prepare()
+		
+		raw = """08A	Schneider	Petra
+10C	Sonstwer	Beispiel
+12LIP	Mustermann	Thomas
+"""
+		with self.assertRaises(orm.core.ConstraintError):
+			addStudents(raw)
+		
+	@db_session
 	def test_getClassGrades(self):
 		Tests.prepare()
 		
@@ -129,8 +284,8 @@ class Tests(unittest.TestCase):
 		
 		tgs = getClassTags(12)
 		self.assertEqual(len(tgs), 2)
-		self.assertIn('Glö', tgs)
-		self.assertIn('Lip', tgs)
+		self.assertIn('glö', tgs)
+		self.assertIn('lip', tgs)
 
 		tgs = getClassTags(8)
 		self.assertEqual(len(tgs), 1)
@@ -185,6 +340,12 @@ class Tests(unittest.TestCase):
 		st = getStudentsLike(name='ch', firstname='ia')
 		self.assertEqual(len(st), 1)
 		self.assertIn(db.Student[2], st)
+		
+		# search should ignore cases
+		st = getStudentsLike(name='sch', firstname='A')
+		self.assertEqual(len(st), 2)
+		self.assertIn(db.Student[2], st)
+		self.assertIn(db.Student[3], st)
 
 	@db_session
 	def test_advanceSchoolYear(self):

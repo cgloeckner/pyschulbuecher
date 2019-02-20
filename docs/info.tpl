@@ -35,7 +35,7 @@ bitte f\"ullen Sie nach Ihren M\"oglichkeiten und W\"unschen den B\"ucherzettel 
 	\item Wir \textbf{empfehlen} B\"ucher, die \"uber viele Schuljahre hinweg verwendet werden (z.B. \textbf{Atlas}, \textbf{Liederbuch}, \textbf{Tafelwerk}) oder in die zu \"Ubersetzungszwecken hineingeschrieben wird (Fremdsprachen), zu \textbf{kaufen}, da sie einem starken Verschleiß unterliegen.
 	\item Bitte setzen Sie in jeder Zeile \textbf{genau ein Kreuz} (nicht mit Bleistift!). Erklärung der Abkürzungen:
 	\begin{description}
-		\item[V] Vorhanden (Dieses Buch ist bereits in Ihrem Besitz oder Sie m\"ochten es kaufen. Bitte beachten Sie die angegebene ISBN.)
+		\item[V/K] Vorhanden oder Kauf (Dieses Buch ist bereits in Ihrem Besitz oder Sie m\"ochten es kaufen. Bitte beachten Sie die angegebene ISBN.)
 		\item[F] Freiexemplar (Dieses Buch m\"ochten Sie von der Schule, nach den geltenden Bestimmungen des Landes Thüringen, ausleihen.)
 	\end{description}
 	\item Bitte \textbf{streichen} Sie die Zeilen der Kurse oder F\"acher, die \textbf{nicht belegt werden} (z.B. Wahlkurse, Ethik / Religion, Fremdsprache).

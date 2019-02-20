@@ -12,12 +12,12 @@
 %if workbook:
 	\begin{longtable}{ | c | p{6cm} | p{2.8cm} | c | r | }
 %else:
-	\begin{longtable}{ | c | p{5cm} | p{2cm} | c | r | p{1cm} | p{1cm} | }
+	\begin{longtable}{ | c | p{4.5cm} | p{2cm} | c | r | p{1cm} | p{1cm} | }
 %end
     \hline
 		\textbf{Fach} & \textbf{Titel} & \textbf{Verlag} & \textbf{ISBN} & \textbf{Preis}
 %if not workbook:
- & \textbf{\quad V} & \textbf{\quad F}
+ & \textbf{\enskip V/K} & \textbf{\quad F}
 %end
 \\ \hline
 %for b in bs:
@@ -82,5 +82,4 @@
 	%end
 %end
 \end{longtable}
-
 

@@ -140,6 +140,83 @@ def books_delete(id):
 
 # -----------------------------------------------------------------------------
 
+@get('/admin/classes')
+@view('admin/classes_index')
+def classes_index():
+	return dict()
+
+@post('/admin/classes/add')
+@errorhandler
+@view('success')
+def classes_add_post():
+	orga.addClasses(request.forms.data)
+	return dict()
+
+@get('/admin/classes/edit/<id:int>')
+@view('admin/classes_edit')
+def classes_edit(id):
+	return dict(c=db.Class[id])
+
+@post('/admin/classes/edit/<id:int>')
+@errorhandler
+@view('success')
+def classes_edit_post(id):
+	orga.updateClass(id, int(request.forms.grade), request.forms.tag,
+		int(request.forms.teacher_id))
+	return dict()
+
+@post('/admin/classes/delete/<id:int>')
+@errorhandler
+@view('success')
+def classes_delete_post(id):
+	db.Class[id].delete()	
+	return dict()
+
+# -----------------------------------------------------------------------------
+
+@get('/admin/students')
+@view('admin/students_index')
+def students_index():
+	return dict()
+
+@post('/admin/students/add')
+@errorhandler
+@view('success')
+def students_add_post():
+	orga.addStudents(request.forms.data)
+	return dict()
+
+@post('/admin/students/search')
+@errorhandler
+@view('admin/students_search')
+def students_search_post():
+	data = orga.getStudentsLike(request.forms.name, request.forms.firstname)
+	return dict(data=data)
+
+@get('/admin/students/edit/<id:int>')
+@view('admin/students_edit')
+def students_edit(id):
+	return dict(s=db.Student[id])
+
+@post('/admin/students/edit/<id:int>')
+@errorhandler
+@view('success')
+def students_edit_post(id):
+	s = db.Student[id]
+	s.person.name = request.forms.name
+	s.person.firstname = request.forms.firstname
+	s.class_ = db.Class[request.forms.class_id]
+	return dict()
+
+@post('/admin/students/delete/<id:int>')
+@errorhandler
+@view('success')
+def students_delete_post(id):
+	db.Student[id].delete()	
+	return dict()
+
+# -----------------------------------------------------------------------------
+
 @get('/admin/settings')
 @view('admin/settings')
 def settings_form():
@@ -180,22 +257,26 @@ def admin_booklist_download(fname):
 def booklist_index():
 	# fetch data
 	data = list()
+	full = False
 	for f in os.listdir('export'):
 		if not f.endswith('.pdf'):
 			# ignore everything else (including tex/ subdir)
 			continue
-		grade = int(f.split('Bücherzettel')[1].split('_')[0].split('.pdf')[0])
-		stat  = os.stat(os.path.join('export', f))
-		data.append({
-			"grade" : grade,
-			"name"  : f,
-			"new"   : '_Neuzugänge' in f,
-			"size"  : stat.st_size,
-			"date"  : datetime.utcfromtimestamp(int(stat.st_mtime)).strftime('%Y-%m-%d %H:%M:%S')
-		})
+		if 'Komplett' in f:
+			full = True
+		else:
+			grade = int(f.split('Bücherzettel')[1].split('_')[0].split('.pdf')[0])
+			stat  = os.stat(os.path.join('export', f))
+			data.append({
+				"grade" : grade,
+				"name"  : f,
+				"new"   : '_Neuzugänge' in f,
+				"size"  : stat.st_size,
+				"date"  : datetime.utcfromtimestamp(int(stat.st_mtime)).strftime('%Y-%m-%d %H:%M:%S')
+			})
 	# sort by grade
 	data.sort(key=lambda d: d["grade"])
-	return dict(data=data)
+	return dict(data=data, full=full)
 
 @get('/admin/booklist/generate')
 def booklist_generate():
@@ -212,6 +293,10 @@ def booklist_generate():
 		if g > 5:
 			yield ' und Neuzugänge'
 			booklist(g, new_students=True)
+	
+	# merging booklists
+	booklist.merge()
+	
 	print('Done')
 	d = time.time() - d
 	
@@ -720,6 +805,145 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 
 	# -------------------------------------------------------------------------
 	
+	@db_session
+	def test_classes_gui(self):
+		Tests.prepare()
+		
+		# show classes gui
+		ret = self.app.get('/admin/classes')
+		self.assertEqual(ret.status_int, 200)
+	
+	@db_session
+	def test_classes_add(self):
+		Tests.prepare()
+		
+		# add classes
+		args = {"data": "09a\n05c\n\n11foo\n\n"}
+		ret = self.app.post('/admin/classes/add', args)
+		self.assertEqual(ret.status_int, 200)
+		
+		# test new classes
+		self.assertEqual(db.Class[4].grade, 9)
+		self.assertEqual(db.Class[5].grade, 5)
+		self.assertEqual(db.Class[6].grade, 11)
+		self.assertEqual(db.Class[4].tag, 'a')
+		self.assertEqual(db.Class[5].tag, 'c')
+		self.assertEqual(db.Class[6].tag, 'foo')
+		
+		# show classes gui
+		ret = self.app.get('/admin/books')
+		self.assertEqual(ret.status_int, 200)
+
+	@db_session
+	def test_classes_edit(self):
+		Tests.prepare()
+		
+		# edit class
+		args = {"grade": 5, "tag": "d", "teacher_id": 1}
+		ret = self.app.post('/admin/classes/edit/1', args)
+		self.assertEqual(ret.status_int, 200)
+		
+		# test changed class
+		cs = db.Class[1]
+		self.assertEqual(cs.grade, 5)
+		self.assertEqual(cs.tag, "d")
+		self.assertEqual(cs.teacher, db.Teacher[1]) # not yet implemented
+	
+	@db_session
+	def test_classes_edit_invalid_class(self):
+		Tests.prepare()
+		
+		# edit class
+		args = {"grade": 8, "tag": "a", "teacher_id": 0}
+		ret = self.app.post('/admin/classes/edit/2', args, expect_errors=True)
+		self.assertEqual(ret.status_int, 400)
+
+	@db_session
+	def test_classes_delete(self):
+		Tests.prepare()
+		
+		# add empty class
+		args = {"data": "09a"}
+		ret = self.app.post('/admin/classes/add', args)
+		self.assertEqual(ret.status_int, 200)
+		
+		# delete class
+		ret = self.app.post('/admin/classes/delete/4')
+		self.assertEqual(ret.status_int, 200)
+		
+		# try access deleted class
+		with self.assertRaises(orm.core.ObjectNotFound):
+			cs = db.Class[4]
+	
+	# -----------------------------------------------------------------------------
+	
+	@db_session
+	def test_students_gui(self):
+		Tests.prepare()
+		
+		# show students gui
+		ret = self.app.get('/admin/students')
+		self.assertEqual(ret.status_int, 200)
+	
+	@db_session
+	def test_students_add(self):
+		Tests.prepare()
+		
+		# add students
+		args = {"data": "08a\tMustermann\tJürgen\n\n12glö\ta\tb\n"}
+		ret = self.app.post('/admin/students/add', args)
+		self.assertEqual(ret.status_int, 200)
+		
+		# test new students
+		self.assertEqual(db.Student[4].person.name,      "Mustermann")
+		self.assertEqual(db.Student[4].person.firstname, "Jürgen")
+		self.assertEqual(db.Student[4].class_, db.Class.get(grade=8, tag='a'))
+		self.assertEqual(db.Student[5].person.name,      "a")
+		self.assertEqual(db.Student[5].person.firstname, "b")
+		self.assertEqual(db.Student[5].class_, db.Class.get(grade=12, tag='glö'))
+		
+		# show students gui
+		ret = self.app.get('/admin/students')
+		self.assertEqual(ret.status_int, 200)
+
+	@db_session
+	def test_students_search(self):
+		Tests.prepare()
+		
+		# search for all students
+		args = {"name": "", "firstname": ""}
+		ret = self.app.post('/admin/students/search', args)
+		self.assertEqual(ret.status_int, 200)
+	
+	@db_session
+	def test_students_edit(self):
+		Tests.prepare()
+		
+		# edit student
+		args = {"name": "A", "firstname": "B", "class_id": 2}
+		ret = self.app.post('/admin/students/edit/1', args)
+		self.assertEqual(ret.status_int, 200)
+		
+		# test changed student
+		st = db.Student[1]
+		self.assertEqual(st.person.name, 'A')
+		self.assertEqual(st.person.firstname, 'B')
+		self.assertEqual(st.class_, db.Class[2])
+	
+	@db_session
+	def test_students_delete(self):
+		Tests.prepare()
+		
+		# delete class
+		ret = self.app.post('/admin/students/delete/1')
+		self.assertEqual(ret.status_int, 200)
+		
+		# tra access deleted student
+		with self.assertRaises(orm.core.ObjectNotFound):
+			cs = db.Student[1]
+	
+	# -----------------------------------------------------------------------------
+
 	@db_session
 	def test_settings_ui(self):
 		ret = self.app.get('/admin/settings')

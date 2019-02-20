@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os, json
+import PyPDF2
 
 from bottle import template
 from latex import build_pdf
@@ -62,6 +63,8 @@ class BooklistPdf(object):
 		# load settings
 		self.s = Settings()
 		self.s.load_from(settings_handle)
+		# merged pdf
+		self.merger = PyPDF2.PdfFileMerger()
 	
 	def __call__(self, grade: int, new_students: bool=False):
 		"""Generate booklist pdf file for the given grade. A separate booklist
@@ -103,6 +106,16 @@ class BooklistPdf(object):
 		fname = os.path.join(self.export, 'Bücherzettel%d%s.pdf' % (grade, suffix))
 		pdf = build_pdf(tex)
 		pdf.save_to(fname)
+		
+		# add to merge-PDF
+		self.merger.append(fname)
+
+	def merge(self):
+		# save merge-PDF
+		fname = os.path.join(self.export, 'BücherzettelKomplett.pdf')
+		
+		with open(fname, 'wb') as h:
+			self.merger.write(h)
 
 # -----------------------------------------------------------------------------
 

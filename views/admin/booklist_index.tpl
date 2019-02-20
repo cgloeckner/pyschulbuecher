@@ -4,6 +4,12 @@
 
 <a href="/admin/booklist/generate" target="_blank">generieren</a>
 
+<hr />
+
+%if full:
+<a href="/admin/booklist/download/BücherzettelKomplett.pdf">als eine Datei</a>
+%end
+
 <table>
 	<tr>
 		<th>Datei</th>

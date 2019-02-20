@@ -1,3 +1,9 @@
+Class List PDF Print with Books
+	--> Booklist Preview (temp chance grade)
+
+Implement Teacher Index/Add/Edit/Delete
+	--> complete class edit (teacher_id)
+
 Write Queries as Usecase Functions
 	db/loans.py --> loaning stuff (all about loans)
 

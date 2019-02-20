@@ -39,7 +39,7 @@ def grade_list(grade):
 	return dict()
 
 
-import admin
+import admin, classes
 
 	
 run(host='localhost', reloader=True, debug=debug, port=8080)
