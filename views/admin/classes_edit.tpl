@@ -23,7 +23,20 @@
 		</tr>
 		<tr>
 			<td>Klassenlehrer</td>
-			<td>TODO: SELECT-OPTION WITH TEACHER LIST</td>
+			<td><select name="teacher_id">
+				<option value="0"\\
+%if c.teacher is None:
+ selected\\
+%end
+>-</option>
+%for t in orga.getTeachers():
+				<option value="{{t.id}}"\\
+	%if c.teacher == t:
+ selected\\
+	%end
+>{{t.tag.upper()}} {{t.person.name}}, {{t.person.firstname}}</option>
+%end	
+				</select></td>
 		</tr>
 		<tr>
 			<td></td>

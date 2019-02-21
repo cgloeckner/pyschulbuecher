@@ -22,7 +22,7 @@
 %end
 </table>
 
-<h2>Neue Verläge hinzufügen</h2>
+<h2>Neue Verlage hinzufügen</h2>
 <form action="/admin/publishers/add" id="publishers" method="post">
 	<textarea rows="5" cols="50" name="data" form="publishers"></textarea><br />
 	<input type="submit" value="Hinzufügen" />

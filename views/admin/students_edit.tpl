@@ -23,7 +23,7 @@
 		%if s.class_ == c:
  selected\\
 		%end
->{{grade}}{{tag}}</option>
+>{{c.toString()}}</option>
 	%end
 %end
 			</select></td>

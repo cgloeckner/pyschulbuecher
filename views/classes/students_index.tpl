@@ -1,8 +1,9 @@
 %import db.orga as orga
 
 %include("header")
-<h1>Übersicht Klasse {{grade}}{{tag}}</h1>
-<a href="/admin/classes/edit/{{orga.db.Class.get(grade=grade, tag=tag).id}}">Bearbeiten</a>
+%c = orga.db.Class.get(grade=grade, tag=tag)
+<h1>Übersicht Klasse {{c.toString()}}</h1>
+<a href="/admin/classes/edit/{{c.id}}">Bearbeiten</a>
 
 %i = 1
 <table>

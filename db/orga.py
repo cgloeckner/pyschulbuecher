@@ -47,6 +47,8 @@ def getStudentsIn(grade: int, tag: str):
 	"""
 	return db.Class.get(grade=grade, tag=tag).student.order_by(lambda s: s.person.firstname).order_by(lambda s: s.person.name)
 
+# -----------------------------------------------------------------------------
+
 def parseClass(raw: str):
 	"""Parse class grade and tag from a raw string.
 	"""
@@ -81,13 +83,20 @@ def updateClass(id: int, grade: int, tag: str, teacher_id: int):
 	# try to query class with grade and tag
 	cs = select(c for c in db.Class if c.grade == grade and c.tag == tag)
 	if cs.count() > 0:
-		raise orm.core.ConstraintError('Ambiguous class %d%s' % (grade, tag))
+		assert(cs.count() == 1)
+		if cs.get().id != id:
+			raise orm.core.ConstraintError('Ambiguous class %d%s' % (grade, tag))
 	
 	# update class
 	c = db.Class[id]
-	c.grade = grade
-	c.tag   = tag
-	print("TODO: orga.py -> updateClass() -> c.teacher = ... using teacher_id")
+	c.grade   = grade
+	c.tag     = tag
+	if teacher_id > 0:
+		c.teacher = db.Teacher[teacher_id]
+	else:
+		c.teacher = None
+
+# -----------------------------------------------------------------------------
 
 def getStudentCount():
 	"""Return total number of students.
@@ -134,6 +143,45 @@ def getStudentsLike(name: str="", firstname: str=""):
 			and firstname.lower() in s.person.firstname.lower()
 	).order_by(lambda s: s.person.firstname).order_by(lambda s: s.person.name).order_by(lambda s: s.class_.tag).order_by(lambda s: s.class_.grade)
 
+# -----------------------------------------------------------------------------
+
+def getTeacherCount():
+	"""Return total number of teachers.
+	"""
+	return db.Teacher.select().count()
+
+def getTeachers():
+	"""Return all teachers sorted.
+	"""
+	return select(t for t in db.Teacher).order_by(lambda t: t.person.firstname).order_by(lambda t: t.person.name).order_by(lambda t: t.tag)
+
+def addTeacher(raw: str):
+	"""Add a new teacher from a given raw string dump, assuming all
+	information being separated by tabs in the following order:
+		Tag, Name, FirstName
+	Uppercase tags are ignored.
+	"""
+	# split data
+	data = raw.split('\t')
+	tag, name, firstname = data[0], data[1], data[2]
+	tag = tag.lower()
+	
+	try:
+		# create actual teacher
+		db.Teacher(person=db.Person(name=name, firstname=firstname), tag=tag)
+	except ValueError as e:
+		raise orm.core.ConstraintError(e)
+
+def addTeachers(raw: str):
+	"""Add teachers from a given raw string dump, assuming all teachers being
+	separated by newlines. Each line is handled by addTeacher().
+	"""
+	for data in raw.split('\n'):
+		if len(data) > 0:
+			addTeacher(data)
+
+# -----------------------------------------------------------------------------
+
 def advanceSchoolYear(last_grade: int, first_grade: int, new_tags: list):
 	"""Advance all students and classes to the next school year.
 	All classes of the last_grade are dropped, so those students remain without
@@ -174,7 +222,7 @@ class Tests(unittest.TestCase):
 		)
 		t2 = db.Teacher(
 			person=db.Person(name='Thiele', firstname='Felix'),
-			tag='THI'
+			tag='thi'
 		)
 		
 		# create some classes
@@ -268,7 +316,45 @@ class Tests(unittest.TestCase):
 """
 		with self.assertRaises(orm.core.ConstraintError):
 			addStudents(raw)
+	
+	@db_session
+	def test_getTeacherCount(self):
+		Tests.prepare()
 		
+		n = getTeacherCount()
+		self.assertEqual(n, 2)
+
+	@db_session
+	def test_addTeachers_for_existing_classes(self):
+		Tests.prepare()
+		
+		raw = """LIP	Lippmann	Iris
+bsp	Beispiel	Peter
+
+Mus	Mustermann	Max
+"""
+		addTeachers(raw)
+		
+		ts = list(db.Teacher.select())
+		self.assertEqual(len(ts), 5)
+		self.assertEqual(ts[2].tag, 'lip')
+		self.assertEqual(ts[3].tag, 'bsp')
+		self.assertEqual(ts[4].tag, 'mus')
+		self.assertEqual(ts[2].person.name,      'Lippmann')
+		self.assertEqual(ts[2].person.firstname, 'Iris')
+		self.assertEqual(ts[3].person.name,      'Beispiel')
+		self.assertEqual(ts[3].person.firstname, 'Peter')
+		self.assertEqual(ts[4].person.name,      'Mustermann')
+		self.assertEqual(ts[4].person.firstname, 'Max')
+
+	@db_session
+	def test_addTeachers_with_invalid_tag(self):
+		Tests.prepare()
+		
+		raw = "glö	A	B"
+		with self.assertRaises(orm.core.CacheIndexError):
+			addTeachers(raw)
+	
 	@db_session
 	def test_getClassGrades(self):
 		Tests.prepare()

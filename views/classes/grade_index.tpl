@@ -12,7 +12,7 @@
 %for tag in orga.getClassTags(grade):
 	%c = orga.db.Class.get(grade=grade, tag=tag)
 	<tr>
-		<td><a href="/classes/{{grade}}/{{tag}}">{{grade}}{{tag}}</a></td>
+		<td><a href="/classes/{{grade}}/{{tag}}">{{c.toString()}}</a></td>
 	%if c.teacher is None:
 		<td>nicht zugewiesen</td>
 	%else:

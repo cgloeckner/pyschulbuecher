@@ -217,6 +217,42 @@ def students_delete_post(id):
 
 # -----------------------------------------------------------------------------
 
+@get('/admin/teachers')
+@view('admin/teachers_index')
+def teachers_index():
+	return dict()
+
+@post('/admin/teachers/add')
+@errorhandler
+@view('success')
+def teachers_add_post():
+	orga.addTeachers(request.forms.data)
+	return dict()
+
+@get('/admin/teachers/edit/<id:int>')
+@view('admin/teachers_edit')
+def students_edit(id):
+	return dict(t=db.Teacher[id])
+
+@post('/admin/teachers/edit/<id:int>')
+@errorhandler
+@view('success')
+def teachers_edit_post(id):
+	s = db.Teacher[id]
+	s.person.name = request.forms.name
+	s.person.firstname = request.forms.firstname
+	s.tag = request.forms.tag.lower()
+	return dict()
+
+@post('/admin/teachers/delete/<id:int>')
+@errorhandler
+@view('success')
+def teachers_delete_post(id):
+	db.Teacher[id].delete()	
+	return dict()
+
+# -----------------------------------------------------------------------------
+
 @get('/admin/settings')
 @view('admin/settings')
 def settings_form():
@@ -847,7 +883,22 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 		cs = db.Class[1]
 		self.assertEqual(cs.grade, 5)
 		self.assertEqual(cs.tag, "d")
-		self.assertEqual(cs.teacher, db.Teacher[1]) # not yet implemented
+		self.assertEqual(cs.teacher, db.Teacher[1])
+	
+	@db_session
+	def test_classes_edit_can_reset_teacher(self):
+		Tests.prepare()
+		
+		# edit class
+		args = {"grade": 5, "tag": "d", "teacher_id": 0}
+		ret = self.app.post('/admin/classes/edit/1', args)
+		self.assertEqual(ret.status_int, 200)
+		
+		# test changed class
+		cs = db.Class[1]
+		self.assertEqual(cs.grade, 5)
+		self.assertEqual(cs.tag, "d")
+		self.assertEqual(cs.teacher, None)
 	
 	@db_session
 	def test_classes_edit_invalid_class(self):
@@ -857,6 +908,15 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 		args = {"grade": 8, "tag": "a", "teacher_id": 0}
 		ret = self.app.post('/admin/classes/edit/2', args, expect_errors=True)
 		self.assertEqual(ret.status_int, 400)
+
+	@db_session
+	def test_classes_edit_can_keep_class_name(self):
+		Tests.prepare()
+		
+		# edit class
+		args = {"grade": 8, "tag": "a", "teacher_id": 0}
+		ret = self.app.post('/admin/classes/edit/1', args)
+		self.assertEqual(ret.status_int, 200)
 
 	@db_session
 	def test_classes_delete(self):
@@ -941,6 +1001,61 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 		# tra access deleted student
 		with self.assertRaises(orm.core.ObjectNotFound):
 			cs = db.Student[1]
+	
+	# -----------------------------------------------------------------------------
+	
+	@db_session
+	def test_teachers_gui(self):
+		Tests.prepare()
+		
+		# show teachers gui
+		ret = self.app.get('/admin/teachers')
+		self.assertEqual(ret.status_int, 200)
+	
+	@db_session
+	def test_teachers_add(self):
+		Tests.prepare()
+		
+		# add teachers
+		args = {"data": "tei\tTeichert\tHolger\n"}
+		ret = self.app.post('/admin/teachers/add', args)
+		self.assertEqual(ret.status_int, 200)
+		
+		# test new students
+		self.assertEqual(db.Teacher[3].tag,              "tei")
+		self.assertEqual(db.Teacher[3].person.name,      "Teichert")
+		self.assertEqual(db.Teacher[3].person.firstname, "Holger")
+		
+		# show students gui
+		ret = self.app.get('/admin/teachers')
+		self.assertEqual(ret.status_int, 200)
+
+	@db_session
+	def test_teachers_edit(self):
+		Tests.prepare()
+		
+		# edit teacher
+		args = {"name": "A", "firstname": "B", "tag": "C"}
+		ret = self.app.post('/admin/teachers/edit/1', args)
+		self.assertEqual(ret.status_int, 200)
+		
+		# test changed teacher
+		tr = db.Teacher[1]
+		self.assertEqual(tr.person.name, 'A')
+		self.assertEqual(tr.person.firstname, 'B')
+		self.assertEqual(tr.tag, 'c')
+	
+	@db_session
+	def test_teachers_delete(self):
+		Tests.prepare()
+		
+		# delete class
+		ret = self.app.post('/admin/teachers/delete/1')
+		self.assertEqual(ret.status_int, 200)
+		
+		# tra access deleted student
+		with self.assertRaises(orm.core.ObjectNotFound):
+			cs = db.Teacher[1]
 	
 	# -----------------------------------------------------------------------------
 

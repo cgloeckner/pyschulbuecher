@@ -28,6 +28,7 @@ body {background-color: white;}
 			<li><a href="/admin/subjects">Fächer</a></li>
 			<li><a href="/admin/publishers">Verlage</a></li>
 			<li><a href="/admin/books">Bücher</a></li>
+			<li><a href="/admin/teachers">Lehrer</a></li>
 			<li><a href="/admin/classes">Klassen</a></li>
 			<li><a href="/admin/students">Schüler</a></li>
 			<li><a href="/admin/booklist">Bücherzettel</a></li>
