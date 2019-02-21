@@ -9,7 +9,7 @@ from pony import orm
 
 from db.orm import db, db_session, Currency
 from db import orga, books
-from db.utils import Settings, BooklistPdf
+from db.utils import Settings, BooklistPdf, ClasslistPdf
 from utils import errorhandler
 
 
@@ -337,6 +337,21 @@ def booklist_generate():
 	d = time.time() - d
 	
 	yield '<hr /><br />Erledigt in %f Sekunden' % (d)
+
+@get('/admin/classlist/generate')
+def classlist_generate():
+	with open('settings.json') as h:
+		classlist = ClasslistPdf(h)
+	
+	# exclude 12th grade (last grade)
+	for grade in range(5, 11+1):
+		for c in orga.getClassesByGrade(grade):
+			classlist(c)
+	
+	print(type(classlist))
+	classlist.saveToFile()
+
+	return 'Fertig'
 
 # -----------------------------------------------------------------------------
 

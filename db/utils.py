@@ -7,7 +7,7 @@ import PyPDF2
 from bottle import template
 from latex import build_pdf
 
-from db import books
+from db import books, orga
 
 
 class Settings(object):
@@ -41,17 +41,17 @@ class Settings(object):
 class BooklistPdf(object):
 	def __init__(self, settings_handle, export='export'):
 		# load LaTeX templates
-		with open('docs/header.tpl') as f:
+		with open('docs/booklist/header.tpl') as f:
 			self.header = f.read()
-		with open('docs/footer.tpl') as f:
+		with open('docs/booklist/footer.tpl') as f:
 			self.footer = f.read()
-		with open('docs/info.tpl') as f:
+		with open('docs/booklist/info.tpl') as f:
 			self.info = f.read()
-		with open('docs/select.tpl') as f:
+		with open('docs/booklist/select.tpl') as f:
 			self.select = f.read()
-		with open('docs/empty.tpl') as f:
+		with open('docs/booklist/empty.tpl') as f:
 			self.empty = f.read()
-		with open('docs/planner.tpl') as f:
+		with open('docs/booklist/planner.tpl') as f:
 			self.planner = f.read()
 		# prepare output directory
 		self.export = export
@@ -116,6 +116,59 @@ class BooklistPdf(object):
 		
 		with open(fname, 'wb') as h:
 			self.merger.write(h)
+
+# -----------------------------------------------------------------------------
+
+class ClasslistPdf(object):
+
+	def __init__(self, settings_handle, export='export'):
+		# load LaTeX templates
+		with open('docs/classlist/header.tpl') as f:
+			self.header = f.read()
+		with open('docs/classlist/footer.tpl') as f:
+			self.footer = f.read()
+		with open('docs/classlist/content.tpl') as f:
+			self.content = f.read()
+		# prepare output directory
+		self.export = export
+		self.texdir = os.path.join(export, 'tex')
+		if not os.path.isdir(self.export):
+			os.mkdir(self.export)
+		if not os.path.isdir(self.texdir):
+			os.mkdir(self.texdir)
+		# load settings
+		self.s = Settings()
+		self.s.load_from(settings_handle)
+		
+		self.tex  = template(self.header)
+	
+	def __call__(self, class_):
+		"""Generate classlist pdf file for the given class.
+		"""
+		# fetch and order books that are used next year by this class
+		bks = books.getBooksStartedIn(class_.grade + 1)
+		bks = books.orderBooksList(bks)
+		
+		# query students
+		students = orga.getStudentsIn(class_.grade, class_.tag)
+		
+		# render template
+		self.tex += template(self.content, s=self.s, class_=class_, bks=bks, students=students)
+	
+	def saveToFile(self):
+		self.tex += template(self.footer)
+		
+		# export tex (debug purpose)
+		dbg_fname = os.path.join(self.texdir, 'Bücherzettel_Klassenlisten.tex')
+		with open(dbg_fname, 'w') as h:
+			h.write(self.tex)
+		
+		# export PDF
+		fname = os.path.join(self.export, 'Bücherzettel_Klassenlisten.pdf')
+		pdf = build_pdf(self.tex)
+		pdf.save_to(fname)
+
+
 
 # -----------------------------------------------------------------------------
 

@@ -35,7 +35,7 @@ def getClassesByGrade(grade: int):
 	return select(c
 		for c in db.Class
 			if c.grade == grade
-	)
+	).order_by(db.Class.tag)
 
 def getClassesCount():
 	"""Return total number of classes."

@@ -2,7 +2,8 @@
 
 <h1>Bücherzettel</h1>
 
-<a href="/admin/booklist/generate" target="_blank">generieren</a>
+<a href="/admin/booklist/generate" target="_blank">Bücherzettel erstellen</a> &dash;
+<a href="/admin/classlist/generate" target="_blank">Klassenlisten erstellen</a>
 
 <hr />
 
