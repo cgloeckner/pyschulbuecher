@@ -19,7 +19,7 @@
 	</tr>
 %for d in data:
 	<tr>
-		<td><a href="/admin/booklist/download/{{d['name']}}" target="_blank">{{d['title']}}</a></td>
+		<td><a href="/admin/lists/download/{{d['name']}}" target="_blank">{{d['title']}}</a></td>
 		<td>{{int(d['size'] / 1024)}}KB</td>
 		<td>{{d['date']}}</td>
 	</tr>

@@ -1,8 +1,6 @@
-Class List PDF Print with Books
-	--> Booklist Preview (temp chance grade)
-
-Implement Teacher Index/Add/Edit/Delete
-	--> complete class edit (teacher_id)
+Request API
+	class page -> request page (edits in table, save-btn)
+	--> Loan List Preview (Lists Menu)
 
 Write Queries as Usecase Functions
 	db/loans.py --> loaning stuff (all about loans)

@@ -282,15 +282,15 @@ def settings_form_post():
 
 # -----------------------------------------------------------------------------
 
-@get('/admin/booklist/download/<fname>')
-def admin_booklist_download(fname):
+@get('/admin/lists/download/<fname>')
+def admin_lists_download(fname):
 	"""Note that this callback is NOT covered by the test suite.
 	"""
 	return static_file(fname, root='./export')
 
-@get('/admin/booklist')
-@view('admin/booklist_index')
-def booklist_index():
+@get('/admin/lists')
+@view('admin/lists_index')
+def lists_index():
 	# fetch data
 	data = list()
 	full = False
@@ -1108,7 +1108,20 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 		ret = self.app.get('/admin/booklist/generate')
 		self.assertEqual(ret.status_code, 200)
 		
-		# show booklist index
-		ret = self.app.get('/admin/booklist')
+		# show lists index
+		ret = self.app.get('/admin/lists')
 		self.assertEqual(ret.status_code, 200)
+
+	@db_session
+	def test_requestlist_creation(self):
+		Tests.prepare()
+		
+		# create requestlists (some even without books)
+		ret = self.app.get('/admin/requestlist/generate')
+		self.assertEqual(ret.status_code, 200)
+		
+		# show lists index
+		ret = self.app.get('/admin/lists')
+		self.assertEqual(ret.status_code, 200)
+
 

@@ -29,7 +29,7 @@ body {background-color: white;}
 			<li><a href="/admin/teachers">Lehrer</a></li>
 			<li><a href="/admin/classes">Klassen</a></li>
 			<li><a href="/admin/students">Schüler</a></li>
-			<li><a href="/admin/booklist">Bücherzettel</a></li>
+			<li><a href="/admin/lists">Listen</a></li>
 			<li><a href="/admin/settings">Einstellungen</a></li>
 		</ul>
 	</span>
