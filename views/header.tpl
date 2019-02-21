@@ -21,8 +21,6 @@ body {background-color: white;}
 %end
 		</ul>
 	</span>
-	<span><a href="/teachers">Lehrer</a></span>
-	<span>Suche</span>
 	<span><a href="/admin/settings">Verwaltung</a>
 		<ul>
 			<li><a href="/admin/subjects">Fächer</a></li>

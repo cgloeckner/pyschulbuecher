@@ -112,22 +112,22 @@ class BooklistPdf(object):
 
 	def merge(self):
 		# save merge-PDF
-		fname = os.path.join(self.export, 'BücherzettelKomplett.pdf')
+		fname = os.path.join(self.export, 'Bücherzettel_Komplett.pdf')
 		
 		with open(fname, 'wb') as h:
 			self.merger.write(h)
 
 # -----------------------------------------------------------------------------
 
-class ClasslistPdf(object):
+class RequestlistPdf(object):
 
 	def __init__(self, settings_handle, export='export'):
 		# load LaTeX templates
-		with open('docs/classlist/header.tpl') as f:
+		with open('docs/requestlist/header.tpl') as f:
 			self.header = f.read()
-		with open('docs/classlist/footer.tpl') as f:
+		with open('docs/requestlist/footer.tpl') as f:
 			self.footer = f.read()
-		with open('docs/classlist/content.tpl') as f:
+		with open('docs/requestlist/content.tpl') as f:
 			self.content = f.read()
 		# prepare output directory
 		self.export = export
@@ -143,7 +143,7 @@ class ClasslistPdf(object):
 		self.tex  = template(self.header)
 	
 	def __call__(self, class_):
-		"""Generate classlist pdf file for the given class.
+		"""Generate requestlist pdf file for the given class.
 		"""
 		# fetch and order books that are used next year by this class
 		bks = books.getBooksStartedIn(class_.grade + 1)
@@ -159,12 +159,12 @@ class ClasslistPdf(object):
 		self.tex += template(self.footer)
 		
 		# export tex (debug purpose)
-		dbg_fname = os.path.join(self.texdir, 'Bücherzettel_Klassenlisten.tex')
+		dbg_fname = os.path.join(self.texdir, 'Erfassungsliste.tex')
 		with open(dbg_fname, 'w') as h:
 			h.write(self.tex)
 		
 		# export PDF
-		fname = os.path.join(self.export, 'Bücherzettel_Klassenlisten.pdf')
+		fname = os.path.join(self.export, 'Bücherzettel_Erfassungsliste.pdf')
 		pdf = build_pdf(self.tex)
 		pdf.save_to(fname)
 
@@ -225,7 +225,7 @@ class Tests(unittest.TestCase):
 
 	@db_session
 	def test_create_custom_booklist(self):
-		# create custom database content (real work example)
+		# create custom database content (real world example)
 		books.addSubjects("Mathematik	Ma\nDeutsch	De\nEnglisch	En\nPhysik	Ph")
 		books.addPublishers("Klett\nCornelsen")
 		books.addBooks("""Ein Mathe-Buch	978-3-7661-5000-4	32,80 €	Cornelsen	5	12	Ma	True	True	False	False	True
@@ -241,5 +241,25 @@ Tafelwerk	978-3-06-001611-2	13,50 €	Cornelsen	7	12		False	False	False	False	Tr
 		booklist(11, new_students=True)
 		print('PLEASE MANUALLY VIEW /tmp/export/Buecherzettel11.pdf')
 
+	@db_session
+	def test_create_custom_requestlist(self):
+		Tests.prepare()
+		
+		# create custom database content (real world example)
+		books.addSubjects("Deutsch	De\nPhysik	Ph")
+		books.addBooks("""Ein Mathe-Buch	978-3-7661-5000-4	32,80 €	Cornelsen	5	12	Ma	True	True	False	False	True
+Mathe AH	978-3-7661-5007-3	8,80 €	Cornelsen	5	12	Ma	True	True	True	False	True
+Deutsch-Buch mit sehr langam Titel und damit einigen Zeilenumbrüchen .. ach und Umlaute in größeren Mengen öÖäÄüÜß sowie Sonderzeichen !"§$%&/()=?.:,;-_@	978-3-12-104104-6	35,95 €	Klett	11	12	De	True	True	False	False	True
+Old English Book			Klett	5	12	En	True	True	False	True	False
+Grundlagen der Physik			Cornelsen	5	12	Ph	True	True	False	False	True
+Tafelwerk	978-3-06-001611-2	13,50 €	Cornelsen	7	12		False	False	False	False	True""")
 
+		# create requestlists
+		with open('settings.json') as h:
+			requestlist = RequestlistPdf(h, export='/tmp/export')
+		for c in select(c for c in db.Class):
+			requestlist(c)
+		requestlist.saveToFile()
+		
+		print('PLEASE MANUALLY VIEW /tmp/export/Erfassungsliste.pdf')
 

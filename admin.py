@@ -9,7 +9,7 @@ from pony import orm
 
 from db.orm import db, db_session, Currency
 from db import orga, books
-from db.utils import Settings, BooklistPdf, ClasslistPdf
+from db.utils import Settings, BooklistPdf, RequestlistPdf
 from utils import errorhandler
 
 
@@ -294,24 +294,20 @@ def booklist_index():
 	# fetch data
 	data = list()
 	full = False
-	for f in os.listdir('export'):
-		if not f.endswith('.pdf'):
+	for fname in os.listdir('export'):
+		if not fname.endswith('.pdf'):
 			# ignore everything else (including tex/ subdir)
 			continue
-		if 'Komplett' in f:
-			full = True
 		else:
-			grade = int(f.split('Bücherzettel')[1].split('_')[0].split('.pdf')[0])
-			stat  = os.stat(os.path.join('export', f))
+			stat  = os.stat(os.path.join('export', fname))
 			data.append({
-				"grade" : grade,
-				"name"  : f,
-				"new"   : '_Neuzugänge' in f,
+				"name"  : fname,
+				"title" : fname.split('.pdf')[0],
 				"size"  : stat.st_size,
 				"date"  : datetime.utcfromtimestamp(int(stat.st_mtime)).strftime('%Y-%m-%d %H:%M:%S')
 			})
-	# sort by grade
-	data.sort(key=lambda d: d["grade"])
+	# sort by name
+	data.sort(key=lambda d: d["name"])
 	return dict(data=data, full=full)
 
 @get('/admin/booklist/generate')
@@ -338,18 +334,16 @@ def booklist_generate():
 	
 	yield '<hr /><br />Erledigt in %f Sekunden' % (d)
 
-@get('/admin/classlist/generate')
-def classlist_generate():
+@get('/admin/requestlist/generate')
+def requestlist_generate():
 	with open('settings.json') as h:
-		classlist = ClasslistPdf(h)
+		requestlist = RequestlistPdf(h)
 	
 	# exclude 12th grade (last grade)
 	for grade in range(5, 11+1):
 		for c in orga.getClassesByGrade(grade):
-			classlist(c)
-	
-	print(type(classlist))
-	classlist.saveToFile()
+			requestlist(c)
+	requestlist.saveToFile()
 
 	return 'Fertig'
 

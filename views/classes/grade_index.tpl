@@ -16,7 +16,7 @@
 	%if c.teacher is None:
 		<td>nicht zugewiesen</td>
 	%else:
-		<td>{{c.teacher.tag}}</td>
+		<td>{{c.teacher.tag.upper()}}</td>
 	%end
 		<td>{{c.student.count()}}</td>
 	</tr>

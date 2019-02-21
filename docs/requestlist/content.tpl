@@ -1,16 +1,14 @@
 %from utils import tex_escape
 
-{\LARGE Klassenliste {{class_.toString()}}
-%if class_.teacher is not None:
-	({{class_.teacher.tag.upper()}})
-%end
-}
+{\LARGE Erfassung Bücherzettel {{class_.toString()}} }
+\hfill
+{\large für Klasse {{class_.grade+1}} ({{s.school_year}}/{{s.school_year+1}}) }
 
-\begin{flushright}
-	{\large Klassenstufe {{class_.grade+1}}
-	(Schuljahr {{s.school_year}}/{{s.school_year+1}})
-	}
-\end{flushright}
+%if class_.teacher is not None:
+	Klassenleiter(in):
+	\quad
+	{{class_.teacher.person.name}}, {{class_.teacher.person.firstname}}
+%end
 
 Bitte für jedes gewünschte Freiexemplar ein Kreuz setzen:
 
@@ -82,5 +80,7 @@ Bitte für jedes gewünschte Freiexemplar ein Kreuz setzen:
 	\hline
 %end
 \end{longtable}
+
+\textit{Vielen Dank!}
 
 \pagebreak
