@@ -1,6 +1,9 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+import locale
+locale.setlocale(locale.LC_ALL, 'de_DE.UTF-8')
+
 from pony import orm
 
 from db.orm import db
@@ -45,7 +48,13 @@ def getClassesCount():
 def getStudentsIn(grade: int, tag: str):
 	"""Return all students in the given grade.
 	"""
-	return db.Class.get(grade=grade, tag=tag).student.order_by(lambda s: s.person.firstname).order_by(lambda s: s.person.name)
+	# Note: explicit list conversion + sort (instead directly order_by)
+	# to fix use of Umlaute while sorting
+	# e.g. handling O and Ö similar instead of sorting Ö after Z
+	l = list(db.Class.get(grade=grade, tag=tag).student)
+	#l.sort(key=lambda s: locale.strxfrm(s.person.firstname))
+	l.sort(key=lambda s: locale.strxfrm(s.person.name))
+	return l
 
 # -----------------------------------------------------------------------------
 

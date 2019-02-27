@@ -1,6 +1,9 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+import locale
+locale.setlocale(locale.LC_ALL, 'de_DE.UTF-8')
+
 __author__ = "Christian Glöckner"
 
 import unittest
