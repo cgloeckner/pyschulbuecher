@@ -16,11 +16,15 @@
 	</tr>
 	<tr>
 		<td>Spätester Abgabetermin Bücherzettel</td>
-		<td><input type="text" name="deadlines_booklist_return" value="{{s.data['deadline']['booklist_return']}}" /></td>
+		<td><input type="text" name="deadline_booklist_return" value="{{s.data['deadline']['booklist_return']}}" /></td>
 	</tr>
 	<tr>
 		<td>Letzter Änderungstermin Bücherzettel</td>
-		<td><input type="text" name="deadlines_booklist_changes" value="{{s.data['deadline']['booklist_changes']}}" /></td>
+		<td><input type="text" name="deadline_booklist_changes" value="{{s.data['deadline']['booklist_changes']}}" /></td>
+	</tr>
+	<tr>
+		<td>Rückgabe Bücher (Klasse 12, Nichtprüfungsfächer)</td>
+		<td><input type="text" name="deadline_bookreturn_noexam" value="{{s.data['deadline']['bookreturn_noexam']}}" /></td>
 	</tr>
 	<tr>
 		<td></td>

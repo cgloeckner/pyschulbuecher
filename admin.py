@@ -9,7 +9,7 @@ from pony import orm
 
 from db.orm import db, db_session, Currency
 from db import orga, books
-from db.utils import Settings, BooklistPdf, RequestlistPdf
+from db.utils import Settings, BooklistPdf, RequestlistPdf, BookreturnPdf
 from utils import errorhandler
 
 
@@ -270,10 +270,11 @@ def settings_form():
 @view('success')
 def settings_form_post():
 	s = Settings()
-	s.data['general']['school_year']       = request.forms.school_year
-	s.data['general']['planner_price']     = str(Currency.fromString(request.forms.planner_price))
-	s.data['deadline']['booklist_changes'] = request.forms.deadlinebooklist_changes
-	s.data['deadline']['booklist_return']  = request.forms.deadline_booklist_return
+	s.data['general']['school_year']         = request.forms.school_year
+	s.data['general']['planner_price']       = str(Currency.fromString(request.forms.planner_price))
+	s.data['deadline']['booklist_changes']   = request.forms.deadline_booklist_changes
+	s.data['deadline']['booklist_return']    = request.forms.deadline_booklist_return
+	s.data['deadline']['bookreturn_noexam'] = request.forms.deadline_bookreturn_noexam
 	
 	with open('settings.ini', 'w') as h:
 		s.save_to(h)
@@ -344,6 +345,18 @@ def requestlist_generate():
 		for c in orga.getClassesByGrade(grade):
 			requestlist(c)
 	requestlist.saveToFile()
+
+	return 'Fertig'
+
+@get('/admin/lists/generate/bookreturn')
+def bookreturn_generate():
+	with open('settings.ini') as h:
+		bookreturn = BookreturnPdf(h)
+	
+	# exclude 12th grade (last grade)
+	for c in orga.getClassesByGrade(12):
+		bookreturn(c)
+	bookreturn.saveToFile()
 
 	return 'Fertig'
 
@@ -1083,7 +1096,8 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 			'school_year'       : '2018',
 			'planner_price'     : '5,00€',
 			'deadline_changes'  : '19.06.2017',
-			'deadline_booklist' : '23.03.2017'
+			'deadline_booklist' : '23.03.2017',
+			'bookreturn_no_exam': '23.03.2017'
 		}
 		ret = self.app.post('/admin/settings', args)
 		
@@ -1118,6 +1132,18 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 		
 		# create requestlists (some even without books)
 		ret = self.app.get('/admin/lists/generate/requestlist')
+		self.assertEqual(ret.status_code, 200)
+		
+		# show lists index
+		ret = self.app.get('/admin/lists')
+		self.assertEqual(ret.status_code, 200)
+
+	@db_session
+	def test_bookreturn_creation(self):
+		Tests.prepare()
+		
+		# create bookreturn
+		ret = self.app.get('/admin/lists/generate/bookreturn')
 		self.assertEqual(ret.status_code, 200)
 		
 		# show lists index

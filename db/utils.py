@@ -20,7 +20,8 @@ class Settings(object):
 		}
 		self.data['deadline'] = {
 			'booklist_return'  : '17.03.2017',
-			'booklist_changes' : '19.06.2017'
+			'booklist_changes' : '19.06.2017',
+			'bookreturn_no_exam': '17.03.2017'
 		}
 
 	def load_from(self, fhandle):
@@ -160,6 +161,54 @@ class RequestlistPdf(object):
 		
 		# export PDF
 		fname = os.path.join(self.export, 'Bücherzettel_Erfassungsliste.pdf')
+		pdf = build_pdf(self.tex)
+		pdf.save_to(fname)
+
+# -----------------------------------------------------------------------------
+
+class BookreturnPdf(object):
+
+	def __init__(self, settings_handle, export='export'):
+		# load LaTeX templates
+		with open('docs/bookreturn/header.tpl') as f:
+			self.header = f.read()
+		with open('docs/bookreturn/footer.tpl') as f:
+			self.footer = f.read()
+		with open('docs/bookreturn/noexam.tpl') as f:
+			self.content = f.read()
+		# prepare output directory
+		self.export = export
+		self.texdir = os.path.join(export, 'tex')
+		if not os.path.isdir(self.export):
+			os.mkdir(self.export)
+		if not os.path.isdir(self.texdir):
+			os.mkdir(self.texdir)
+		# load settings
+		self.s = Settings()
+		self.s.load_from(settings_handle)
+		
+		self.tex  = template(self.header)
+	
+	def __call__(self, class_):
+		"""Generate requestlist pdf file for the given class.
+		"""
+		# fetch and order books that are used next year by this class
+		bks = books.getBooksStartedIn(class_.grade + 1)
+		bks = books.orderBooksList(bks)
+		
+		# render template
+		self.tex += template(self.content, s=self.s, class_=class_, bks=bks)
+	
+	def saveToFile(self):
+		self.tex += template(self.footer)
+		
+		# export tex (debug purpose)
+		dbg_fname = os.path.join(self.texdir, 'Bücherrückgabe_Klasse12.tex')
+		with open(dbg_fname, 'w') as h:
+			h.write(self.tex)
+		
+		# export PDF
+		fname = os.path.join(self.export, 'Bücherrückgabe_Klasse12.pdf')
 		pdf = build_pdf(self.tex)
 		pdf.save_to(fname)
 

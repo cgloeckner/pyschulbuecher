@@ -3,7 +3,8 @@
 <h1>Bücherzettel</h1>
 
 <a href="/admin/lists/generate/booklist" target="_blank">Bücherzettel erstellen</a> &dash;
-<a href="/admin/lists/generate/requestlist" target="_blank">Erfassungsliste erstellen</a>
+<a href="/admin/lists/generate/requestlist" target="_blank">Erfassungsliste erstellen</a> &dash;
+<a href="/admin/lists/generate/bookreturn" target="_blank">Bücherrückgabe Klasse 12 erstellen</a>
 
 <hr />
 
