@@ -5,6 +5,10 @@
 %include("header")
 <h1>Übersicht Bücher</h1>
 
+<a href="/admin/demand" target="_blank">Bedarfsbericht</a>
+
+<br /><br />
+
 <input type="checkbox" id="show_regular" onClick="showBooks('regular');" checked /><label for="show_regular">Lehrbücher</label>
 <input type="checkbox" id="show_workbooks" onClick="showBooks('workbook');" checked /><label for="show_workbooks">Arbeitshefte</label>
 <input type="checkbox" id="show_classsets" onClick="showBooks('classsets');" checked /><label for="show_classsets">Klassensätze</label>

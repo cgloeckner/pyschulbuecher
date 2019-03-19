@@ -8,7 +8,7 @@ from bottle import *
 from pony import orm
 
 from db.orm import db, db_session, Currency
-from db import orga, books
+from db import orga, books, loans
 from db.utils import Settings, BooklistPdf, RequestlistPdf, BookreturnPdf
 from utils import errorhandler
 
@@ -137,6 +137,53 @@ def books_edit_post(id):
 def books_delete(id):
 	db.Book[id].delete()
 	return dict()
+
+
+@get('/admin/demand')
+@view('admin/demand_form')
+def demand_form():
+	bks = books.orderBooksIndex(books.getAllBooks())
+	
+	data = dict()
+	for b in bks:
+		need = loans.countNeededBooks(b)
+		diff = b.stock - need
+		if diff < 0:
+			price = -b.price * diff
+		else:
+			price = 0
+		
+		data[b.id] = {
+			'need': need,
+			'diff': diff,
+			'price': price
+		}
+	
+	return dict(bks=bks, data=data)
+
+
+@get('/admin/order')
+@view('admin/order_list')
+def order_list():
+	bks = books.orderBooksIndex(books.getAllBooks())
+	
+	data = dict()
+	for b in bks:
+		need = loans.countNeededBooks(b)
+		diff = b.stock - need
+		if diff < 0:
+			price = -b.price * diff
+		else:
+			price = 0
+		
+		data[b.id] = {
+			'need': need,
+			'diff': diff,
+			'price': price
+		}
+	
+	return dict(bks=bks, data=data)
+
 
 # -----------------------------------------------------------------------------
 

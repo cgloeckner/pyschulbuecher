@@ -4,7 +4,7 @@
 from datetime import date
 
 from db.orm import db
-from db import books
+from db import books, orga
 
 __author__ = "Christian Glöckner"
 
@@ -40,6 +40,27 @@ def updateRequest(student: db.Student, book: db.Book, status: bool):
 		r = db.Request.get(person=student.person, book=book)
 		r.delete()
 	# else: nothing to update
+
+def countNeededBooks(book: db.Book):
+	"""Count how many books are required considering current loans, returning
+	loans and new requested loans.
+	"""
+
+	# consider new requests
+	n = len(book.request)
+		
+	# consider books already in used
+	for l in book.loan:
+		n += l.count
+		
+	# consider books being returned by last grade that uses it
+	for c in orga.getClassesByGrade(book.outGrade):
+		for s in c.student:
+			if s.person in book.loan:
+				l = db.Loan.get(person=s.person, book=book)
+				n -= l.count
+	
+	return n
 
 # -----------------------------------------------------------------------------
 
@@ -109,6 +130,43 @@ class Tests(unittest.TestCase):
 		updateRequest(db.Student[3], db.Book[5], False)
 		self.assertEqual(len(db.Student[3].person.request), 0)
 		self.assertFalse(isRequested(db.Student[3], db.Book[5]))
+
+	@db_session
+	def test_countNeededBooks(self):
+		Tests.prepare()
+		
+		# prepare book
+		b = db.Book(title='Example', isbn='000-001', price=2495,
+			publisher=db.Publisher[1], inGrade=5, outGrade=7,
+			subject=db.Subject[1])
+		
+		# prepare addition classes
+		c_new  = db.Class(grade=5, tag='a')
+		c_cont = db.Class(grade=6, tag='c')
+		c_ret  = db.Class(grade=7, tag='b')
+		for i in range(5):
+			s = db.Student(person=db.Person(name='Foo', firstname='Bar'), class_=c_new)
+			db.Request(person=s.person, book=b)
+		
+		for i in range(5):
+			s = db.Student(person=db.Person(name='Foo', firstname='Bar'), class_=c_cont)
+			db.Loan(person=s.person, book=b, given=date.today())
+
+		# give 6th student two books		
+		s = db.Student(person=db.Person(name='Foo', firstname='Bar'), class_=c_cont)
+		db.Loan(person=s.person, book=b, given=date.today(), count=2)
+			
+		for i in range(3):
+			s = db.Student(person=db.Person(name='Foo', firstname='Bar'), class_=c_ret)
+			db.Loan(person=s.person, book=b, given=date.today())
+		
+		# give 4th student two books		
+		s2 = db.Student(person=db.Person(name='Foo', firstname='Bar'), class_=c_cont)
+		db.Loan(person=s2.person, book=b, given=date.today(), count=2)
+			
+		n = countNeededBooks(b)
+		# 5 new, 6+1 already used, 4+1 returning --> 17 needed
+		self.assertEqual(n, 17)
 
 	@db_session
 	def test_addLoans(self):
