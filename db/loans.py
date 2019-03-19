@@ -18,6 +18,28 @@ def getExpectedReturns(student: db.Student):
 			and l.book.outGrade <= student.class_.grade
 	)
 
+def isRequested(student: db.Student, book: db.Book):
+	"""Returns whether the given book is requested by the given student.
+	"""
+	for r in student.person.request:
+		if r.book == book:
+			return True
+	return False
+
+def updateRequest(student: db.Student, book: db.Book, status: bool):
+	"""Update request status for the given book and the given student. If True
+	is provided, a request object is created. If not, no request object exists
+	for that student to that book.
+	"""
+	was = isRequested(student, book)
+	if not was and status:
+		# new request
+		db.Request(person=student.person, book=book)
+	elif was and not status:
+		# delete request
+		r = db.Request.get(person=student.person, book=book)
+		r.delete()
+	# else: nothing to update
 
 # -----------------------------------------------------------------------------
 
@@ -43,6 +65,50 @@ class Tests(unittest.TestCase):
 		
 	def tearDown(self):
 		db.drop_all_tables(with_all_data=True)
+		
+	@db_session
+	def test_isRequested(self):
+		Tests.prepare()
+		
+		db.Request(person=db.Student[3].person, book=db.Book[3])
+		
+		self.assertTrue(isRequested(db.Student[3], db.Book[3]))
+		self.assertFalse(isRequested(db.Student[3], db.Book[5]))
+		self.assertFalse(isRequested(db.Student[1], db.Book[3]))
+
+	@db_session
+	def test_updateRequest(self):
+		Tests.prepare()
+		
+		self.assertEqual(len(db.Student[3].person.request), 0)
+		
+		# register book 3
+		updateRequest(db.Student[3], db.Book[3], True)
+		self.assertEqual(len(db.Student[3].person.request), 1)
+		self.assertTrue(isRequested(db.Student[3], db.Book[3]))
+		
+		# double-register book 3
+		updateRequest(db.Student[3], db.Book[3], True)
+		self.assertEqual(len(db.Student[3].person.request), 1)
+		
+		# double-unregister book 5
+		updateRequest(db.Student[3], db.Book[5], False)
+		self.assertEqual(len(db.Student[3].person.request), 1)
+		
+		# register book 5
+		updateRequest(db.Student[3], db.Book[5], True)
+		self.assertEqual(len(db.Student[3].person.request), 2)
+		self.assertTrue(isRequested(db.Student[3], db.Book[5]))
+		
+		# unregister book 3
+		updateRequest(db.Student[3], db.Book[3], False)
+		self.assertEqual(len(db.Student[3].person.request), 1)
+		self.assertFalse(isRequested(db.Student[3], db.Book[3]))
+		
+		# unregister book 5
+		updateRequest(db.Student[3], db.Book[5], False)
+		self.assertEqual(len(db.Student[3].person.request), 0)
+		self.assertFalse(isRequested(db.Student[3], db.Book[5]))
 
 	@db_session
 	def test_addLoans(self):

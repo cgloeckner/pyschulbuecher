@@ -8,7 +8,7 @@ from bottle import *
 from pony import orm
 
 from db.orm import db, db_session, Currency
-from db import orga, books
+from db import orga, books, loans
 from utils import errorhandler
 
 
@@ -25,6 +25,27 @@ def classes_grade_index(grade):
 def classes_students_index(grade, tag):
 	return dict(grade=grade, tag=tag)
 
+# -----------------------------------------------------------------------------
+
+@get('/classes/requests/<grade:int>/<tag>')
+@view('classes/request_form')
+def classes_requests_form(grade, tag):
+	bks = books.getBooksStartedIn(grade+1, True)
+	bks = books.orderBooksList(bks)
+	return dict(grade=grade, tag=tag, books=bks)
+
+@post('/classes/requests/<grade:int>/<tag>')
+@errorhandler
+def classes_requests_post(grade, tag):
+	bks = books.getBooksStartedIn(grade+1, True)
+	for s in orga.getStudentsIn(grade, tag):
+		for b in bks:
+			key    = "%d_%d" % (s.id, b.id)
+			status = request.forms.get(key) == 'on'
+			loans.updateRequest(s, b, status)
+	
+	db.commit()
+	redirect('/classes/%d/%s' % (grade, tag))
 
 # -----------------------------------------------------------------------------
 

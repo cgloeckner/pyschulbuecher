@@ -8,7 +8,19 @@
 	<script src="/static/admin.js"></script> 
 	<title>Schulbuchverwaltung</title>
 <style>
-body {background-color: white;}
+body {
+	background-color: white;
+}
+
+th.rotate, td.rotate {
+	writing-mode: sideways-lr;
+	width: 25px;
+}
+
+th.gray, td.gray {
+	background-color: rgb(200, 200, 200);
+}
+
 </style>
 </head>
 
