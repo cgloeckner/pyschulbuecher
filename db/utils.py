@@ -21,7 +21,7 @@ class Settings(object):
 		self.data['deadline'] = {
 			'booklist_return'  : '17.03.2017',
 			'booklist_changes' : '19.06.2017',
-			'bookreturn_no_exam': '17.03.2017'
+			'bookreturn_noexam': '17.03.2017'
 		}
 
 	def load_from(self, fhandle):
