@@ -10,7 +10,7 @@
 <table>
 	<tr>
 		<th></th>
-		<th></th>
+		<th><input type="button" value="Auswahl umkehren" onClick="checkAll();" /></th>
 %i = 1
 %for b in books:
 	%if b.workbook:
@@ -69,6 +69,7 @@
 		%if b.workbook or b.classsets:
 			%continue
 		%end
+		%id = '%i_%i' % (s.id, b.id)
 		%if j % 2 == 0:
 		<td class="gray">
 		%else:
@@ -80,7 +81,7 @@
 		%else:
 			%checked = ''
 		%end
-		<input type="checkbox" name="{{s.id}}_{{b.id}}" {{!checked}} /></td>
+		<input class="selection" type="checkbox" name="{{id}}" {{!checked}} /></td>
 	%end
 	</tr>
 %end

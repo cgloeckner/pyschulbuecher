@@ -21,6 +21,10 @@ th.gray, td.gray {
 	background-color: rgb(200, 200, 200);
 }
 
+input[type=checkbox].selection {
+	transform: scale(1.5);
+}
+
 </style>
 </head>
 

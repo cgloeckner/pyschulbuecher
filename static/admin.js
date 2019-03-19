@@ -6,3 +6,14 @@ function showBooks(css_class) {
 		$('.' + css_class).css('display', 'table-row');
 	}
 }
+
+function checkAll() {
+	$("input[type='checkbox']").each(function() {
+    	$(this).prop("checked", !this.checked);
+	});
+}
+
+function toggle(name) {
+	var obj = $("input[name='" + name + "']")[0];
+	obj.checked = !obj.checked;
+}
