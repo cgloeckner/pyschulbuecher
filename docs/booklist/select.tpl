@@ -12,12 +12,12 @@
 %if workbook:
 	\begin{longtable}{ | c | p{6cm} | p{2.8cm} | c | r | }
 %else:
-	\begin{longtable}{ | c | p{4.5cm} | p{2cm} | c | r | p{1cm} | p{1cm} | }
+	\begin{longtable}{ | c | p{4.5cm} | p{2cm} | c | r | p{0.66cm} | p{0.66cm} | p{0.66cm} | }
 %end
     \hline
 		\textbf{Fach} & \textbf{Titel} & \textbf{Verlag} & \textbf{ISBN} & \textbf{Preis}
 %if not workbook:
- & \textbf{\enskip V/K} & \textbf{\quad F}
+ & \textbf{\enspace V} & \textbf{\enspace K} & \textbf{\enspace F}
 %end
 \\ \hline
 %for b in bs:
@@ -67,13 +67,15 @@
 		%if not b.workbook:
 	&
 			%if b.classsets:
-	\multicolumn{2}{c|} { \small { Klassens\"atze } }
+	\multicolumn{3}{c|} { \small { Klassens\"atze } }
 			%else:
 				%if b.isbn is None or b.price is None:
 	\cellcolor{black!75}
 	&
-				%else:
+	\cellcolor{black!75}
 	&
+				%else:
+	& &
 				%end
 			%end
 		%end
