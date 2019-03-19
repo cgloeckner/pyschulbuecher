@@ -11,8 +11,9 @@
 
 \vspace{0.5cm}
 
+%year = int(s.data['general']['school_year'])
 \begin{center}
-	{\LARGE B\"ucherzettel f\"ur das Schuljahr {{s.school_year}}/{{s.school_year+1}}}
+	{\LARGE B\"ucherzettel f\"ur das Schuljahr {{year}}/{{year+1}}}
 \end{center}
 
 \vspace{0.5cm}
@@ -39,13 +40,13 @@ bitte f\"ullen Sie nach Ihren M\"oglichkeiten und W\"unschen den B\"ucherzettel 
 		\item[F] Freiexemplar (Dieses Buch m\"ochten Sie von der Schule, nach den geltenden Bestimmungen des Landes Thüringen, ausleihen.)
 	\end{description}
 	\item Bitte \textbf{streichen} Sie die Zeilen der Kurse oder F\"acher, die \textbf{nicht belegt werden} (z.B. Wahlkurse, Ethik / Religion, Fremdsprache).
-	\item Der Erwerb der Kaufexemplare und Arbeitshefte erfolgt in den f\"ur den Schulbuchverkauf zust\"andigen Verkaufsstellen (nicht im Gymnasium) durch die Eltern. Bitte den B\"ucherzettel erst nach dem {{s.deadline_changes}} dort abgeben, falls \"Anderungen eintreten sollten.
+	\item Der Erwerb der Kaufexemplare und Arbeitshefte erfolgt in den f\"ur den Schulbuchverkauf zust\"andigen Verkaufsstellen (nicht im Gymnasium) durch die Eltern. Bitte den B\"ucherzettel erst nach dem {{s.data['deadline']['booklist_changes']}} dort abgeben, falls \"Anderungen eintreten sollten.
 	\item Wir bitte Sie den \textbf{ausgef\"ullten B\"ucherzettel} zwecks sp\"aterer Kontrolle und Buchkauf unbedingt mehrfach zu \textbf{kopieren}.
 
 %if grade == 5 or new_students:
-	\item Der \textbf{korrekt und vollst\"andig ausgef\"ullte B\"ucherzettel} ist \textbf{bis sp\"atestens {{s.deadline_booklist}}} unterschrieben an das Gymnasium zur\"uck zu senden. Sp\"ater ankommende B\"ucherzettel k\"onnen f\"ur die B\"ucherbestellung nicht mehr ber\"ucksichtigt werden! Falls Sie sp\"ater ein anderes Gymnasium w\"ahlen, ist dieser B\"ucherzettel nicht bindend.
+	\item Der \textbf{korrekt und vollst\"andig ausgef\"ullte B\"ucherzettel} ist \textbf{bis sp\"atestens {{s.data['deadline']['booklist_return']}}} unterschrieben an das Gymnasium zur\"uck zu senden. Sp\"ater ankommende B\"ucherzettel k\"onnen f\"ur die B\"ucherbestellung nicht mehr ber\"ucksichtigt werden! Falls Sie sp\"ater ein anderes Gymnasium w\"ahlen, ist dieser B\"ucherzettel nicht bindend.
 %else:
-	\item Der Bücherzettel ist nach Erhalt auszufüllen und unverzüglich, jedoch \textbf{bis sp\"atestens {{s.deadline_booklist}} beim Klassenleiter abzugeben}.
+	\item Der Bücherzettel ist nach Erhalt auszufüllen und unverzüglich, jedoch \textbf{bis sp\"atestens {{s.data['deadline']['booklist_return']}} beim Klassenleiter abzugeben}.
 %end
 
 %if grade == 5:
@@ -71,7 +72,7 @@ Wir best\"atigen hiermit den B\"ucherzettel und alle Hinweise gelesen und ordnun
 \def\arraystretch{1.5}
 
 \begin{tabular}{ c p{4cm} p{0.2cm} p{8cm}}
-	Eisenberg, den & \rule[-4pt]{3cm}{0.1mm} {{s.school_year}} & & \rule[-4pt]{8cm}{0.1mm} \\
+	Eisenberg, den & \rule[-4pt]{3cm}{0.1mm} {{year}} & & \rule[-4pt]{8cm}{0.1mm} \\
 	& & & Unterschrift der Erziehungsberechtigten
 \end{tabular}
 
@@ -79,7 +80,7 @@ Wir best\"atigen hiermit den B\"ucherzettel und alle Hinweise gelesen und ordnun
 
 \def\arraystretch{1.5}
 
-\fancyfoot[L]{Schuljahr {{s.school_year}}/{{s.school_year + 1}}}
+\fancyfoot[L]{Schuljahr {{year}}/{{year + 1}}}
 \fancyfoot[C]{Bücherzettel}
 \fancyfoot[R]{Klasse {{grade}}
 %if new_students:

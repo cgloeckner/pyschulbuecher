@@ -15,7 +15,7 @@ Ist hinter dem Fach eines Buches \glqq gA\grqq{} oder \glqq eA\grqq{} angegeben,
 	%if grade == 5:
 		kostenlos
 	%else:
-		{{Currency.toString(s.planner_price)}} \euro
+		{{Currency.toString(int(s.data['general']['planner_price']))}} \euro
 	%end
 	& & \\ \hline
 \end{longtable}

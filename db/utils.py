@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-import os, json
+import os, configparser
 import PyPDF2
 
 from bottle import template
@@ -13,28 +13,23 @@ from db import books, orga
 class Settings(object):
 
 	def __init__(self):
-		self.school_year       = 2019
-		self.planner_price     = 600
-		self.deadline_booklist = '17.03.2017'
-		self.deadline_changes  = '19.06.2017'
+		self.data = configparser.ConfigParser()
+		self.data['general'] = {
+			'school_year': '2019',
+			'planner_price': '600'
+		}
+		self.data['deadline'] = {
+			'booklist_return'  : '17.03.2017',
+			'booklist_changes' : '19.06.2017'
+		}
 
 	def load_from(self, fhandle):
-		tmp = json.load(fhandle)
-		
-		self.school_year       = tmp['school_year']
-		self.planner_price     = tmp['planner_price']
-		self.deadline_booklist = tmp['deadline_booklist']
-		self.deadline_changes  = tmp['deadline_changes']
+		tmp = configparser.ConfigParser()
+		tmp.read_file(fhandle)
+		self.data = tmp
 	
 	def save_to(self, fhandle):
-		tmp = {
-			'school_year'        : self.school_year,
-			'planner_price'      : self.planner_price,
-			'deadline_booklist'  : self.deadline_booklist,
-			'deadline_changes'   : self.deadline_changes
-		}
-	
-		json.dump(tmp, fhandle)
+		self.data.write(fhandle)
 
 # -----------------------------------------------------------------------------
 
@@ -197,33 +192,6 @@ class Tests(unittest.TestCase):
 		db.drop_all_tables(with_all_data=True)
 
 	@db_session
-	def test_settings_save(self):
-		s = Settings()
-		s.school_year       = 1
-		s.planner_price     = 2
-		s.deadline_booklist = '3'
-		s.deadline_changes  = '4'
-		
-		io = StringIO()
-		s.save_to(io)
-		
-		self.assertEqual(io.getvalue(), '{"school_year": 1, "planner_price": 2, "deadline_booklist": "3", "deadline_changes": "4"}')
-	
-	@db_session
-	def test_settings_load(self):
-		io = StringIO()
-		io.write('{"school_year": 1, "planner_price": 2, "deadline_booklist": "3", "deadline_changes": "4"}')
-		io.seek(0)
-		
-		s = Settings()
-		s.load_from(io)
-		
-		self.assertEqual(s.school_year      , 1)
-		self.assertEqual(s.planner_price    , 2)
-		self.assertEqual(s.deadline_booklist, '3')
-		self.assertEqual(s.deadline_changes , '4')
-
-	@db_session
 	def test_create_custom_booklist(self):
 		# create custom database content (real world example)
 		books.addSubjects("Mathematik	Ma\nDeutsch	De\nEnglisch	En\nPhysik	Ph")
@@ -236,7 +204,7 @@ Grundlagen der Physik			Cornelsen	5	12	Ph	True	True	False	False	True
 Tafelwerk	978-3-06-001611-2	13,50 €	Cornelsen	7	12		False	False	False	False	True""")
 
 		# create booklist
-		with open('settings.json') as h:
+		with open('settings.ini') as h:
 			booklist = BooklistPdf(h, export='/tmp/export')
 		booklist(11, new_students=True)
 		print('PLEASE MANUALLY VIEW /tmp/export/Buecherzettel11.pdf')
@@ -255,7 +223,7 @@ Grundlagen der Physik			Cornelsen	5	12	Ph	True	True	False	False	True
 Tafelwerk	978-3-06-001611-2	13,50 €	Cornelsen	7	12		False	False	False	False	True""")
 
 		# create requestlists
-		with open('settings.json') as h:
+		with open('settings.ini') as h:
 			requestlist = RequestlistPdf(h, export='/tmp/export')
 		for c in select(c for c in db.Class):
 			requestlist(c)

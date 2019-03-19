@@ -258,7 +258,7 @@ def teachers_delete_post(id):
 def settings_form():
 	s = Settings()
 	try:
-		with open('settings.json') as h:
+		with open('settings.ini') as h:
 			s.load_from(h)
 	except FileNotFoundError:
 		# keep default values
@@ -270,12 +270,12 @@ def settings_form():
 @view('success')
 def settings_form_post():
 	s = Settings()
-	s.school_year       = int(request.forms.school_year)
-	s.planner_price     = Currency.fromString(request.forms.planner_price)
-	s.deadline_changes  = request.forms.deadline_changes
-	s.deadline_booklist = request.forms.deadline_booklist
+	s.data['general']['school_year']       = request.forms.school_year
+	s.data['general']['planner_price']     = str(Currency.fromString(request.forms.planner_price))
+	s.data['deadline']['booklist_changes'] = request.forms.deadlinebooklist_changes
+	s.data['deadline']['booklist_return']  = request.forms.deadline_booklist_return
 	
-	with open('settings.json', 'w') as h:
+	with open('settings.ini', 'w') as h:
 		s.save_to(h)
 	
 	return dict()
@@ -310,9 +310,9 @@ def lists_index():
 	data.sort(key=lambda d: d["name"])
 	return dict(data=data, full=full)
 
-@get('/admin/booklist/generate')
+@get('/admin/lists/generate/booklist')
 def booklist_generate():
-	with open('settings.json') as h:
+	with open('settings.ini') as h:
 		booklist = BooklistPdf(h)
 	
 	print('Generating Booklists')
@@ -334,9 +334,9 @@ def booklist_generate():
 	
 	yield '<hr /><br />Erledigt in %f Sekunden' % (d)
 
-@get('/admin/requestlist/generate')
+@get('/admin/lists/generate/requestlist')
 def requestlist_generate():
-	with open('settings.json') as h:
+	with open('settings.ini') as h:
 		requestlist = RequestlistPdf(h)
 	
 	# exclude 12th grade (last grade)
@@ -1076,7 +1076,7 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 	@db_session
 	def test_settings_post(self):
 		s = Settings()
-		with open('settings.json') as h:
+		with open('settings.ini') as h:
 			s.load_from(h)
 		
 		args = {
@@ -1088,7 +1088,7 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 		ret = self.app.post('/admin/settings', args)
 		
 		# override test-settings with original settings
-		with open('settings.json', 'w') as h:
+		with open('settings.ini', 'w') as h:
 			s.save_to(h)
 		
 		self.assertEqual(ret.status_int, 200)
@@ -1105,7 +1105,7 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 		
 		# create all booklists (some even without books)
 		# note: this may take some seconds
-		ret = self.app.get('/admin/booklist/generate')
+		ret = self.app.get('/admin/lists/generate/booklist')
 		self.assertEqual(ret.status_code, 200)
 		
 		# show lists index
@@ -1117,7 +1117,7 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 		Tests.prepare()
 		
 		# create requestlists (some even without books)
-		ret = self.app.get('/admin/requestlist/generate')
+		ret = self.app.get('/admin/lists/generate/requestlist')
 		self.assertEqual(ret.status_code, 200)
 		
 		# show lists index

@@ -2,7 +2,8 @@
 
 {\LARGE Erfassung Bücherzettel {{class_.toString()}} }
 \hfill
-{\large für Klasse {{class_.grade+1}} ({{s.school_year}}/{{s.school_year+1}}) }
+%year = int(s.data['general']['school_year'])
+{\large für Klasse {{class_.grade+1}} ({{year}}/{{year+1}}) }
 
 %if class_.teacher is not None:
 	Klassenleiter(in):
