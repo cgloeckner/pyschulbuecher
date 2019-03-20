@@ -140,7 +140,7 @@ def books_delete(id):
 
 
 @get('/admin/demand')
-@view('admin/demand_form')
+@view('admin/demand_list')
 def demand_form():
 	bks = books.orderBooksIndex(books.getAllBooks())
 	

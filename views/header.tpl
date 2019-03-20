@@ -25,6 +25,16 @@ input[type=checkbox].selection {
 	transform: scale(1.5);
 }
 
+td.critical {
+	font-weight: bold;
+	background-color: red;
+}
+
+td.low {
+	font-weight: bold;
+	background-color: orange;
+}
+
 </style>
 </head>
 
@@ -51,3 +61,4 @@ input[type=checkbox].selection {
 	</span>
 </div>
 <div class="content">
+

@@ -2,6 +2,7 @@
 %from utils import bool2str
 %from db.orm import Currency
 
+%include("header")
 <h1>Bedarfsbericht</h1>
 
 <a href="/admin/order">Bestellübersicht</a>
@@ -29,7 +30,20 @@
 		<td>{{b.publisher.name}}</td>
 		<td>{{b.stock}}</td>
 		<td>{{data[b.id]["need"]}}</td>
-		<td>{{data[b.id]["diff"]}}</td>
+	
+	%perc = 1.0
+	%if data[b.id]["need"] > 0:
+		%perc = data[b.id]["diff"] / data[b.id]["need"]
+	%end
+	
+	%if perc < 0.0:
+		<td class="critical">
+	%elif perc <= 0.1:
+		<td class="low">
+	%else:
+		<td>
+	%end
+		{{data[b.id]["diff"]}}</td>
 		<td>
 	%diff = data[b.id]["diff"]
 	%if diff < 0:
