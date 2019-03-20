@@ -16,7 +16,7 @@ Bitte für jedes gewünschte Freiexemplar ein Kreuz setzen:
 \newcolumntype{g}{>{\columncolor{black!10}}p{0.175cm}}
 
 \rowcolors{1}{white}{black!10}
-\begin{longtable}{ | r | l l |
+\begin{longtable}[l]{ | r | l l |
 %i = 0
 %for b in bks:
 	%if not b.workbook and not b.classsets:
@@ -28,6 +28,7 @@ Bitte für jedes gewünschte Freiexemplar ein Kreuz setzen:
 		%i += 1
 	%end
 %end
+	| p{0.175cm} |
 }
 	\hiderowcolors
 	\hline
@@ -37,6 +38,7 @@ Bitte für jedes gewünschte Freiexemplar ein Kreuz setzen:
 		& \rotatebox{90}{\footnotesize {{!tex_escape(b.title)}} }
 	%end
 %end	
+		& \rotatebox{90}{\footnotesize Schulplaner }
 	\\
     	Nr & Name & Vorname
 %for b in bks:
@@ -59,6 +61,7 @@ Bitte für jedes gewünschte Freiexemplar ein Kreuz setzen:
 		}
 	%end
 %end
+		&
 	\\
 	\hline
 %i = 1
@@ -77,11 +80,18 @@ Bitte für jedes gewünschte Freiexemplar ein Kreuz setzen:
 		&
 		%end
 	%end
+		&
 	\\
 	\hline
 %end
 \end{longtable}
 
-\textit{Vielen Dank!}
+\begin{flushright}
+
+	Anzahl benötiger Schulplaner: \rule[-4pt]{4cm}{0.1mm} Stück
+
+	\textit{Vielen Dank!}
+
+\end{flushright}
 
 \pagebreak
