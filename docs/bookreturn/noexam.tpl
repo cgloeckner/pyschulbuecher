@@ -17,7 +17,6 @@ Bitte \textbf{belehren} Sie die Schüler, dass
 	\item Dabei ist \textbf{in jedes Buch} ein \textbf{Zettel mit Name und Stammkurs} zu legen, um eine eindeutige und zügige Zuordnung zu ermöglichen.
 \end{itemize}
 
-Mit freundlichen Grüßen \\
-Christian Glöckner
+Mit freundlichen Grüßen
 
 \vspace{1.5cm}
