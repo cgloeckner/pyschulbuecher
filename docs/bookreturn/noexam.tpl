@@ -4,7 +4,7 @@
 Liebe Kolleginnen und Kollegen,
 
 \begin{itemize}
-	\item am {{s.data['deadline']['bookreturn_noexam']}} werden alle Bücher der \textbf{Nichtprüfungsfächer} in der 1./2. Stunde eingesammelt.
+	\item am {{s.data['deadline']['bookreturn_noexam']}} werden alle Bücher der \textbf{Nichtprüfungsfächer} eingesammelt.
 	\item Bitte kennzeichnen Sie eingesammelte Bücher durch ein Kreuz \framebox[14pt]{\xcancel{1}}
 	\item bringen Sie alle eingesammelten Bücher nach der 2. Stunde in den Bücherraum.
 	\item Bei fehlenden Büchern vereinbaren wir individuell einen Ausweichtermin.

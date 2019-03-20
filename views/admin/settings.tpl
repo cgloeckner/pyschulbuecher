@@ -23,7 +23,7 @@
 		<td><input type="text" name="deadline_booklist_changes" value="{{s.data['deadline']['booklist_changes']}}" /></td>
 	</tr>
 	<tr>
-		<td>Rückgabe Bücher (Klasse 12, Nichtprüfungsfächer)</td>
+		<td>Rückgabetermin Bücher, inkl. Stunde<br />(Klasse 12, Nichtprüfungsfächer)</td>
 		<td><input type="text" name="deadline_bookreturn_noexam" value="{{s.data['deadline']['bookreturn_noexam']}}" /></td>
 	</tr>
 	<tr>
