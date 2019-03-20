@@ -25,6 +25,10 @@ input[type=checkbox].selection {
 	transform: scale(1.5);
 }
 
+input[type=text].selection {
+	width: 15px;
+}
+
 td.critical {
 	font-weight: bold;
 	background-color: red;

@@ -41,6 +41,24 @@ def updateRequest(student: db.Student, book: db.Book, status: bool):
 		r.delete()
 	# else: nothing to update
 
+def updateLoan(person: db.Person, book: db.Book, count: int):
+	"""Update the loan status for the given book and the given person. If the
+	count is set to zero, the loan object is deleted from the database.
+	Otherwise the loan object is updated. If no such object exists, it will be
+	created as needed.
+	"""
+	l = db.Loan.get(person=person, book=book)
+	if l is None and count > 0:
+		# create new loan
+		db.Loan(person=person, book=book, given=date.today(), count=count)
+	elif l is not None:
+		if count == 0:
+			# delete loan
+			l.delete()
+		else:
+			# update it
+			l.count = count
+
 def countNeededBooks(book: db.Book):
 	"""Count how many books are required considering current loans, returning
 	loans and new requested loans.
@@ -61,6 +79,14 @@ def countNeededBooks(book: db.Book):
 				n -= l.count
 	
 	return n
+
+def getLoanCount(person: db.Person, book: db.Book):
+	"""Return number of this specific book loaned by that person.
+	"""
+	for l in person.loan:
+		if l.book == book:
+			return l.count
+	return 0
 
 # -----------------------------------------------------------------------------
 
@@ -130,6 +156,42 @@ class Tests(unittest.TestCase):
 		updateRequest(db.Student[3], db.Book[5], False)
 		self.assertEqual(len(db.Student[3].person.request), 0)
 		self.assertFalse(isRequested(db.Student[3], db.Book[5]))
+
+	@db_session
+	def test_updateLoan(self):
+		Tests.prepare()
+		
+		s = db.Student[3]
+		self.assertEqual(len(s.person.loan), 0)
+		
+		# register book 3
+		updateLoan(s.person, db.Book[3], 1)
+		self.assertEqual(len(s.person.loan), 1)
+		self.assertEqual(getLoanCount(s.person, db.Book[3]), 1)
+		
+		# register 2nd book 3
+		updateLoan(s.person, db.Book[3], 2)
+		self.assertEqual(len(s.person.loan), 1)
+		self.assertEqual(getLoanCount(s.person, db.Book[3]), 2)
+		
+		# return book 5 (not loaned yet)
+		updateLoan(s.person, db.Book[5], 0)
+		self.assertEqual(len(s.person.loan), 1)
+		
+		# register book 5
+		updateLoan(s.person, db.Book[5], 1)
+		self.assertEqual(len(s.person.loan), 2)
+		self.assertEqual(getLoanCount(s.person, db.Book[5]), 1)
+		
+		# return book 3
+		updateLoan(s.person, db.Book[3], 0)
+		self.assertEqual(len(s.person.loan), 1)
+		self.assertEqual(getLoanCount(s.person, db.Book[3]), 0)
+		
+		# return book 5
+		updateLoan(s.person, db.Book[5], 0)
+		self.assertEqual(len(s.person.loan), 0)
+		self.assertEqual(getLoanCount(s.person, db.Book[5]), 0)
 
 	@db_session
 	def test_countNeededBooks(self):

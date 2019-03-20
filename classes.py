@@ -23,7 +23,9 @@ def classes_grade_index(grade):
 @get('/classes/<grade:int>/<tag>')
 @view('classes/students_index')
 def classes_students_index(grade, tag):
-	return dict(grade=grade, tag=tag)
+	bks = books.getBooksStartedIn(grade)
+	bks = books.orderBooksList(bks)
+	return dict(grade=grade, tag=tag, books=bks)
 
 # -----------------------------------------------------------------------------
 
@@ -43,6 +45,25 @@ def classes_requests_post(grade, tag):
 			key    = "%d_%d" % (s.id, b.id)
 			status = request.forms.get(key) == 'on'
 			loans.updateRequest(s, b, status)
+	
+	db.commit()
+	redirect('/classes/%d/%s' % (grade, tag))
+
+# -----------------------------------------------------------------------------
+
+@post('/classes/loans/<grade:int>/<tag>')
+@errorhandler
+def classes_loans_post(grade, tag):
+	bks = books.getBooksStartedIn(grade, True)
+	for s in orga.getStudentsIn(grade, tag):
+		for b in bks:
+			key   = "%d_%d" % (s.id, b.id)
+			count = request.forms.get(key)
+			if count is None or count is "":
+				count = 0
+			else:
+				count = int(count)
+			loans.updateLoan(s.person, b, count)
 	
 	db.commit()
 	redirect('/classes/%d/%s' % (grade, tag))
