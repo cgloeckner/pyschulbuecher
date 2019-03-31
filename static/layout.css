@@ -2,9 +2,14 @@ body {
 	background-color: white;
 }
 
+span.button {
+	cursor: pointer;
+}
+
 th.rotate, td.rotate {
 	writing-mode: sideways-lr;
-	width: 25px;
+	width: 20px;
+	font-size: small;
 }
 
 tr.gray td, tr.gray th {
@@ -12,16 +17,14 @@ tr.gray td, tr.gray th {
 }
 
 input[type=checkbox].selection {
-	transform: scale(1.125);
-}
-
-input[type=button].negate {
-	width: 25px;
-	padding: 0px;
+	width: 20px;
+	height: 15px;
 }
 
 input[type=text].selection {
-	width: 15px;
+	width: 8px;
+	height: 10px;
+	font-size: smaller;
 }
 
 td.critical {
@@ -33,3 +36,4 @@ td.low {
 	font-weight: bold;
 	background-color: orange;
 }
+

@@ -11,7 +11,7 @@
 	<!-- ==================== book titles ==================== //-->
 	<tr>
 		<th></th>
-		<th><input type="button" value="alle umkehren ↺" onClick="toggleAll();" /></th>
+		<th><span class="button" style="font-size: 500%;" onClick="toggleAll();" title="Auswahl für alle umkehren">↺</span></th>
 %i = 1
 %for b in books:
 	%if b.workbook:
@@ -61,7 +61,7 @@
 	%if b.workbook or b.classsets:
 		%continue
 	%end
-		<td><input class="negate" type="button" value="↺" onClick="toggleCol({{b.id}});" /></td>
+		<td><span class="button" onClick="toggleCol({{b.id}});" title="Auswahl für dieses Buch umkehren">↺</span></td>
 	%if i % 3 == 0:
 		<td></td>
 	%end
@@ -87,19 +87,18 @@
 			%continue
 		%end
 		%id = '%i_%i' % (s.id, b.id)
-		<td name="{{b.id}}">\\
 		%if loans.isRequested(s, b):
 			%checked = 'checked="checked"'
 		%else:
 			%checked = ''
 		%end
-<input class="selection" type="checkbox" name="{{id}}" {{!checked}}/></td>
+		<td name="{{b.id}}"><input class="selection" type="checkbox" name="{{id}}" {{!checked}}/></td>
 		%if j % 3 == 0:
 		<td></td>
 		%end
 		%j += 1
 	%end
-		<td><input class="negate" type="button" value="↺" onClick="toggleRow({{s.id}});" /></td>
+		<td><span class="button" onClick="toggleRow({{s.id}});" title="Auswahl für diesen Schüler umkehren">↺</span></td>
 	</tr>
 %end
 </table>

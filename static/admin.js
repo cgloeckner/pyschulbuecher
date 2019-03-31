@@ -31,3 +31,4 @@ function toggleCol(id) {
 		objs[i].checked = !objs[i].checked;
 	}
 }
+
