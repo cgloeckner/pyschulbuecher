@@ -12,6 +12,7 @@
 %count = dict()
 
 <table>
+	<!-- ==================== book titles ==================== //-->
 	<tr>
 		<th></th>
 		<th></th>
@@ -20,18 +21,15 @@
 	%if b.workbook or b.classsets:
 		%continue
 	%end
-	
 	%count[b.id] = 0
-	
-	%if i % 2 == 0:
-		<th class="rotate gray">
-	%else:
-		<th class="rotate">
+		<th class="rotate">{{b.title}}</th>
+	%if i % 3 == 0:
+		<td></td>
 	%end
 	%i += 1
-	{{b.title}}</th>
 %end
 	</tr>
+	<!-- ==================== subjects titles ==================== //-->
 	<tr>
 		<th>Nr.</th>
 		<th>Name, Vorname</th>
@@ -40,58 +38,49 @@
 	%if b.workbook or b.classsets:
 		%continue
 	%end
-	%if i % 2 == 0:
-		<td class="rotate gray">
-	%else:
-		<td class="rotate">
-	%end
+	<td class="rotate">\\
 	%i += 1
 	%if b.subject is not None:
-		{{b.subject.tag}}
+{{b.subject.tag}} \\
 	%end
 	%if b.advanced and not b.novices:
-		(eA)
+ (eA) \\
 	%elif b.novices and not b.advanced:
-		(gA)
+ (gA) \\
 	%end
-		{{b.comment}}
+{{b.comment}}</td>
+	%if i % 3 == 0:
+		<td></td>
+	%end
+	%i += 1
 %end
 	</tr>
 	
 %i = 1
 %for s in orga.getStudentsIn(grade, tag):
-	<tr>
+	<!-- ==================== student #{{s.id}} ({{s.person.name}}, {{s.person.firstname}}) ==================== //-->
 	%if i % 2 == 0:
-		%cl = ' class="gray"'
+	<tr class="gray">
 	%else:
-		%cl = ''
+	<tr>
 	%end
-		<td{{!cl}}>{{i}}</td>
-		<td{{!cl}}><a href="/admin/students/edit/{{s.id}}">{{s.person.name}}, {{s.person.firstname}}</a></td>
-	
+		<td>{{i}}</td>
+		<td><a href="/admin/students/edit/{{s.id}}">{{s.person.name}}, {{s.person.firstname}}</a></td>
 	%i += 1
-	
 	%j = 1
 	%for b in books:
 		%if b.workbook or b.classsets:
 			%continue
 		%end
-		
 		%value = loans.getLoanCount(s.person, b)
 		%count[b.id] += value
-		
+		%value = '' if value == 0 else value
 		%id = '%i_%i' % (s.id, b.id)
-		%if j % 2 == 0:
-		<td class="gray">
-		%else:
-		<td{{!cl}}>
+		<td><input class="selection" type="text" name="{{id}}" value="{{value}}" maxlength="1" /></td>
+		%if j % 3 == 0:
+		<td></td>
 		%end
-		%j += 1
-		
-		%if value == 0:
-		%	value = ""
-		%end
-		<input class="selection" type="text" name="{{id}}" value="{{value}}" maxlength="1" /></td>
+		%j += 1	
 	%end
 	</tr>
 %end

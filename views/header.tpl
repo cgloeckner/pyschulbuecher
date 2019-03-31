@@ -5,41 +5,10 @@
 <head>
 	<meta charset="UTF-8"> 
 	<script src="/static/jquery-3.3.1.min.js"></script>
-	<script src="/static/admin.js"></script> 
+	<script src="/static/admin.js"></script>
+	<link rel="stylesheet" type="text/css" href="/static/normalize.css">
+	<link rel="stylesheet" type="text/css" href="/static/layout.css">
 	<title>Schulbuchverwaltung</title>
-<style>
-body {
-	background-color: white;
-}
-
-th.rotate, td.rotate {
-	writing-mode: sideways-lr;
-	width: 25px;
-}
-
-th.gray, td.gray {
-	background-color: rgb(200, 200, 200);
-}
-
-input[type=checkbox].selection {
-	transform: scale(1.5);
-}
-
-input[type=text].selection {
-	width: 15px;
-}
-
-td.critical {
-	font-weight: bold;
-	background-color: red;
-}
-
-td.low {
-	font-weight: bold;
-	background-color: orange;
-}
-
-</style>
 </head>
 
 <body>

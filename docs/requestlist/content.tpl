@@ -13,23 +13,23 @@
 
 Bitte für jedes gewünschte Freiexemplar ein Kreuz setzen:
 
-\newcolumntype{g}{>{\columncolor{black!10}}p{0.175cm}}
+%num_bks = len([b for b in bks if not b.workbook and not b.classsets])
 
 \rowcolors{1}{white}{black!10}
 \begin{longtable}[l]{ | r | l l |
 %i = 0
 %for b in bks:
 	%if not b.workbook and not b.classsets:
-		%if i % 2 == 0:
-			p{0.175cm} |
-		%else:
-			g |
-		%end
+		p{0.175cm} |
 		%i += 1
+		%if i % 3 == 0 and i != num_bks:
+			|
+		%end
 	%end
 %end
 	| p{0.175cm} |
 }
+
 	\hiderowcolors
 	\hline
 		& &

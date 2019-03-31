@@ -1,0 +1,35 @@
+body {
+	background-color: white;
+}
+
+th.rotate, td.rotate {
+	writing-mode: sideways-lr;
+	width: 25px;
+}
+
+tr.gray td, tr.gray th {
+	background-color: rgb(200, 200, 200);
+}
+
+input[type=checkbox].selection {
+	transform: scale(1.125);
+}
+
+input[type=button].negate {
+	width: 25px;
+	padding: 0px;
+}
+
+input[type=text].selection {
+	width: 15px;
+}
+
+td.critical {
+	font-weight: bold;
+	background-color: red;
+}
+
+td.low {
+	font-weight: bold;
+	background-color: orange;
+}
