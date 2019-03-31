@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-import os, time
+import os, time, json
 from datetime import datetime
 
 from bottle import *
@@ -140,50 +140,84 @@ def books_delete(id):
 
 
 @get('/admin/demand')
-@view('admin/demand_list')
+@view('admin/demand_form')
 def demand_form():
-	bks = books.orderBooksIndex(books.getAllBooks())
+	s = Settings()
+	try:
+		with open('settings.ini') as h:
+			s.load_from(h)
+	except FileNotFoundError:
+		# keep default values
+		pass
+
+	# load student numbers from file
+	with open('demand.json', 'r') as h:
+		students = json.load(h)
+
+	return dict(s=s, students=students)
+
+@post('/admin/demand')
+@view('admin/demand_report')
+def demand_report():
+	s = Settings()
+	try:
+		with open('settings.ini') as h:
+			s.load_from(h)
+	except FileNotFoundError:
+		# keep default values
+		pass
 	
+	# parse student numbers
+	#   5th to 10th grade
+	students = dict()
+	for grade in range(5, 10+1):
+		students[grade] = dict()
+		for sub in ['Fr', 'Ru', 'La', 'Eth', 'eR']: # TODO: fix hardcoding
+			key = "%d_%s" % (grade, sub)
+			tmp = request.forms.get(key)
+			students[grade][sub] = int(tmp) if tmp != "" else 0
+	#   11th / 12th grade
+	for grade in [11, 12]:
+		students[grade] = dict()
+		for sub in books.getSubjects():
+			students[grade][sub.tag] = dict()
+			for level in ['gA', 'eA']:
+				key = "%d_%s_%s" % (grade, sub.tag, level)
+				tmp = request.forms.get(key)
+				students[grade][sub.tag][level] = int(tmp) if tmp != "" else 0
+	# save student numbers
+	with open('demand.json', 'w') as h:
+		json.dump(students, h, indent=4)
+
+	# create book demand report
+	bks = books.orderBooksList(books.getAllBooks())
+	total = 0
 	data = dict()
 	for b in bks:
-		need = loans.countNeededBooks(b)
-		diff = b.stock - need
-		if diff < 0:
-			price = -b.price * diff
+		free = loans.countNeededBooks(b)
+		required = 0
+		if b.novices:
+			required += loans.countWorstCase(b, students, 'gA')
+		if b.advanced:
+			required += loans.countWorstCase(b, students, 'eA')
+		if not b.novices and not b.advanced:
+			required += loans.countWorstCase(b, students)
+		diff = free - b.stock
+		if diff > 0:
+			price = b.price * diff
 		else:
 			price = 0
+			diff = "&mdash;"
 		
 		data[b.id] = {
-			'need': need,
+			'free': free,
+			'parents': required - free,
 			'diff': diff,
-			'price': price
+			'price': price,
 		}
+		total += price
 	
-	return dict(bks=bks, data=data)
-
-
-@get('/admin/order')
-@view('admin/order_list')
-def order_list():
-	bks = books.orderBooksIndex(books.getAllBooks())
-	
-	data = dict()
-	for b in bks:
-		need = loans.countNeededBooks(b)
-		diff = b.stock - need
-		if diff < 0:
-			price = -b.price * diff
-		else:
-			price = 0
-		
-		data[b.id] = {
-			'need': need,
-			'diff': diff,
-			'price': price
-		}
-	
-	return dict(bks=bks, data=data)
-
+	return dict(bks=bks, data=data, total=total, s=s)
 
 # -----------------------------------------------------------------------------
 

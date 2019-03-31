@@ -80,6 +80,26 @@ def countNeededBooks(book: db.Book):
 	
 	return n
 
+def countWorstCase(book: db.Book, students: dict, level=None):
+	"""Count how many copies of the given book are required in worst case if
+	all of the given students want a free copy.
+	"""
+	total = 0
+	for grade in range(book.inGrade, book.outGrade+1):
+		if book.subject is None or book.subject.tag not in students[grade]:
+			# use student count
+			total += orga.getStudentsCount(grade)
+		elif grade <= 10:
+			# use regular number
+			total += students[grade][book.subject.tag]
+		elif level is not None:
+			# consider course level
+			total += students[grade][book.subject.tag][level]
+		else:
+			# fallback: use student count (again)
+			total += orga.getStudentsCount(grade)
+	return total
+
 def getLoanCount(person: db.Person, book: db.Book):
 	"""Return number of this specific book loaned by that person.
 	"""

@@ -41,9 +41,18 @@ def getClassesByGrade(grade: int):
 	).order_by(db.Class.tag)
 
 def getClassesCount():
-	"""Return total number of classes."
+	"""Return total number of classes.
 	"""
 	return db.Class.select().count()
+
+def getStudentsCount(grade: int):
+	"""Return total number of students in the given grade.
+	"""
+	cs = getClassesByGrade(grade)
+	total = 0
+	for c in cs:
+		total += len(c.student)
+	return total
 
 def getStudentsIn(grade: int, tag: str):
 	"""Return all students in the given grade.

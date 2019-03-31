@@ -6,6 +6,7 @@
 	<meta charset="UTF-8"> 
 	<script src="/static/jquery-3.3.1.min.js"></script>
 	<script src="/static/admin.js"></script>
+	<script src="/static/classes.js"></script>
 	<link rel="stylesheet" type="text/css" href="/static/normalize.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link rel="stylesheet" type="text/css" href="/static/layout.css">

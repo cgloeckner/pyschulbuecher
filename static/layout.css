@@ -51,6 +51,10 @@ tr.gray td, tr.gray th {
 	background-color: rgb(200, 200, 200);
 }
 
+td.demand {
+	background-color: rgb(255, 255, 100);
+}
+
 input[type=checkbox].selection {
 	width: 20px;
 	height: 15px;
@@ -60,6 +64,10 @@ input[type=text].selection {
 	width: 8px;
 	height: 10px;
 	font-size: smaller;
+}
+
+input[type=text].short {
+	width: 25px;
 }
 
 td.critical {
