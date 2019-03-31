@@ -7,13 +7,11 @@
 	<tr>
 		<th>Kürzel</th>
 		<th>Fach</th>
-		<th></th>
 	</tr>
 %for s in books.getSubjects():
 	<tr>
-		<td>{{s.tag}}</td>
+		<td><a href="/admin/subjects/edit/{{s.id}}">{{s.tag}}</a></td>
 		<td>{{s.name}}</td>
-		<td><a href="/admin/subjects/edit/{{s.id}}">Bearbeiten</a></td>
 	</tr>
 %end
 

@@ -15,7 +15,7 @@
 		<td>{{s.person.name}}</td>
 		<td>{{s.person.firstname}}</td>
 		<td><a href="/classes/{{s.class_.grade}}/{{s.class_.tag}}">{{s.class_.toString()}}</a></td>
-		<td><a href="/admin/students/edit/{{s.id}}">Bearbeiten</a></td>
+		<td>Bearbeiten</a></td>
 	</tr>
 %end
 </table>

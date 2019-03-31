@@ -3,17 +3,11 @@
 %include("header")
 <h1>Übersicht Verlage</h1>
 
-<table>
-	<tr>
-		<th>Name</th>
-		<th></th>
-	</tr>
+<ul>
 %for s in books.getPublishers():
-	<tr>
-		<td>{{s.name}}</td>
-		<td><a href="/admin/publishers/edit/{{s.id}}">Bearbeiten</a></td>
-	</tr>
+	<li><a href="/admin/publishers/edit/{{s.id}}">{{s.name}}</a></li>
 %end
+</ul>
 
 %if len(books.getPublishers()) == 0:
 	<tr>

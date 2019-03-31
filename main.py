@@ -31,16 +31,6 @@ def static_files(fname):
 def landingpage():
 	return dict()
 
-@get('/classes')
-@view('class_index')
-def class_index():
-	return dict()
-
-@get('/classes/<grade:int>')
-@view('grade_list')
-def grade_list(grade):
-	return dict()
-
 
 import admin, classes
 

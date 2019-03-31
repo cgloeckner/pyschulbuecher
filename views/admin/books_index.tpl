@@ -19,7 +19,7 @@
 <a href="#{{s.tag}}">{{s.tag}}</a> &nbsp;
 %end
 
-<table>
+<table class="books">
 %old = None
 %bs = books.orderBooksIndex(books.getAllBooks())
 %for b in bs:
@@ -36,16 +36,15 @@
 		<th>ISBN</th>
 		<th>Preis</th>
 		<th>Verlag</th>
-		<th>Bestand</th>
-		<th>Klassen-<br />stufen</th>
-		<th>Fach</th>
-		<th>für gA</th>
-		<th>für eA</th>
-		<th>AH?</th>
-		<th>Klassen-<br />satz?</th>
-		<th>auf Bücher-<br>zettel?</th>
+		<th class="rotate">Bestand</th>
+		<th class="rotate">Klassen-<br />stufen</th>
+		<th class="rotate">Fach</th>
+		<th class="rotate">für gA</th>
+		<th class="rotate">für eA</th>
+		<th class="rotate">AH?</th>
+		<th class="rotate">Klassen-<br />satz?</th>
+		<th class="rotate">auf Bücher-<br>zettel?</th>
 		<th>Kommentar</th>
-		<th></th>
 	</tr>	
 	%end
 	%if b.workbook:
@@ -57,7 +56,7 @@
 	<tr class="regular">
 		%end
 	%end
-		<td>{{b.title}}</td>
+		<td><a href="/admin/books/edit/{{b.id}}">{{b.title}}<a/></td>
 		<td>{{b.isbn}}</td>
 	%if b.price is not None:
 		<td>{{Currency.toString(b.price)}}€</td>
@@ -82,7 +81,6 @@
 		<td>{{bool2str(b.classsets)}}</td>
 		<td>{{bool2str(b.for_loan)}}</td>
 		<td>{{b.comment}}</td>
-		<td><a href="/admin/books/edit/{{b.id}}">Bearbeiten</a></td>
 	</tr>
 %end
 

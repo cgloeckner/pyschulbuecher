@@ -1,9 +1,44 @@
 body {
+	background-color: #ddd;
+}
+
+div.navbar span.info {
+	color: white;
+	float: right;
+	margin: 25px;
+}
+
+div.content {
 	background-color: white;
+	width: 1024px;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 25px;
+	padding-top: 5px;
+}
+
+table {
+	border-collapse: collapse;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+table, th, td {
+	border: 1px solid black;
+	padding: 5px;
+}
+
+table.simple, table.simple th, table.simple td {
+	border: none;
+	padding: 0px;
 }
 
 span.button {
 	cursor: pointer;
+}
+
+table.books th, table.books td {	
+	font-size: small;
 }
 
 th.rotate, td.rotate {

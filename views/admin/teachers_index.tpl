@@ -9,11 +9,10 @@
 		<th>Name</th>
 		<th>Vorname</th>
 		<th>Klasse</th>
-		<th></th>
 	</tr>
 %for t in orga.getTeachers():
 	<tr>
-		<td>{{t.tag.upper()}}</td>
+		<td><a href="/admin/teachers/edit/{{t.id}}">{{t.tag.upper()}}</a></td>
 		<td>{{t.person.name}}</td>
 		<td>{{t.person.firstname}}</td>
 		<td>
@@ -23,7 +22,6 @@
 	keine
 %end
 		</td>
-		<td><a href="/admin/teachers/edit/{{t.id}}">Bearbeiten</a></td>
 	</tr>
 %end
 </table>

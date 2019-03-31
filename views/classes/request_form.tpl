@@ -7,7 +7,7 @@
 
 <form action="/classes/requests/{{grade}}/{{tag}}" id="requests" method="post">
 
-<table>
+<table class="simple">
 	<!-- ==================== book titles ==================== //-->
 	<tr>
 		<th></th>

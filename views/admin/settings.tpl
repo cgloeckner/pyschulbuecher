@@ -5,7 +5,7 @@
 
 <form action="/admin/settings" id="settings" method="post">
 
-<table>
+<table class="simple">
 	<tr>
 		<td>Schuljahr</td>
 		<td><input type="text" name="school_year" value="{{s.data['general']['school_year']}}" /></td>

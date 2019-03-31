@@ -15,6 +15,11 @@ from utils import errorhandler
 __author__ = "Christian Glöckner"
 
 
+@get('/classes')
+@view('classes/class_index')
+def class_index():
+	return dict()
+
 @get('/classes/<grade:int>')
 @view('classes/grade_index')
 def classes_grade_index(grade):

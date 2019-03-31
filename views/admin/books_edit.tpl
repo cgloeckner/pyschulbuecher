@@ -6,7 +6,7 @@
 <h1>Buch bearbeiten</h1>
 
 <form action="/admin/books/edit/{{b.id}}" id="books" method="post">
-	<table>
+	<table class="simple">
 		<tr>
 			<td>Titel</td>
 			<td><input type="text" name="title" value="{{b.title}}" /></td>

@@ -4,7 +4,7 @@
 <h1>Schüler verwalten</h1>
 
 <form action="/admin/students/search" id="search" method="post">
-<table>
+<table class="simple">
 	<tr>
 		<td>Name</td>
 		<td><input type="text" name="name" /></td>

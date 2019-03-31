@@ -14,7 +14,7 @@
 
 %count = dict()
 
-<table>
+<table class="simple">
 	<!-- ==================== book titles ==================== //-->
 	<tr>
 		<th></th>

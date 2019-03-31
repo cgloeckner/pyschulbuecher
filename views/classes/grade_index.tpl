@@ -3,7 +3,7 @@
 %include("header")
 <h1>Übersicht Klassenstufe {{grade}}</h1>
 
-<table>
+<table class="small">
 	<tr>
 		<th>Klasse</th>
 		<th>Klassenlehrer</th>
