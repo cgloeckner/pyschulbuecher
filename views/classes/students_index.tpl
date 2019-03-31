@@ -87,11 +87,16 @@
 	<tr>
 		<th></th>
 		<th>Summe:</th>
+%i = 1
 %for b in books:
 	%if b.workbook or b.classsets:
 		%continue
 	%end
 		<td>{{count[b.id]}}</td>
+	%if i % 3 == 0:
+		<td></td>
+	%end
+	%i += 1
 %end
 	</tr>
 </table>

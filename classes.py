@@ -23,7 +23,7 @@ def classes_grade_index(grade):
 @get('/classes/<grade:int>/<tag>')
 @view('classes/students_index')
 def classes_students_index(grade, tag):
-	bks = books.getBooksStartedIn(grade)
+	bks = books.getBooksUsedIn(grade)
 	bks = books.orderBooksList(bks)
 	return dict(grade=grade, tag=tag, books=bks)
 
