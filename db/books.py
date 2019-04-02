@@ -16,12 +16,21 @@ def getPublishers():
 		for p in db.Publisher
 	).order_by(db.Publisher.name)
 
-def getSubjects():
-	"""Return a list of all subjects.
+def getSubjects(elective=None):
+	"""Return a list of all subjects. If elective is provided, only elective
+	or non-elective subjects are returned. If elective is not provided, all
+	subjects are returned (default).
 	"""
-	return select(s
-		for s in db.Subject
-	).order_by(db.Subject.tag)
+	if elective is not None:
+		ret = select(s
+			for s in db.Subject
+				if s.elective == elective
+		)
+	else:
+		ret = select(s
+			for s in db.Subject
+		)
+	return ret.order_by(db.Subject.tag).order_by(db.Subject.elective)
 
 def orderBooksIndex(bks):
 	# 1st: subject, 2nd: inGrade, 3rd: title
@@ -223,6 +232,9 @@ class Tests(unittest.TestCase):
 		db.Subject(name='Mathematics', tag='Ma')
 		db.Subject(name='Russian',     tag='Ru')
 		db.Subject(name='English',     tag='En')
+		db.Subject(name='Spanish',     tag='Spa')
+		db.Subject[2].elective = True
+		db.Subject[4].elective = True
 		
 		# create publishers
 		db.Publisher(name='Cornelsen')
@@ -282,10 +294,21 @@ class Tests(unittest.TestCase):
 		Tests.prepare()
 		
 		sb = getSubjects()
-		self.assertEqual(len(sb), 3)
+		self.assertEqual(len(sb), 4)
 		self.assertIn(db.Subject[1], sb)
-		self.assertIn(db.Subject[2], sb)
 		self.assertIn(db.Subject[3], sb)
+		self.assertIn(db.Subject[2], sb)
+		self.assertIn(db.Subject[4], sb)
+		
+		sb = getSubjects(elective=False)
+		self.assertEqual(len(sb), 2)
+		self.assertIn(db.Subject[1], sb)
+		self.assertIn(db.Subject[3], sb)
+		
+		sb = getSubjects(elective=True)
+		self.assertEqual(len(sb), 2)
+		self.assertIn(db.Subject[2], sb)
+		self.assertIn(db.Subject[4], sb)
 	
 	@db_session
 	def test_getAllBooks(self):

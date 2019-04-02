@@ -16,22 +16,17 @@
 	<tr>
 		<th class="rotate">Klassenstufe</th>
 		<th class="rotate">Gesamtzahl Schüler</th>
-		<th>Fr</th>
-		<th>La</th>
-		<th>Ru</th>
-		<th>Eth</th>
-		<th>eR</th>
+	%for sub in books.getSubjects(elective=True):
+		<th>{{sub.tag}}</th>
+	%end
 	</tr>
 %for grade in range(5, 10+1):
 	<tr>
 		<td>{{grade}}</td>
 		<td id="{{grade}}_status">{{orga.getStudentsCount(grade-1)}}</td>
-	%# TODO: fix hardcoding
-		<td><input type="text" class="short" maxLength="3" name="{{grade}}_Fr" value="{{students[str(grade)]['Fr']}}" /></td>
-		<td><input type="text" class="short" maxLength="3" name="{{grade}}_La" value="{{students[str(grade)]['La']}}" /></td>
-		<td><input type="text" class="short" maxLength="3" name="{{grade}}_Ru" value="{{students[str(grade)]['Ru']}}" /></td>
-		<td><input type="text" class="short" maxLength="3" name="{{grade}}_Eth" value="{{students[str(grade)]['Eth']}}" /></td>
-		<td><input type="text" class="short" maxLength="3" name="{{grade}}_eR" value="{{students[str(grade)]['eR']}}" /></td>
+	%for sub in books.getSubjects(elective=True):
+		<td><input type="text" class="short" maxLength="3" name="{{grade}}_{{sub.tag}}" value="{{students[str(grade)][sub.tag]}}" /></td>
+	%end
 	</tr>
 %end
 </table>

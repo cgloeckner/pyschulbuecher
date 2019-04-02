@@ -181,7 +181,7 @@ def demand_report():
 	students = dict()
 	for grade in range(5, 10+1):
 		students[grade] = dict()
-		for sub in ['Fr', 'Ru', 'La', 'Eth', 'eR']: # TODO: fix hardcoding
+		for sub in books.getSubjects(elective=True):
 			key = "%d_%s" % (grade, sub)
 			tmp = request.forms.get(key)
 			students[grade][sub] = int(tmp) if tmp != "" else 0
