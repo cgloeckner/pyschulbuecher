@@ -54,15 +54,20 @@ def getStudentsCount(grade: int):
 		total += len(c.student)
 	return total
 
+def sortStudents(students: list):
+	"""Sort students by name (primary) and firstname (secondary). This
+	considers Umlate while sorting, e.h. handling O and Ö similar instead of
+	sorting Ö after Z
+	"""
+	students.sort(key=lambda s: locale.strxfrm(s.person.firstname))
+	students.sort(key=lambda s: locale.strxfrm(s.person.name))
+
 def getStudentsIn(grade: int, tag: str):
 	"""Return all students in the given grade.
 	"""
 	# Note: explicit list conversion + sort (instead directly order_by)
-	# to fix use of Umlaute while sorting
-	# e.g. handling O and Ö similar instead of sorting Ö after Z
 	l = list(db.Class.get(grade=grade, tag=tag).student)
-	#l.sort(key=lambda s: locale.strxfrm(s.person.firstname))
-	l.sort(key=lambda s: locale.strxfrm(s.person.name))
+	sortStudents(l)
 	return l
 
 # -----------------------------------------------------------------------------
@@ -423,6 +428,27 @@ Mus	Mustermann	Max
 		# no classes
 		cs = getClassesByGrade(9)
 		self.assertEqual(len(cs), 0)
+	
+	@db_session
+	def test_sortStudents(self):
+		Tests.prepare()
+		
+		db.Student(person=db.Person(name='Öbla', firstname='Cäsar'), class_=db.Class[3])
+		db.Student(person=db.Person(name='Öbla', firstname='Carl'), class_=db.Class[3])
+		db.Student(person=db.Person(name='Ober', firstname='Unter'), class_=db.Class[3])
+		db.Student(person=db.Person(name='Daumen', firstname='Zehe'), class_=db.Class[3])
+		
+		# query and sort all students
+		students = list(db.Class[3].student)
+		sortStudents(students)
+		
+		self.assertEqual(len(students), 4)
+		self.assertEqual(students[0].person.name, 'Daumen')
+		self.assertEqual(students[1].person.name, 'Ober')
+		self.assertEqual(students[2].person.name, 'Öbla')
+		self.assertEqual(students[2].person.firstname, 'Carl')
+		self.assertEqual(students[3].person.name, 'Öbla')
+		self.assertEqual(students[3].person.firstname, 'Cäsar')
 	
 	@db_session
 	def test_getStudentsLike(self):

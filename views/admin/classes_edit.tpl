@@ -45,6 +45,8 @@
 	</table>
 </form>
 
+<a href="/admin/classes/move/{{c.id}}">Schüler verschieben</a>
+
 <hr />
 
 <form action="/admin/classes/delete/{{c.id}}" id="drop" method="post">

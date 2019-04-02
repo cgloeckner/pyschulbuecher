@@ -20,7 +20,7 @@
 		%else:
 		<td>{{c.teacher.tag.upper()}}</td>
 		%end
-		<td>{{c.student.count()}}</td>
+		<td><a href="/admin/classes/move/{{c.id}}">{{c.student.count()}}</a></td>
 		<td><a href="/admin/classes/edit/{{c.id}}">Bearbeiten</a></td>
 	</tr>
 	%end
