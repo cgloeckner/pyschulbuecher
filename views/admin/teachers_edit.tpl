@@ -15,7 +15,7 @@
 		</tr>
 		<tr>
 			<td>Kürzel</td>
-			<td><input type="text" name="tag" value="{{t.tag}""</td>
+			<td><input type="text" name="tag" value="{{t.tag.upper()}}"</td>
 		</tr>
 		<tr>
 			<td></td>
