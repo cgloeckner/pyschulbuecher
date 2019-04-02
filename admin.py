@@ -23,13 +23,14 @@ def subjects_index():
 
 @post('/admin/subjects/add')
 @errorhandler
-@view('success')
 def subjects_add_post():
 	for line in request.forms.data.split('\n'):
 		if len(line) > 0:
 			tag, name = line.split('\t')
 			db.Subject(name=name, tag=tag)
-	return dict()
+	
+	db.commit()
+	redirect('/admin/subjects')
 
 @get('/admin/subjects/edit/<id:int>')
 @errorhandler
@@ -50,10 +51,11 @@ def subjects_edit_post(id):
 
 @post('/admin/subjects/delete/<id:int>')
 @errorhandler
-@view('success')
 def subjects_delete(id):
 	db.Subject[id].delete()
-	return dict()
+	
+	db.commit()
+	redirect('/admin/subjects')
 
 # -----------------------------------------------------------------------------
 
@@ -64,12 +66,13 @@ def publishers_index():
 
 @post('/admin/publishers/add')
 @errorhandler
-@view('success')
 def publishers_add_post():
 	for name in request.forms.data.split('\n'):
 		if len(name) > 0:
 			db.Publisher(name=name)
-	return dict()
+
+	db.commit()
+	redirect('/admin/publishers')
 
 @get('/admin/publishers/edit/<id:int>')
 @errorhandler
@@ -79,18 +82,20 @@ def publishers_edit_form(id):
 
 @post('/admin/publishers/edit/<id:int>')
 @errorhandler
-@view('success')
 def publishers_edit_post(id):
 	p = db.Publisher[id]
 	p.name = request.forms.name
-	return dict()
+	
+	db.commit()
+	redirect('/admin/publishers')
 
 @post('/admin/publishers/delete/<id:int>')
 @errorhandler
-@view('success')
 def publishers_delete(id):
 	db.Publisher[id].delete()
-	return dict()
+	
+	db.commit()
+	redirect('/admin/publishers')
 
 # -----------------------------------------------------------------------------
 
@@ -101,10 +106,11 @@ def books_index():
 
 @post('/admin/books/add')
 @errorhandler
-@view('success')
 def books_add_post():
 	books.addBooks(request.forms.data)
-	return dict()
+	
+	db.commit()
+	redirect('/admin/books')
 
 @get('/admin/books/edit/<id:int>')
 @errorhandler
@@ -114,7 +120,6 @@ def books_edit_form(id):
 
 @post('/admin/books/edit/<id:int>')
 @errorhandler
-@view('success')
 def books_edit_post(id):
 	b = db.Book[id]
 	b.title   = request.forms.title
@@ -131,15 +136,17 @@ def books_edit_post(id):
 	b.classsets = True if request.forms.classsets == 'on' else False
 	b.for_loan  = True if request.forms.for_loan  == 'on' else False
 	b.comment   = request.forms.comment
-	return dict()
+	
+	db.commit()
+	redirect('/admin/books')
 
 @post('/admin/books/delete/<id:int>')
 @errorhandler
-@view('success')
 def books_delete(id):
 	db.Book[id].delete()
-	return dict()
-
+	
+	db.commit()
+	redirect('/admin/books')
 
 @get('/admin/demand')
 @view('admin/demand_form')
@@ -230,10 +237,11 @@ def classes_index():
 
 @post('/admin/classes/add')
 @errorhandler
-@view('success')
 def classes_add_post():
 	orga.addClasses(request.forms.data)
-	return dict()
+	
+	db.commit()
+	redirect('/admin/classes')
 
 @get('/admin/classes/edit/<id:int>')
 @view('admin/classes_edit')
@@ -242,11 +250,12 @@ def classes_edit(id):
 
 @post('/admin/classes/edit/<id:int>')
 @errorhandler
-@view('success')
 def classes_edit_post(id):
 	orga.updateClass(id, int(request.forms.grade), request.forms.tag,
 		int(request.forms.teacher_id))
-	return dict()
+	
+	db.commit()
+	redirect('/admin/classes')
 
 @get('/admin/classes/move/<id:int>')
 @view('admin/classes_move')
@@ -273,10 +282,11 @@ def classes_move_post(id):
 
 @post('/admin/classes/delete/<id:int>')
 @errorhandler
-@view('success')
 def classes_delete_post(id):
-	db.Class[id].delete()	
-	return dict()
+	db.Class[id].delete()
+	
+	db.commit()
+	redirect('/admin/classes')
 
 # -----------------------------------------------------------------------------
 
@@ -287,10 +297,11 @@ def students_index():
 
 @post('/admin/students/add')
 @errorhandler
-@view('success')
 def students_add_post():
 	orga.addStudents(request.forms.data)
-	return dict()
+	
+	db.commit()
+	redirect('/admin/students')
 
 @post('/admin/students/search')
 @errorhandler
@@ -306,20 +317,22 @@ def students_edit(id):
 
 @post('/admin/students/edit/<id:int>')
 @errorhandler
-@view('success')
 def students_edit_post(id):
 	s = db.Student[id]
 	s.person.name = request.forms.name
 	s.person.firstname = request.forms.firstname
 	s.class_ = db.Class[request.forms.class_id]
-	return dict()
+	
+	db.commit()
+	redirect('/admin/students')
 
 @post('/admin/students/delete/<id:int>')
 @errorhandler
-@view('success')
 def students_delete_post(id):
 	db.Student[id].delete()	
-	return dict()
+	
+	db.commit()
+	redirect('/admin/students')
 
 # -----------------------------------------------------------------------------
 
@@ -330,10 +343,11 @@ def teachers_index():
 
 @post('/admin/teachers/add')
 @errorhandler
-@view('success')
 def teachers_add_post():
 	orga.addTeachers(request.forms.data)
-	return dict()
+	
+	db.commit()
+	redirect('/admin/teachers')
 
 @get('/admin/teachers/edit/<id:int>')
 @view('admin/teachers_edit')
@@ -342,20 +356,22 @@ def students_edit(id):
 
 @post('/admin/teachers/edit/<id:int>')
 @errorhandler
-@view('success')
 def teachers_edit_post(id):
 	s = db.Teacher[id]
 	s.person.name = request.forms.name
 	s.person.firstname = request.forms.firstname
 	s.tag = request.forms.tag.lower()
-	return dict()
+	
+	db.commit()
+	redirect('/admin/teachers')
 
 @post('/admin/teachers/delete/<id:int>')
 @errorhandler
-@view('success')
 def teachers_delete_post(id):
 	db.Teacher[id].delete()	
-	return dict()
+	
+	db.commit()
+	redirect('/admin/teachers')
 
 # -----------------------------------------------------------------------------
 
@@ -373,7 +389,6 @@ def settings_form():
 	return dict(s=s)
 
 @post('/admin/settings')
-@view('success')
 def settings_form_post():
 	s = Settings()
 	s.data['general']['school_year']         = request.forms.school_year
@@ -385,7 +400,8 @@ def settings_form_post():
 	with open('settings.ini', 'w') as h:
 		s.save_to(h)
 	
-	return dict()
+	db.commit()
+	redirect('/admin/settings')
 
 # -----------------------------------------------------------------------------
 
@@ -510,7 +526,7 @@ class Tests(unittest.TestCase):
 			"data": "Fr\tFranzösisch\nDe\tDeutsch"
 		}
 		ret = self.app.post('/admin/subjects/add', args)
-		self.assertEqual(ret.status_int, 200)
+		self.assertEqual(ret.status_int, 302) # 302=redirect
 		
 		# show subjects list
 		ret = self.app.get('/admin/subjects')
@@ -538,7 +554,7 @@ class Tests(unittest.TestCase):
 		# add subjects
 		args = { "data": "Fr\tFranzösisch\n\nDe\tDeutsch\n" }
 		ret = self.app.post('/admin/subjects/add', args)
-		self.assertEqual(ret.status_int, 200)
+		self.assertEqual(ret.status_int, 302) # 302=redirect
 		
 		# show subjects gui
 		ret = self.app.get('/admin/subjects')
@@ -563,7 +579,7 @@ class Tests(unittest.TestCase):
 		# edit subject
 		args = { 'tag' : 'Sk', 'name': 'Sozialkunde', 'elective': 'on' }
 		ret = self.app.post('/admin/subjects/edit/1', args)
-		self.assertEqual(ret.status_int, 302) # 302=redirection
+		self.assertEqual(ret.status_int, 302) # 302=redirect
 		
 		sj = db.Subject[1]
 		self.assertEqual(sj.tag,  args['tag'])
@@ -602,7 +618,7 @@ class Tests(unittest.TestCase):
 		
 		# delete subject
 		ret = self.app.post('/admin/subjects/delete/1')
-		self.assertEqual(ret.status_int, 200)
+		self.assertEqual(ret.status_int, 302) # 302=redirect
 	
 	@db_session
 	def test_subjects_delete_invalid(self):
@@ -631,7 +647,7 @@ class Tests(unittest.TestCase):
 			"data": "C. C. Buchner\nWestermann"
 		}
 		ret = self.app.post('/admin/publishers/add', args)
-		self.assertEqual(ret.status_int, 200)
+		self.assertEqual(ret.status_int, 302) # 302=redirect
 		
 		self.assertEqual(db.Publisher[3].name, 'C. C. Buchner')
 		self.assertEqual(db.Publisher[4].name, 'Westermann')
@@ -662,7 +678,7 @@ class Tests(unittest.TestCase):
 		# add subjects
 		args = { "data": "C. C. Buchner\n\nWestermann\n" }
 		ret = self.app.post('/admin/publishers/add', args)
-		self.assertEqual(ret.status_int, 200)
+		self.assertEqual(ret.status_int, 302) # 302=redirect
 		
 		# show subjects gui
 		ret = self.app.get('/admin/publishers')
@@ -687,7 +703,7 @@ class Tests(unittest.TestCase):
 		# edit subject
 		args = { 'name': 'Volk und Wissen' }
 		ret = self.app.post('/admin/publishers/edit/1', args)
-		self.assertEqual(ret.status_int, 200)
+		self.assertEqual(ret.status_int, 302) # 302=redirect
 		
 		self.assertEqual(db.Publisher[1].name, args['name'])
 		
@@ -726,7 +742,7 @@ class Tests(unittest.TestCase):
 		
 		# delete publisher
 		ret = self.app.post('/admin/publishers/delete/{0}'.format(p.id))
-		self.assertEqual(ret.status_int, 200)
+		self.assertEqual(ret.status_int, 302) # 302=redirect
 	
 	@db_session
 	def test_publishers_delete_invalid(self):
@@ -756,7 +772,7 @@ Titel2\t0815-001\t1234\tKlett\t10\t12\tEn\tTrue\tFalse\tFalse\tFalse\tTrue\t
 Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\tBla"""
 		}
 		ret = self.app.post('/admin/books/add', args)
-		self.assertEqual(ret.status_int, 200)
+		self.assertEqual(ret.status_int, 302) # 302=redirect
 		
 		# shhhh, I'm to lazy to test all three books completely .__.
 		self.assertEqual(db.Book[10].title, 'Titel')
@@ -781,7 +797,7 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 """
 		}
 		ret = self.app.post('/admin/books/add', args)
-		self.assertEqual(ret.status_int, 200)
+		self.assertEqual(ret.status_int, 302) # 302=redirect
 		
 		# show books list
 		ret = self.app.get('/admin/books')
@@ -794,7 +810,7 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 		# add book (invalid publisher)
 		args = { "data": "Titel\t\t\tKlett\t10\t12" }
 		ret = self.app.post('/admin/books/add', args)
-		self.assertEqual(ret.status_int, 200)
+		self.assertEqual(ret.status_int, 302) # 302=redirect
 		
 		bk = db.Book[10]
 		self.assertEqual(bk.title, 'Titel')
@@ -878,7 +894,7 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 			"comment"      : ""
 		}
 		ret = self.app.post('/admin/books/edit/1', args)
-		self.assertEqual(ret.status_int, 200)
+		self.assertEqual(ret.status_int, 302) # 302=redirect
 		
 		bk = db.Book[1]
 		self.assertEqual(bk.title,        args['title'])
@@ -958,7 +974,7 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 		
 		# delete book
 		ret = self.app.post('/admin/books/delete/1')
-		self.assertEqual(ret.status_int, 200)
+		self.assertEqual(ret.status_int, 302) # 302=redirect
 	
 	@db_session
 	def test_books_delete_invalid(self):
@@ -985,7 +1001,7 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 		# add classes
 		args = {"data": "09a\n05c\n\n11foo\n\n"}
 		ret = self.app.post('/admin/classes/add', args)
-		self.assertEqual(ret.status_int, 200)
+		self.assertEqual(ret.status_int, 302) # 302=redirect
 		
 		# test new classes
 		self.assertEqual(db.Class[4].grade, 9)
@@ -1006,7 +1022,7 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 		# edit class
 		args = {"grade": 5, "tag": "d", "teacher_id": 1}
 		ret = self.app.post('/admin/classes/edit/1', args)
-		self.assertEqual(ret.status_int, 200)
+		self.assertEqual(ret.status_int, 302) # 302=redirect
 		
 		# test changed class
 		cs = db.Class[1]
@@ -1021,7 +1037,7 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 		# edit class
 		args = {"grade": 5, "tag": "d", "teacher_id": 0}
 		ret = self.app.post('/admin/classes/edit/1', args)
-		self.assertEqual(ret.status_int, 200)
+		self.assertEqual(ret.status_int, 302) # 302=redirect
 		
 		# test changed class
 		cs = db.Class[1]
@@ -1045,7 +1061,7 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 		# edit class
 		args = {"grade": 8, "tag": "a", "teacher_id": 0}
 		ret = self.app.post('/admin/classes/edit/1', args)
-		self.assertEqual(ret.status_int, 200)
+		self.assertEqual(ret.status_int, 302) # 302=redirect
 
 	@db_session
 	def test_classes_delete(self):
@@ -1054,11 +1070,11 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 		# add empty class
 		args = {"data": "09a"}
 		ret = self.app.post('/admin/classes/add', args)
-		self.assertEqual(ret.status_int, 200)
+		self.assertEqual(ret.status_int, 302) # 302=redirect
 		
 		# delete class
 		ret = self.app.post('/admin/classes/delete/4')
-		self.assertEqual(ret.status_int, 200)
+		self.assertEqual(ret.status_int, 302) # 302=redirect
 		
 		# try access deleted class
 		with self.assertRaises(orm.core.ObjectNotFound):
@@ -1081,7 +1097,7 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 		# add students
 		args = {"data": "08a\tMustermann\tJürgen\n\n12glö\ta\tb\n"}
 		ret = self.app.post('/admin/students/add', args)
-		self.assertEqual(ret.status_int, 200)
+		self.assertEqual(ret.status_int, 302) # 302=redirect
 		
 		# test new students
 		self.assertEqual(db.Student[4].person.name,      "Mustermann")
@@ -1111,7 +1127,7 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 		# edit student
 		args = {"name": "A", "firstname": "B", "class_id": 2}
 		ret = self.app.post('/admin/students/edit/1', args)
-		self.assertEqual(ret.status_int, 200)
+		self.assertEqual(ret.status_int, 302) # 302=redirect
 		
 		# test changed student
 		st = db.Student[1]
@@ -1125,7 +1141,7 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 		
 		# delete class
 		ret = self.app.post('/admin/students/delete/1')
-		self.assertEqual(ret.status_int, 200)
+		self.assertEqual(ret.status_int, 302) # 302=redirect
 		
 		# tra access deleted student
 		with self.assertRaises(orm.core.ObjectNotFound):
@@ -1148,7 +1164,7 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 		# add teachers
 		args = {"data": "tei\tTeichert\tHolger\n"}
 		ret = self.app.post('/admin/teachers/add', args)
-		self.assertEqual(ret.status_int, 200)
+		self.assertEqual(ret.status_int, 302) # 302=redirect
 		
 		# test new students
 		self.assertEqual(db.Teacher[3].tag,              "tei")
@@ -1166,7 +1182,7 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 		# edit teacher
 		args = {"name": "A", "firstname": "B", "tag": "C"}
 		ret = self.app.post('/admin/teachers/edit/1', args)
-		self.assertEqual(ret.status_int, 200)
+		self.assertEqual(ret.status_int, 302) # 302=redirect
 		
 		# test changed teacher
 		tr = db.Teacher[1]
@@ -1180,7 +1196,7 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 		
 		# delete class
 		ret = self.app.post('/admin/teachers/delete/1')
-		self.assertEqual(ret.status_int, 200)
+		self.assertEqual(ret.status_int, 302) # 302=redirect
 		
 		# tra access deleted student
 		with self.assertRaises(orm.core.ObjectNotFound):
@@ -1212,7 +1228,7 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 		with open('settings.ini', 'w') as h:
 			s.save_to(h)
 		
-		self.assertEqual(ret.status_int, 200)
+		self.assertEqual(ret.status_int, 302) # 302=redirect
 	
 		# show settings gui
 		ret = self.app.get('/admin/settings')
