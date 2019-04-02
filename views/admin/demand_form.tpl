@@ -42,9 +42,9 @@
 %end
 	</tr>
 %for grade in [11, 12]:
-	%for level in ['gA', 'eA']:
+	%for level in ['novices', 'advanced']:
 	<tr>
-		<td>{{grade}} {{level}}</td>
+		<td>{{grade}} {{'gA' if level == 'novices' else 'eA'}}</td>
 		%for s in subjects:
 		<td><input type="text" class="short" maxLength="3" name="{{grade}}_{{s.tag}}_{{level}}" value="{{students[str(grade)][s.tag][level]}}"  /></td>
 		%end

@@ -182,15 +182,15 @@ def demand_report():
 	for grade in range(5, 10+1):
 		students[grade] = dict()
 		for sub in books.getSubjects(elective=True):
-			key = "%d_%s" % (grade, sub)
+			key = "%d_%s" % (grade, sub.tag)
 			tmp = request.forms.get(key)
-			students[grade][sub] = int(tmp) if tmp != "" else 0
+			students[grade][sub.tag] = int(tmp) if tmp != "" else 0
 	#   11th / 12th grade
 	for grade in [11, 12]:
 		students[grade] = dict()
 		for sub in books.getSubjects():
 			students[grade][sub.tag] = dict()
-			for level in ['gA', 'eA']:
+			for level in ['novices', 'advanced']:
 				key = "%d_%s_%s" % (grade, sub.tag, level)
 				tmp = request.forms.get(key)
 				students[grade][sub.tag][level] = int(tmp) if tmp != "" else 0
