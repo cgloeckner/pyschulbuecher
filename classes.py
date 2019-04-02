@@ -59,7 +59,7 @@ def classes_requests_post(grade, tag):
 @post('/classes/loans/<grade:int>/<tag>')
 @errorhandler
 def classes_loans_post(grade, tag):
-	bks = books.getBooksStartedIn(grade, True)
+	bks = books.getBooksUsedIn(grade, True)
 	for s in orga.getStudentsIn(grade, tag):
 		for b in bks:
 			key   = "%d_%d" % (s.id, b.id)
