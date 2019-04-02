@@ -1,11 +1,3 @@
-replace hardcoded voluntary subjects (admin.py, demand_form.tpl)
-	--> Subject.voluntary : bool
-
-convert demand.json stuff to separate class
-	with getter and setter handling type conversions (grade as int, not as str)
-
-unittest ./ db / loans.py -> countWorstCase()
-
 unittest ./ classes.py -> *
 
 
