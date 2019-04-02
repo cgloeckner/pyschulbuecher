@@ -27,6 +27,7 @@ class Settings(object):
 	def load_from(self, fhandle):
 		tmp = configparser.ConfigParser()
 		tmp.read_file(fhandle)
+		# overwrite internal data
 		self.data = tmp
 	
 	def save_to(self, fhandle):

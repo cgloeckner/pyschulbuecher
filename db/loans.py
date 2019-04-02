@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+import json
 from datetime import date
 
 from db.orm import db
@@ -80,26 +81,6 @@ def countNeededBooks(book: db.Book):
 	
 	return n
 
-def countWorstCase(book: db.Book, students: dict, level=None):
-	"""Count how many copies of the given book are required in worst case if
-	all of the given students want a free copy.
-	"""
-	total = 0
-	for grade in range(book.inGrade, book.outGrade+1):
-		if book.subject is None or book.subject.tag not in students[grade]:
-			# use student count
-			total += orga.getStudentsCount(grade)
-		elif grade <= 10:
-			# use regular number
-			total += students[grade][book.subject.tag]
-		elif level is not None:
-			# consider course level
-			total += students[grade][book.subject.tag][level]
-		else:
-			# fallback: use student count (again)
-			total += orga.getStudentsCount(grade)
-	return total
-
 def getLoanCount(person: db.Person, book: db.Book):
 	"""Return number of this specific book loaned by that person.
 	"""
@@ -107,6 +88,94 @@ def getLoanCount(person: db.Person, book: db.Book):
 		if l.book == book:
 			return l.count
 	return 0
+
+
+# -----------------------------------------------------------------------------
+
+class DemandManager(object):
+
+	def __init__(self, grade_query=orga.getStudentsCount):
+		self.data        = dict()
+		self.grade_query = grade_query
+	
+	def parse(self, forms):
+		"""Parse demand data from a form. The given forms parameter is a
+		function handle with __call__(key), where key is a UI-related name tag.
+		"""
+		# note: str(grade) because json will dump to str it anyway
+		# parse student numbers for elective subjects (until 10th grade)
+		tmp = dict()
+		for grade in range(5, 10+1):
+			tmp[str(grade)] = dict()
+			for sub in books.getSubjects(elective=True):
+				key = "%d_%s" % (grade, sub.tag)
+				val = forms(key)
+				tmp[str(grade)][sub.tag] = int(val) if val != "" else 0
+		# parse student numbers for each subject (after 11th grade)
+		for grade in [11, 12]:
+			tmp[str(grade)] = dict()
+			for sub in books.getSubjects():
+				tmp[str(grade)][sub.tag] = dict()
+				for level in ['novices', 'advanced']:
+					key = "%d_%s_%s" % (grade, sub.tag, level)
+					val = forms(key)
+					tmp[str(grade)][sub.tag][level] = int(val) if val != "" else 0
+		# overwrite internal data
+		self.data = tmp
+	
+	def getStudentNumber(self, grade: int, subject: db.Subject, level: str=None):
+		"""Return total number of students for the given grade and subject.
+		Optionally specified novice and/or advanced courses are considered.
+		"""
+		# note: str(grade) because json will dump to str it anyway
+		assert level in [None, 'novices', 'advanced']
+		
+		if str(grade) not in self.data:
+			# no such grade (maybe there is not 8th grade this year)
+			return 0
+		if subject.tag not in self.data[str(grade)]:
+			# no such subject (maybe there is no french class in this grade)
+			# note that the n th grade is currently (n-1)th grade
+			return self.grade_query(grade-1)
+		
+		if level is None:
+			# consider regular class
+			return self.data[str(grade)][subject.tag]
+		else:
+			# consider course levels
+			return self.data[str(grade)][subject.tag][level]
+	
+	def getMaxDemand(self, book: db.Book):
+		"""Calculate worst case demand of the given book assuming.
+		Note that this calculates the demand for the NEXT year, so all grades
+		are considerd -1.
+		E.g. the new 10th grade is currently 9th grade now.
+		"""
+		total = 0
+		for grade in range(book.inGrade, book.outGrade+1):
+			if book.subject is None:
+				# use student count (e.g. cross-subject books)
+				# note that the n th grade is currently (n-1)th grade
+				total += self.grade_query(grade-1)
+			elif grade <= 10:
+				# use regular class size
+				total += self.getStudentNumber(grade, book.subject)
+			else:
+				# consider course level
+				if book.novices:
+					total += self.getStudentNumber(grade, book.subject, 'novices')
+				if book.advanced:
+					total += self.getStudentNumber(grade, book.subject, 'advanced')
+		return total
+	
+	def load_from(self, fhandle):
+		tmp = json.load(fhandle)
+		# overwrite internal data
+		self.data = tmp
+	
+	def save_to(self, fhandle):
+		json.dump(self.data, fhandle, indent=4)
+
 
 # -----------------------------------------------------------------------------
 
@@ -335,5 +404,103 @@ class Tests(unittest.TestCase):
 		db.Student[1].class_.grade = 7
 		ln = list(getExpectedReturns(db.Student[1]))
 		self.assertEqual(len(ln), 0)
+	
+	@db_session
+	def test_DemandManager(self):
+		Tests.prepare()
+		
+		# stub for grade sizes
+		grade_size = { # become 5th, 6th, ..., 12th grade next year
+			4: 73, 5: 67, 6: 55, 7: 0, 8: 62, 9: 51, 10: 43, 11: 33
+		}
+		
+		# setup elective subjects
+		sub_fr = db.Subject(name='Französisch', tag='Fr')
+		sub_la = db.Subject(name='Latein', tag='La')
+		sub_fr.elective = True
+		sub_la.elective = True
+		sub_ru = db.Subject.get(tag='Ru')
+		sub_ru.elective = True
+		sub_ma = db.Subject.get(tag='Ma')
+		sub_de = db.Subject(name='Deutsch', tag='De')
+		
+		# stub complete for UI query
+		# this demand is based on the NEW year (so the current 4th is then 5th etc.)
+		keys = {
+			'5_Fr': 27,
+			'5_Ru': 13,
+			'5_La': 19,
+			'6_Fr': 8,
+			'11_Ma_novices': 20,
+			'11_Ma_advanced': 17,
+			'11_De_novices': 18,
+			'11_De_advanced': 22,
+			'12_Ma_novices': 13,
+			'12_Ma_advanced': 7,
+			'12_De_novices': 13,
+			'12_De_advanced': 12,
+		}
+		for grade in range(5, 10+1):
+			for sub in books.getSubjects(elective=True):
+				key = '%s_%s' % (grade, sub.tag)
+				if key not in keys:
+					keys[key] = 0
+		for grade in [11, 12]:
+			for sub in books.getSubjects():
+				for level in ['novices', 'advanced']:
+					key = '%s_%s_%s' % (grade, sub.tag, level)
+					if key not in keys:
+						keys[key] = 0
+		
+		# setup some more books
+		math1 = db.Book(title='Maths A', isbn='000-001', price=2495,
+			publisher=db.Publisher[1], inGrade=11, outGrade=12,
+			subject=sub_ma, novices=True)
+		math2 = db.Book(title='Maths B', isbn='001-021', price=2999,
+			publisher=db.Publisher[1], inGrade=11, outGrade=12,
+			subject=sub_ma, advanced=True)
+		math3 = db.Book(title='Maths B', isbn='001-022', price=2999,
+			publisher=db.Publisher[1], inGrade=5, outGrade=7,
+			subject=sub_ma)
+		
+		de = db.Book(title='Literatur', isbn='400-001', price=2495,
+			publisher=db.Publisher[1], inGrade=11, outGrade=12,
+			subject=sub_de, novices=True, advanced=True)
+		
+		fr = db.Book(title='French 101', isbn='000-002', price=1234,
+			publisher=db.Publisher[1], inGrade=5, outGrade=6,
+			subject=sub_fr)
+		
+		# create demand manager
+		d = DemandManager(grade_size.__getitem__)
+		d.parse(keys.__getitem__)
+		
+		# test student number queries
+		self.assertEqual(d.getStudentNumber(5, sub_la), 19)
+		self.assertEqual(d.getStudentNumber(5, sub_fr), 27)
+		self.assertEqual(d.getStudentNumber(5, sub_ru), 13)
+		self.assertEqual(d.getStudentNumber(5, sub_ma), 73)
+		self.assertEqual(d.getStudentNumber(6, sub_fr), 8)
+		self.assertEqual(d.getStudentNumber(6, sub_ru), 0)
+		self.assertEqual(d.getStudentNumber(8, sub_ma), 0)
+		self.assertEqual(d.getStudentNumber(11, sub_ma, 'novices'), 20)
+		self.assertEqual(d.getStudentNumber(12, sub_ma, 'advanced'), 7)
+		self.assertEqual(d.getStudentNumber(11, sub_de, 'novices'), 18)
+
+		# test demands for some books
+		self.assertEqual(d.getMaxDemand(math1), 20+13) # both novices courses
+		self.assertEqual(d.getMaxDemand(math2), 17+7) # both advanced courses
+		self.assertEqual(d.getMaxDemand(math3), 73+67+55) # grade 5,6,8		
+		self.assertEqual(d.getMaxDemand(de), 18+22+13+12) # all 11th/12th grade course use it
+		self.assertEqual(d.getMaxDemand(fr), 27+8) # 27 from 5th grade + 8 from 6th grade
+
+		# test saving and loading
+		import io
+		handle = io.StringIO()
+		d.save_to(handle)
+		handle.seek(0) # rewind
+		
+		d2 = DemandManager()
+		d2.load_from(handle)
 		
 

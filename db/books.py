@@ -231,7 +231,7 @@ class Tests(unittest.TestCase):
 		# create subjects
 		db.Subject(name='Mathematics', tag='Ma')
 		db.Subject(name='Russian',     tag='Ru')
-		db.Subject(name='English',     tag='En')
+		db.Subject(name='English',     tag='Eng')
 		db.Subject(name='Spanish',     tag='Spa')
 		db.Subject[2].elective = True
 		db.Subject[4].elective = True
@@ -515,7 +515,7 @@ class Tests(unittest.TestCase):
 	@db_session
 	def test_addSubjects(self):
 		raw = """Mathematik\tMa
-Englisch\tEn
+Englisch\tEng
 Deutsch\tDe
 Sport\tSp"""
 		addSubjects(raw)

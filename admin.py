@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-import os, time, json
+import os, time
 from datetime import datetime
 
 from bottle import *
@@ -14,6 +14,11 @@ from utils import errorhandler
 
 
 __author__ = "Christian Glöckner"
+
+
+
+# this global variable is changed during unit testing
+demand_json = 'demand.json'
 
 
 @get('/admin/subjects')
@@ -160,10 +165,11 @@ def demand_form():
 		pass
 
 	# load student numbers from file
-	with open('demand.json', 'r') as h:
-		students = json.load(h)
+	demand = loans.DemandManager()
+	with open(demand_json, 'r') as h:
+		demand.load_from(h)
 
-	return dict(s=s, students=students)
+	return dict(s=s, demand=demand)
 
 @post('/admin/demand')
 @view('admin/demand_report')
@@ -176,27 +182,14 @@ def demand_report():
 		# keep default values
 		pass
 	
-	# parse student numbers
-	#   5th to 10th grade
-	students = dict()
-	for grade in range(5, 10+1):
-		students[grade] = dict()
-		for sub in books.getSubjects(elective=True):
-			key = "%d_%s" % (grade, sub.tag)
-			tmp = request.forms.get(key)
-			students[grade][sub.tag] = int(tmp) if tmp != "" else 0
-	#   11th / 12th grade
-	for grade in [11, 12]:
-		students[grade] = dict()
-		for sub in books.getSubjects():
-			students[grade][sub.tag] = dict()
-			for level in ['novices', 'advanced']:
-				key = "%d_%s_%s" % (grade, sub.tag, level)
-				tmp = request.forms.get(key)
-				students[grade][sub.tag][level] = int(tmp) if tmp != "" else 0
-	# save student numbers
-	with open('demand.json', 'w') as h:
-		json.dump(students, h, indent=4)
+	# fetch demand from UI input
+	demand = loans.DemandManager()
+	demand.parse(request.forms.get)
+	
+	# save total student numbers
+	print(demand_json)
+	with open(demand_json, 'w') as h:
+		demand.save_to(h)
 
 	# create book demand report
 	bks = books.orderBooksList(books.getAllBooks())
@@ -204,13 +197,7 @@ def demand_report():
 	data = dict()
 	for b in bks:
 		free = loans.countNeededBooks(b)
-		required = 0
-		if b.novices:
-			required += loans.countWorstCase(b, students, 'gA')
-		if b.advanced:
-			required += loans.countWorstCase(b, students, 'eA')
-		if not b.novices and not b.advanced:
-			required += loans.countWorstCase(b, students)
+		required = demand.getMaxDemand(b)
 		diff = free - b.stock
 		if diff > 0:
 			price = b.price * diff
@@ -768,7 +755,7 @@ class Tests(unittest.TestCase):
 	
 		# add books
 		args = { "data": """Titel\t0815-000\t1234\tKlett\t10\t12\tMa\tTrue\tFalse\tFalse\tFalse\tTrue\t
-Titel2\t0815-001\t1234\tKlett\t10\t12\tEn\tTrue\tFalse\tFalse\tFalse\tTrue\t
+Titel2\t0815-001\t1234\tKlett\t10\t12\tEng\tTrue\tFalse\tFalse\tFalse\tTrue\t
 Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\tBla"""
 		}
 		ret = self.app.post('/admin/books/add', args)
@@ -776,7 +763,7 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\tBla"
 		
 		# shhhh, I'm to lazy to test all three books completely .__.
 		self.assertEqual(db.Book[10].title, 'Titel')
-		self.assertEqual(db.Book[11].subject.tag, 'En')
+		self.assertEqual(db.Book[11].subject.tag, 'Eng')
 		self.assertEqual(db.Book[12].comment, 'Bla')
 		
 		# show books list
@@ -791,7 +778,7 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\tBla"
 		args = { "data": """Titel\t0815-000\t1234\tKlett\t10\t12\tMa\tTrue\tFalse\tFalse\tFalse\tTrue\t
 
 
-Titel2\t0815-001\t1234\tKlett\t10\t12\tEn\tTrue\tFalse\tFalse\tFalse\tTrue\t
+Titel2\t0815-001\t1234\tKlett\t10\t12\tEng\tTrue\tFalse\tFalse\tFalse\tTrue\t
 
 Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 """
@@ -1273,4 +1260,38 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 		ret = self.app.get('/admin/lists')
 		self.assertEqual(ret.status_code, 200)
 
+	# -------------------------------------------------------------------------
+	
+	@db_session
+	def test_demand_generation(self):
+		Tests.prepare()
+		
+		# show demand form
+		ret = self.app.get('/admin/demand')
+		self.assertEqual(ret.status_code, 200)
+
+		# build random demand post (and change path)
+		global demand_json
+		demand_json = '/tmp/demand.json'
+		
+		args = dict()
+		
+		for grade in range(5, 10+1):
+			for sub in books.getSubjects(elective=True):
+				key = "%s_%s" % (grade, sub.tag)
+				args[key] = 63
+		for grade in [11, 12]:
+			for level in ['novices', 'advanced']:
+				for sub in books.getSubjects():
+					key = "%s_%s_%s" % (grade, sub.tag, level)
+					args[key] = 23
+
+		# post demand
+		ret = self.app.post('/admin/demand', args)
+		self.assertEqual(ret.status_code, 200)
+			
+		# show demand form (again)
+		ret = self.app.get('/admin/demand')
+		self.assertEqual(ret.status_code, 200)
+	
 

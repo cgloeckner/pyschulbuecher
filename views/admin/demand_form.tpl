@@ -25,7 +25,7 @@
 		<td>{{grade}}</td>
 		<td id="{{grade}}_status">{{orga.getStudentsCount(grade-1)}}</td>
 	%for sub in books.getSubjects(elective=True):
-		<td><input type="text" class="short" maxLength="3" name="{{grade}}_{{sub.tag}}" value="{{students[str(grade)][sub.tag]}}" /></td>
+		<td><input type="text" class="short" maxLength="3" name="{{grade}}_{{sub.tag}}" value="{{demand.getStudentNumber(grade, sub)}}" /></td>
 	%end
 	</tr>
 %end
@@ -46,7 +46,7 @@
 	<tr>
 		<td>{{grade}} {{'gA' if level == 'novices' else 'eA'}}</td>
 		%for s in subjects:
-		<td><input type="text" class="short" maxLength="3" name="{{grade}}_{{s.tag}}_{{level}}" value="{{students[str(grade)][s.tag][level]}}"  /></td>
+		<td><input type="text" class="short" maxLength="3" name="{{grade}}_{{s.tag}}_{{level}}" value="{{demand.getStudentNumber(grade, sub, level)}}"  /></td>
 		%end
 	</tr>
 	%end
