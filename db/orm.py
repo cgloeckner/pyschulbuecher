@@ -54,6 +54,7 @@ class Subject(db.Entity):
 	id        = PrimaryKey(int, auto=True)
 	name      = Required(str, unique=True)
 	tag       = Required(str, unique=True)
+	elective  = Required(bool, default=False)
 	# reverse attribute
 	book      = Set("Book")
 

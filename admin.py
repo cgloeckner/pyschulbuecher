@@ -39,12 +39,14 @@ def subjects_edit_form(id):
 
 @post('/admin/subjects/edit/<id:int>')
 @errorhandler
-@view('success')
 def subjects_edit_post(id):
 	s = db.Subject[id]
 	s.tag = request.forms.tag
 	s.name = request.forms.name
-	return dict()
+	s.elective = request.forms.elective == 'on'
+	
+	db.commit()
+	redirect('/admin/subjects')
 
 @post('/admin/subjects/delete/<id:int>')
 @errorhandler
@@ -559,13 +561,14 @@ class Tests(unittest.TestCase):
 		Tests.prepare()
 		
 		# edit subject
-		args = { 'tag' : 'Sk', 'name': 'Sozialkunde' }
+		args = { 'tag' : 'Sk', 'name': 'Sozialkunde', 'elective': 'on' }
 		ret = self.app.post('/admin/subjects/edit/1', args)
-		self.assertEqual(ret.status_int, 200)
+		self.assertEqual(ret.status_int, 302) # 302=redirection
 		
 		sj = db.Subject[1]
 		self.assertEqual(sj.tag,  args['tag'])
 		self.assertEqual(sj.name, args['name'])
+		self.assertEqual(sj.elective, True)
 		
 		# show subjects gui
 		ret = self.app.get('/admin/subjects')

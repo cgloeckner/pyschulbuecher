@@ -135,6 +135,7 @@ def getBooksByIsbn(isbn: str):
 def addSubjects(raw: str):
 	"""Add subjects from a given raw string dump, assuming subjects being
 	separated by newlines. Name and tag are assumed to be separated by a tab.
+	A new subject is declared as non-elective by default.
 	"""
 	for data in raw.split("\n"):
 		res = data.split("\t")

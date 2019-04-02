@@ -1,4 +1,5 @@
 %import db.books as books
+%from utils import bool2str
 
 %include("header")
 <h1>Übersicht Fächer</h1>
@@ -7,11 +8,13 @@
 	<tr>
 		<th>Kürzel</th>
 		<th>Fach</th>
+		<th>Wahlfach<br />(Sek. I)</th>
 	</tr>
 %for s in books.getSubjects():
 	<tr>
 		<td><a href="/admin/subjects/edit/{{s.id}}">{{s.tag}}</a></td>
 		<td>{{s.name}}</td>
+		<td>{{bool2str(s.elective)}}</td>
 	</tr>
 %end
 
