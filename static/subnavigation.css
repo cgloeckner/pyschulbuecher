@@ -1,0 +1,23 @@
+span.downarrow {
+	font-size: x-small;
+	padding: 5px;
+	vertical-align: 25%;
+}
+
+span.rightarrow {
+	font-size: xx-small;
+	padding: 5px;
+	vertical-align: 25%;
+}
+
+div.navbar div.submenu div.dropdown-content {
+	display: none;
+	position: absolute;
+	left: 160px;
+	margin-top: -40px;
+	margin-left: -30px;
+}
+
+div.navbar div.submenu:hover div.dropdown-content {
+	display: block;
+}
