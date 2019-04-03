@@ -30,7 +30,10 @@ def classes_grade_index(grade):
 def classes_students_index(grade, tag):
 	bks = books.getBooksUsedIn(grade)
 	bks = books.orderBooksList(bks)
-	return dict(grade=grade, tag=tag, books=bks)
+	c = orga.db.Class.get(grade=grade, tag=tag)
+	if c is None:
+		abort(404)
+	return dict(grade=grade, tag=tag, books=bks, c=c)
 
 # -----------------------------------------------------------------------------
 
@@ -39,7 +42,10 @@ def classes_students_index(grade, tag):
 def classes_requests_form(grade, tag):
 	bks = books.getBooksStartedIn(grade+1, True)
 	bks = books.orderBooksList(bks)
-	return dict(grade=grade, tag=tag, books=bks)
+	c = orga.db.Class.get(grade=grade, tag=tag)
+	if c is None:
+		abort(404)
+	return dict(grade=grade, tag=tag, books=bks, c=c)
 
 @post('/classes/requests/<grade:int>/<tag>')
 @errorhandler
@@ -112,15 +118,15 @@ class Tests(unittest.TestCase):
 		Tests.prepare()
 		
 		# show grade index
-		ret = self.app.get('/class/8')
+		ret = self.app.get('/classes/8')
 		self.assertEqual(ret.status_int, 200)
 		
-		# show grade index (7th grade not present)
-		ret = self.app.get('/class/7')
-		self.assertEqual(ret.status_int, 400)
+		# show grade index (empty because 7th grade not present)
+		ret = self.app.get('/classes/7')
+		self.assertEqual(ret.status_int, 200)
 		
 		# show grade index
-		ret = self.app.get('/class/12')
+		ret = self.app.get('/classes/12')
 		self.assertEqual(ret.status_int, 200)
 	
 	@db_session
@@ -128,15 +134,16 @@ class Tests(unittest.TestCase):
 		Tests.prepare()
 		
 		# show class overview
-		ret = self.app.get('/class/8/a')
+		ret = self.app.get('/classes/8/a')
 		self.assertEqual(ret.status_int, 200)
 		
 		# show class overview (7th grade not present)
-		ret = self.app.get('/class/8/b')
-		self.assertEqual(ret.status_int, 400)
+		
+		ret = self.app.get('/classes/8/b', expect_errors=True)
+		self.assertEqual(ret.status_int, 404) # 404=not found
 		
 		# show class overview
-		ret = self.app.get('/class/12/lip')
+		ret = self.app.get('/classes/12/lip')
 		self.assertEqual(ret.status_int, 200)
 	
 	@db_session
@@ -144,23 +151,23 @@ class Tests(unittest.TestCase):
 		Tests.prepare()
 		
 		# show requests overview
-		ret = self.app.get('/class/requests/8/a')
+		ret = self.app.get('/classes/requests/8/a')
 		self.assertEqual(ret.status_int, 200)
 		
 		# show requests overview (7th grade not present)
-		ret = self.app.get('/class/requests/8/b')
-		self.assertEqual(ret.status_int, 400)
+		ret = self.app.get('/classes/requests/8/b', expect_errors=True)
+		self.assertEqual(ret.status_int, 404) # 404=not found
 		
 		# show requests overview
-		ret = self.app.get('/class/requests/12/lip')
+		ret = self.app.get('/classes/requests/12/lip')
 		self.assertEqual(ret.status_int, 200)
 	
 	@db_session
 	def test_requests_post(self):
 		Tests.prepare()
 		
-		ma  = db.Subject(name='Maths', tag='Ma')
-		eng = db.Subject(name='English', tag='Eng')
+		ma  = db.Subject.get(tag='Ma')
+		eng = db.Subject.get(tag='Eng')
 		
 		# add some books for 8th grade
 		b1 = db.Book(title='Math 8', publisher=db.Publisher[1], inGrade=8,
@@ -169,25 +176,29 @@ class Tests(unittest.TestCase):
 			outGrade=8, subject=eng)
 		
 		# show requests overview
-		ret = self.app.get('/class/requests/8/a')
+		ret = self.app.get('/classes/requests/8/a')
 		self.assertEqual(ret.status_int, 200)
 		
 		# post requests
 		args = {}
 		for b in [b1, b2]:
-			for s in db.Class.get(grade=8, tag='b').student:
+			for s in db.Class.get(grade=8, tag='a').student:
 				key = '%d_%d' % (s.id, b.id)
 				args[key] = 'on'
 		
-		ret = self.app.post('/class/requests/8/a', args)
-		self.assertEqual(ret.status_int, 302) # redirect
+		ret = self.app.post('/classes/requests/8/a', args)
+		self.assertEqual(ret.status_int, 302) # 302=redirect
 	
+		# show requests overview (again)
+		ret = self.app.get('/classes/requests/8/a')
+		self.assertEqual(ret.status_int, 200)
+		
 	@db_session
 	def test_loans_post(self):
 		Tests.prepare()
 		
-		ma  = db.Subject(name='Maths', tag='Ma')
-		eng = db.Subject(name='English', tag='Eng')
+		ma  = db.Subject.get(tag='Ma')
+		eng = db.Subject.get(tag='Eng')
 		
 		# add some books for 8th grade
 		b1 = db.Book(title='Math 8', publisher=db.Publisher[1], inGrade=8,
@@ -196,16 +207,20 @@ class Tests(unittest.TestCase):
 			outGrade=8, subject=eng)
 		
 		# show class overview
-		ret = self.app.get('/class/8/a')
+		ret = self.app.get('/classes/8/a')
 		self.assertEqual(ret.status_int, 200)
 		
 		# post requests
 		args = {}
 		for b in [b1, b2]:
-			for s in db.Class.get(grade=8, tag='b').student:
+			for s in db.Class.get(grade=8, tag='a').student:
 				key = '%d_%d' % (s.id, b.id)
 				args[key] = '1'
 		
-		ret = self.app.post('/class/loans/8/a', args)
+		ret = self.app.post('/classes/loans/8/a', args)
 		self.assertEqual(ret.status_int, 302) # redirect
 	
+		# show class overview (again)
+		ret = self.app.get('/classes/8/a')
+		self.assertEqual(ret.status_int, 200)
+		

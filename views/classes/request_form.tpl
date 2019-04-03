@@ -2,7 +2,6 @@
 %import db.loans as loans
 
 %include("header")
-%c = orga.db.Class.get(grade=grade, tag=tag)
 <h1>Bücherzettel Klasse {{c.toString()}} (für Klasse {{grade+1}})</h1>
 
 <form action="/classes/requests/{{grade}}/{{tag}}" id="requests" method="post">

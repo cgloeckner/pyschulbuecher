@@ -2,7 +2,6 @@
 %import db.loans as loans
 
 %include("header")
-%c = orga.db.Class.get(grade=grade, tag=tag)
 <h1>Bücherübersicht Klasse {{c.toString()}}</h1>
 <a href="/admin/classes/edit/{{c.id}}">Bearbeiten</a>
 
