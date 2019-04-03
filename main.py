@@ -8,18 +8,25 @@ from bottle import *
 from pony import orm
 from db.orm import db, db_session
 from db import orga
-from version import test_version
+from db import orga, utils
 
 
 __author__ = "Christian Glöckner"
 
 
-test_version()
+# determine school year and load suitable database
 
+s = utils.Settings()
+try:
+	with open('settings.ini') as h:
+		s.load_from(h)
+except FileNotFoundError:
+	# keep default values
+	pass
 
 debug = True
 
-db.bind('sqlite', 'example.db', create_db=True)
+db.bind('sqlite', 'data%s.db' % s.data['general']['school_year'], create_db=True)
 db.generate_mapping(create_tables=True)
 
 app = default_app()

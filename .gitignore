@@ -1,4 +1,4 @@
-example.db
+data*.db
 export/*
 *~
 # Byte-compiled / optimized / DLL files

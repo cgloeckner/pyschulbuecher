@@ -13,7 +13,7 @@
 
 %year = int(s.data['general']['school_year'])
 \begin{center}
-	{\LARGE B\"ucherzettel f\"ur das Schuljahr {{year}}/{{year+1}}}
+	{\LARGE B\"ucherzettel f\"ur das Schuljahr {{year+1}}/{{year+2}}}
 \end{center}
 
 \vspace{0.5cm}
@@ -81,7 +81,7 @@ Wir best\"atigen hiermit den B\"ucherzettel und alle Hinweise gelesen und ordnun
 
 \def\arraystretch{1.5}
 
-\fancyfoot[L]{Schuljahr {{year}}/{{year + 1}}}
+\fancyfoot[L]{Schuljahr {{year+1}}/{{year+2}}}
 \fancyfoot[C]{Bücherzettel}
 \fancyfoot[R]{Klasse {{grade}}
 %if new_students:

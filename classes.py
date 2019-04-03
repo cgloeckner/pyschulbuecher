@@ -54,7 +54,7 @@ def classes_requests_post(grade, tag):
 			loans.updateRequest(s, b, status)
 	
 	db.commit()
-	redirect('/classes/%d/%s' % (grade, tag))
+	redirect('/classes/%d' % (grade))
 
 # -----------------------------------------------------------------------------
 
@@ -73,7 +73,7 @@ def classes_loans_post(grade, tag):
 			loans.updateLoan(s.person, b, count)
 	
 	db.commit()
-	redirect('/classes/%d/%s' % (grade, tag))
+	redirect('/classes/%d' % (grade))
 
 # -----------------------------------------------------------------------------
 

@@ -178,6 +178,8 @@ def addBook(raw: str):
 	for_loan  = data[11] if 11 < len(data) else ""
 	comment   = data[12] if 12 < len(data) else ""
 	
+	print(subject)
+	
 	# fix parameters
 	try:
 		price    = Currency.fromString(price) if price != "" else None
@@ -196,6 +198,8 @@ def addBook(raw: str):
 	# query referenced entities
 	publisher = db.Publisher.get(name=publisher)
 	subject   = db.Subject.get(tag=subject) if subject != "" else None
+	
+	print(subject)
 	
 	try:
 		# create actual book
@@ -588,6 +592,9 @@ C.C. Buchner"""
 		addPublishers("Klett\nCornelsen")
 		addSubjects("Mathemati\tMa\nEnglisch\tEng")
 		
+		ma = db.Subject.get(tag="Ma")
+		eng = db.Subject.get(tag="Eng")
+		
 		raw = """Mathematik Live\t0815-1234\t2395\tKlett\t11\t12\tMa\tTrue\tFalse\tFalse\tFalse\tTrue\t
 Tafelwerk\t12-52-6346\t1999\tKlett\t7\t12\t\tFalse\tFalse\tFalse\tFalse\tfächerübergreifend
 Englisch Oberstufe\t433-5213-6246\t4995\tCornelsen\t11\t12\tEng\tTrue\tTrue\tFalse\tFalse\tTrue\t
@@ -604,6 +611,9 @@ Das Große Tafelwerk\t\t\tKlett\t7\t12\t\tFalse\tFalse\tFalse\tFalse\tTrue\tfäc
 		self.assertEqual(b2.title, "Tafelwerk")
 		self.assertEqual(b3.title, "Englisch Oberstufe")
 		self.assertEqual(b4.title, "Das Große Tafelwerk")
+		self.assertEqual(b1.subject, ma)
+		self.assertEqual(b2.subject, None)
+		self.assertEqual(b3.subject, eng)
 		self.assertTrue(b3.novices)
 		self.assertTrue(b3.advanced)
 
