@@ -5,16 +5,13 @@
 
 <ul>
 %for s in books.getPublishers():
-	<li><a href="/admin/publishers/edit/{{s.id}}">{{s.name}}</a></li>
+	<li><a class="edit" href="/admin/publishers/edit/{{s.id}}">&#9998;</a> {{s.name}}</li>
 %end
 </ul>
 
 %if len(books.getPublishers()) == 0:
-	<tr>
-		<td colspan="2">keine Verlage vorhanden</td>
-	</tr>
+<p>keine Verlage vorhanden</p>
 %end
-</table>
 
 <h2>Neue Verlage hinzufügen</h2>
 <form action="/admin/publishers/add" id="publishers" method="post">

@@ -32,6 +32,7 @@
 		%end
 		%old = tag
 	<tr>
+		<th></th>
 		<th>Titel</th>
 		<th>ISBN</th>
 		<th>Preis</th>
@@ -56,7 +57,8 @@
 	<tr class="regular">
 		%end
 	%end
-		<td><a href="/admin/books/edit/{{b.id}}">{{b.title}}<a/></td>
+		<td><a class="edit" href="/admin/books/edit/{{b.id}}">&#9998;</a></td>
+		<td>{{b.title}}</td>
 		<td>{{b.isbn}}</td>
 	%if b.price is not None:
 		<td>{{Currency.toString(b.price)}}€</td>

@@ -6,13 +6,15 @@
 
 <table>
 	<tr>
+		<th></th>
 		<th>Kürzel</th>
 		<th>Fach</th>
 		<th>Wahlfach<br />(Sek. I)</th>
 	</tr>
 %for s in books.getSubjects():
 	<tr>
-		<td><a href="/admin/subjects/edit/{{s.id}}">{{s.tag}}</a></td>
+		<td><a class="edit" href="/admin/subjects/edit/{{s.id}}">&#9998;</a></td>
+		<td>{{s.tag}}</td>
 		<td>{{s.name}}</td>
 		<td>{{bool2str(s.elective)}}</td>
 	</tr>

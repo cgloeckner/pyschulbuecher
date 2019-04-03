@@ -5,14 +5,17 @@
 
 <table>
 	<tr>
+		<th></th>
 		<th>Kürzel</th>
 		<th>Name</th>
 		<th>Vorname</th>
 		<th>Klasse</th>
+		<th>Leihen</th>
 	</tr>
 %for t in orga.getTeachers():
 	<tr>
-		<td><a href="/admin/teachers/edit/{{t.id}}">{{t.tag.upper()}}</a></td>
+		<td><a class="edit" href="/admin/teachers/edit/{{t.id}}">&#9998;</a></td>
+		<td>{{t.tag.upper()}}</td>
 		<td>{{t.person.name}}</td>
 		<td>{{t.person.firstname}}</td>
 		<td>
@@ -22,6 +25,7 @@
 	keine
 %end
 		</td>
+		<td><a href="/loan/{{t.person.id}}">ansehen</a></td>
 	</tr>
 %end
 </table>

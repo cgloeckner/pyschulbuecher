@@ -5,15 +5,16 @@
 
 <table>
 	<tr>
+		<th></th>
 		<th>Klasse</th>
 		<th>Klassenlehrer</th>
 		<th>Anzahl Schüler</th>
-		<th></th>
 	</tr>
 %for grade in orga.getClassGrades():
 	%for tag in orga.getClassTags(grade):
 		%c = orga.db.Class.get(grade=grade, tag=tag)
 	<tr>
+		<td><a class="edit" href="/admin/classes/edit/{{c.id}}">&#9998;</a></td>
 		<td><a href="/classes/{{grade}}/{{tag}}">{{c.toString()}}</a></td>
 		%if c.teacher is None:
 		<td>nicht zugewiesen</td>
@@ -21,7 +22,6 @@
 		<td>{{c.teacher.tag.upper()}}</td>
 		%end
 		<td><a href="/admin/classes/move/{{c.id}}">{{c.student.count()}}</a></td>
-		<td><a href="/admin/classes/edit/{{c.id}}">Bearbeiten</a></td>
 	</tr>
 	%end
 %end
