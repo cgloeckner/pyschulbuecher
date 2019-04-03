@@ -32,10 +32,6 @@ def suite():
 	return suite
 
 if __name__ == '__main__':
-	from version import test_version
-	
-	test_version()
-
 	orm.db.bind('sqlite', ':memory:', create_db=True)
 	orm.db.generate_mapping(create_tables=True)
 	

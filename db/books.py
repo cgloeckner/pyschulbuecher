@@ -178,8 +178,6 @@ def addBook(raw: str):
 	for_loan  = data[11] if 11 < len(data) else ""
 	comment   = data[12] if 12 < len(data) else ""
 	
-	print(subject)
-	
 	# fix parameters
 	try:
 		price    = Currency.fromString(price) if price != "" else None
@@ -198,8 +196,6 @@ def addBook(raw: str):
 	# query referenced entities
 	publisher = db.Publisher.get(name=publisher)
 	subject   = db.Subject.get(tag=subject) if subject != "" else None
-	
-	print(subject)
 	
 	try:
 		# create actual book

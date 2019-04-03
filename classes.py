@@ -39,8 +39,6 @@ def classes_students_index(grade, tag):
 def classes_requests_form(grade, tag):
 	bks = books.getBooksStartedIn(grade+1, True)
 	bks = books.orderBooksList(bks)
-	for b in bks:
-		print(b.title)
 	return dict(grade=grade, tag=tag, books=bks)
 
 @post('/classes/requests/<grade:int>/<tag>')
@@ -77,8 +75,6 @@ def classes_loans_post(grade, tag):
 
 # -----------------------------------------------------------------------------
 
-"""
-
 import unittest, webtest
 
 class Tests(unittest.TestCase):
@@ -104,25 +100,112 @@ class Tests(unittest.TestCase):
 	# -------------------------------------------------------------------------
 
 	@db_session
-	def test_subjects_gui(self):
+	def test_class_index(self):
 		Tests.prepare()
 		
-		# show subjects gui
-		ret = self.app.get('/admin/subjects')
+		# show class index
+		ret = self.app.get('/classes')
 		self.assertEqual(ret.status_int, 200)
 	
 	@db_session
-	def test_subjects_add_new(self):
+	def test_grade_index(self):
 		Tests.prepare()
-	
-		# add subjects
-		args = {
-			"data": "Fr\tFranzösisch\nDe\tDeutsch"
-		}
-		ret = self.app.post('/admin/subjects/add', args)
+		
+		# show grade index
+		ret = self.app.get('/class/8')
 		self.assertEqual(ret.status_int, 200)
 		
-		# show subjects list
-		ret = self.app.get('/admin/subjects')
+		# show grade index (7th grade not present)
+		ret = self.app.get('/class/7')
+		self.assertEqual(ret.status_int, 400)
+		
+		# show grade index
+		ret = self.app.get('/class/12')
 		self.assertEqual(ret.status_int, 200)
-"""
+	
+	@db_session
+	def test_class_overview(self):
+		Tests.prepare()
+		
+		# show class overview
+		ret = self.app.get('/class/8/a')
+		self.assertEqual(ret.status_int, 200)
+		
+		# show class overview (7th grade not present)
+		ret = self.app.get('/class/8/b')
+		self.assertEqual(ret.status_int, 400)
+		
+		# show class overview
+		ret = self.app.get('/class/12/lip')
+		self.assertEqual(ret.status_int, 200)
+	
+	@db_session
+	def test_requests_overview(self):
+		Tests.prepare()
+		
+		# show requests overview
+		ret = self.app.get('/class/requests/8/a')
+		self.assertEqual(ret.status_int, 200)
+		
+		# show requests overview (7th grade not present)
+		ret = self.app.get('/class/requests/8/b')
+		self.assertEqual(ret.status_int, 400)
+		
+		# show requests overview
+		ret = self.app.get('/class/requests/12/lip')
+		self.assertEqual(ret.status_int, 200)
+	
+	@db_session
+	def test_requests_post(self):
+		Tests.prepare()
+		
+		ma  = db.Subject(name='Maths', tag='Ma')
+		eng = db.Subject(name='English', tag='Eng')
+		
+		# add some books for 8th grade
+		b1 = db.Book(title='Math 8', publisher=db.Publisher[1], inGrade=8,
+			outGrade=8, subject=ma)
+		b2 = db.Book(title='English B', publisher=db.Publisher[1], inGrade=7,
+			outGrade=8, subject=eng)
+		
+		# show requests overview
+		ret = self.app.get('/class/requests/8/a')
+		self.assertEqual(ret.status_int, 200)
+		
+		# post requests
+		args = {}
+		for b in [b1, b2]:
+			for s in db.Class.get(grade=8, tag='b').student:
+				key = '%d_%d' % (s.id, b.id)
+				args[key] = 'on'
+		
+		ret = self.app.post('/class/requests/8/a', args)
+		self.assertEqual(ret.status_int, 302) # redirect
+	
+	@db_session
+	def test_loans_post(self):
+		Tests.prepare()
+		
+		ma  = db.Subject(name='Maths', tag='Ma')
+		eng = db.Subject(name='English', tag='Eng')
+		
+		# add some books for 8th grade
+		b1 = db.Book(title='Math 8', publisher=db.Publisher[1], inGrade=8,
+			outGrade=8, subject=ma)
+		b2 = db.Book(title='English B', publisher=db.Publisher[1], inGrade=7,
+			outGrade=8, subject=eng)
+		
+		# show class overview
+		ret = self.app.get('/class/8/a')
+		self.assertEqual(ret.status_int, 200)
+		
+		# post requests
+		args = {}
+		for b in [b1, b2]:
+			for s in db.Class.get(grade=8, tag='b').student:
+				key = '%d_%d' % (s.id, b.id)
+				args[key] = '1'
+		
+		ret = self.app.post('/class/loans/8/a', args)
+		self.assertEqual(ret.status_int, 302) # redirect
+	
