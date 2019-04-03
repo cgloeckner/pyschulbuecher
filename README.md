@@ -10,6 +10,7 @@ Note that the current version is only tested on Linux-based systems. Especially 
 Required Python Modules (e.g. through `pip`)
 * pony
 * bottle
+* PyPDF2
 * latex
 (might need `pip install six --upgrade`)
 
