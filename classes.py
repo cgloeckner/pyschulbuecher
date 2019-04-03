@@ -39,6 +39,8 @@ def classes_students_index(grade, tag):
 def classes_requests_form(grade, tag):
 	bks = books.getBooksStartedIn(grade+1, True)
 	bks = books.orderBooksList(bks)
+	for b in bks:
+		print(b.title)
 	return dict(grade=grade, tag=tag, books=bks)
 
 @post('/classes/requests/<grade:int>/<tag>')
