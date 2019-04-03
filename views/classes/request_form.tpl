@@ -83,7 +83,7 @@
 	%end
 		<td><a class="edit" href="/admin/students/edit/{{s.id}}">&#9998;</a></td>
 		<td>{{i}}</td>
-		<td><a href="/loan/{{s.person.id}}">{{s.person.name}}, {{s.person.firstname}}</a></td>
+		<td><a href="/loan/person/{{s.person.id}}">{{s.person.name}}, {{s.person.firstname}}</a></td>
 	%i += 1
 	%j = 1
 	%for b in books:

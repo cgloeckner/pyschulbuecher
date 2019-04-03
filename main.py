@@ -43,7 +43,7 @@ def landingpage():
 	return dict()
 
 
-import admin, classes
+import admin, classes, loan
 
 	
 run(host='localhost', reloader=True, debug=debug, port=8080)

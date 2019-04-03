@@ -25,7 +25,7 @@
 	keine
 %end
 		</td>
-		<td><a href="/loan/{{t.person.id}}">ansehen</a></td>
+		<td><a href="/loan/person/{{t.person.id}}">ansehen</a></td>
 	</tr>
 %end
 </table>
