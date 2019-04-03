@@ -9,6 +9,20 @@ from db import books, orga
 
 __author__ = "Christian Glöckner"
 
+def orderLoanOverview(loans):
+	# 1st: outGrade, 2nd: subject, 3rd: title
+	loans = list(loans.order_by(lambda l: l.book.title))
+	loans.sort(key=lambda l: l.book.subject.tag if l.book.subject is not None else '')
+	loans.sort(key=lambda l: l.book.outGrade)
+	return loans
+
+def orderRequestOverview(requests):
+	# 1st: outGrade, 2nd: subject, 3rd: title
+	requests = list(requests.order_by(lambda r: r.book.title))
+	requests.sort(key=lambda r: r.book.subject.tag if r.book.subject is not None else '')
+	requests.sort(key=lambda r: r.book.outGrade)
+	return requests
+
 def getExpectedReturns(student: db.Student):
 	"""Returns a list of loans which are expected to be returned referring
 	the student's current grade.
