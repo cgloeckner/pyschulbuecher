@@ -46,6 +46,10 @@ table.books th, table.books td {
 	font-size: small;
 }
 
+table tr.select:hover td.name a {
+	color: red;
+}
+
 th.rotate, td.rotate {
 	writing-mode: sideways-lr;
 	width: 20px;

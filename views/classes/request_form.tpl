@@ -76,13 +76,13 @@
 %for s in orga.getStudentsIn(grade, tag):
 	<!-- ==================== student #{{s.id}} ({{s.person.name}}, {{s.person.firstname}}) ==================== //-->
 	%if i % 2 == 0:
-	<tr class="gray" id="{{s.id}}">
+	<tr class="gray select" id="{{s.id}}">
 	%else:
-	<tr id="{{s.id}}">
+	<tr class="select" id="{{s.id}}">
 	%end
 		<td><a class="edit" href="/admin/students/edit/{{s.id}}">&#9998;</a></td>
 		<td>{{i}}</td>
-		<td><a href="/loan/person/{{s.person.id}}">{{s.person.name}}, {{s.person.firstname}}</a></td>
+		<td class="name"><a href="/loan/person/{{s.person.id}}">{{s.person.name}}, {{s.person.firstname}}</a></td>
 	%i += 1
 	%j = 1
 	%for b in books:
