@@ -17,7 +17,11 @@
 		</tr>
 		<tr>
 			<td>Preis</td>
-			<td><input type="text" name="price" value="{{Currency.toString(b.price)}}" />€</td>
+%if b.price is not None:
+			<td><input type="text" name="price" value="{{Currency.toString(b.price).split('€')[0].rstrip()}}" />€</td>
+%else:
+			<td><input type="text" name="price" value="" />€</td>
+%end
 		</tr>
 		<tr>
 			<td>Verlag</td>

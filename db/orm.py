@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+import locale
 from datetime import date
 
 from pony.orm import *
@@ -88,13 +89,7 @@ class Book(db.Entity):
 class Currency(object):
 	@staticmethod
 	def toString(cents: int):
-		s = str(cents / 100.0).replace('.', ',')
-		if s.startswith(','):
-			s = '0' + s
-		dec = len(s.split(',')[1])
-		if dec < 2:
-			s += '0' * (2 - dec)
-		return s
+		return locale.currency(cents / 100.0, grouping=True).replace(' ', '')
 	
 	@staticmethod
 	def fromString(raw: str):

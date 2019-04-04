@@ -27,7 +27,8 @@
 		<td>{{l.given}}</td>
 		<td>{{l.count}}</td>
 	</tr>
-%else:
+%end
+%if len(loan) == 0:
 	<tr>
 		<td colspan="5">keine</td>
 	</tr>
@@ -57,7 +58,8 @@
 	%end
 </td>
 	</tr>
-%else:
+%end
+%if len(request) == 0:
 	<tr>
 		<td colspan="3">keine</td>
 	</tr>

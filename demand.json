@@ -1,184 +1,184 @@
 {
-    "5": {
-        "Et": 0,
-        "Fr": 0,
-        "La": 0,
-        "Ru": 0,
-        "eR": 0
-    },
-    "6": {
-        "Et": 0,
-        "Fr": 0,
-        "La": 0,
-        "Ru": 0,
-        "eR": 0
-    },
-    "7": {
-        "Et": 0,
-        "Fr": 0,
-        "La": 0,
-        "Ru": 0,
-        "eR": 0
-    },
-    "8": {
-        "Et": 0,
-        "Fr": 0,
-        "La": 0,
-        "Ru": 0,
-        "eR": 0
+    "12": {
+        "Fr": {
+            "advanced": 0,
+            "novices": 0
+        },
+        "Ge": {
+            "advanced": 0,
+            "novices": 0
+        },
+        "Sk": {
+            "advanced": 0,
+            "novices": 0
+        },
+        "WR": {
+            "advanced": 0,
+            "novices": 0
+        },
+        "Ma": {
+            "advanced": 0,
+            "novices": 0
+        },
+        "Mu": {
+            "advanced": 0,
+            "novices": 0
+        },
+        "Et": {
+            "advanced": 0,
+            "novices": 0
+        },
+        "eR": {
+            "advanced": 0,
+            "novices": 0
+        },
+        "Bio": {
+            "advanced": 0,
+            "novices": 0
+        },
+        "Geo": {
+            "advanced": 0,
+            "novices": 0
+        },
+        "Eng": {
+            "advanced": 0,
+            "novices": 0
+        },
+        "Ch": {
+            "advanced": 0,
+            "novices": 0
+        },
+        "La": {
+            "advanced": 0,
+            "novices": 0
+        },
+        "Deu": {
+            "advanced": 0,
+            "novices": 0
+        },
+        "Ph": {
+            "advanced": 0,
+            "novices": 0
+        },
+        "Ru": {
+            "advanced": 0,
+            "novices": 0
+        },
+        "MNT": {
+            "advanced": 0,
+            "novices": 0
+        }
     },
     "9": {
-        "Et": 0,
-        "Fr": 0,
         "La": 0,
         "Ru": 0,
-        "eR": 0
+        "Fr": 0,
+        "eR": 0,
+        "Et": 0
     },
     "10": {
-        "Et": 0,
-        "Fr": 0,
         "La": 0,
         "Ru": 0,
-        "eR": 0
+        "Fr": 0,
+        "eR": 0,
+        "Et": 0
+    },
+    "7": {
+        "La": 0,
+        "Ru": 0,
+        "Fr": 0,
+        "eR": 0,
+        "Et": 0
+    },
+    "6": {
+        "La": 0,
+        "Ru": 0,
+        "Fr": 0,
+        "eR": 0,
+        "Et": 0
     },
     "11": {
-        "Bio": {
-            "novices": 0,
-            "advanced": 0
-        },
-        "Ch": {
-            "novices": 0,
-            "advanced": 0
-        },
-        "Deu": {
-            "novices": 0,
-            "advanced": 0
-        },
-        "Eng": {
-            "novices": 0,
-            "advanced": 0
+        "Fr": {
+            "advanced": 0,
+            "novices": 0
         },
         "Ge": {
-            "novices": 0,
-            "advanced": 0
-        },
-        "Geo": {
-            "novices": 0,
-            "advanced": 0
-        },
-        "MNT": {
-            "novices": 0,
-            "advanced": 0
-        },
-        "Ma": {
-            "novices": 0,
-            "advanced": 0
-        },
-        "Mu": {
-            "novices": 0,
-            "advanced": 0
-        },
-        "Ph": {
-            "novices": 0,
-            "advanced": 0
+            "advanced": 0,
+            "novices": 0
         },
         "Sk": {
-            "novices": 0,
-            "advanced": 0
+            "advanced": 0,
+            "novices": 0
         },
         "WR": {
-            "novices": 0,
-            "advanced": 0
+            "advanced": 0,
+            "novices": 0
+        },
+        "Ma": {
+            "advanced": 0,
+            "novices": 0
+        },
+        "Mu": {
+            "advanced": 0,
+            "novices": 0
         },
         "Et": {
-            "novices": 0,
-            "advanced": 0
-        },
-        "Fr": {
-            "novices": 0,
-            "advanced": 0
-        },
-        "La": {
-            "novices": 0,
-            "advanced": 0
-        },
-        "Ru": {
-            "novices": 0,
-            "advanced": 0
+            "advanced": 0,
+            "novices": 0
         },
         "eR": {
-            "novices": 0,
-            "advanced": 0
+            "advanced": 0,
+            "novices": 0
+        },
+        "Bio": {
+            "advanced": 0,
+            "novices": 0
+        },
+        "Geo": {
+            "advanced": 0,
+            "novices": 0
+        },
+        "Eng": {
+            "advanced": 0,
+            "novices": 0
+        },
+        "Ch": {
+            "advanced": 0,
+            "novices": 0
+        },
+        "La": {
+            "advanced": 0,
+            "novices": 0
+        },
+        "Deu": {
+            "advanced": 0,
+            "novices": 0
+        },
+        "Ph": {
+            "advanced": 0,
+            "novices": 0
+        },
+        "Ru": {
+            "advanced": 0,
+            "novices": 0
+        },
+        "MNT": {
+            "advanced": 0,
+            "novices": 0
         }
     },
-    "12": {
-        "Bio": {
-            "novices": 0,
-            "advanced": 0
-        },
-        "Ch": {
-            "novices": 0,
-            "advanced": 0
-        },
-        "Deu": {
-            "novices": 0,
-            "advanced": 0
-        },
-        "Eng": {
-            "novices": 0,
-            "advanced": 0
-        },
-        "Ge": {
-            "novices": 0,
-            "advanced": 0
-        },
-        "Geo": {
-            "novices": 0,
-            "advanced": 0
-        },
-        "MNT": {
-            "novices": 0,
-            "advanced": 0
-        },
-        "Ma": {
-            "novices": 0,
-            "advanced": 0
-        },
-        "Mu": {
-            "novices": 0,
-            "advanced": 0
-        },
-        "Ph": {
-            "novices": 0,
-            "advanced": 0
-        },
-        "Sk": {
-            "novices": 0,
-            "advanced": 0
-        },
-        "WR": {
-            "novices": 0,
-            "advanced": 0
-        },
-        "Et": {
-            "novices": 0,
-            "advanced": 0
-        },
-        "Fr": {
-            "novices": 0,
-            "advanced": 0
-        },
-        "La": {
-            "novices": 0,
-            "advanced": 0
-        },
-        "Ru": {
-            "novices": 0,
-            "advanced": 0
-        },
-        "eR": {
-            "novices": 0,
-            "advanced": 0
-        }
+    "8": {
+        "La": 0,
+        "Ru": 0,
+        "Fr": 0,
+        "eR": 0,
+        "Et": 0
+    },
+    "5": {
+        "La": 0,
+        "Ru": 0,
+        "Fr": 0,
+        "eR": 0,
+        "Et": 0
     }
 }

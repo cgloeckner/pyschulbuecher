@@ -6,12 +6,14 @@
 
 <form action="/classes/requests/{{grade}}/{{tag}}" id="requests" method="post">
 
+%total = dict()
+
 <table class="simple">
 	<!-- ==================== book titles ==================== //-->
-	<tr>
+	<tr class="titles">
 		<th></th>
 		<th></th>
-		<th><span class="button" style="font-size: 500%;" onClick="toggleAll();" title="Auswahl für alle umkehren">↺</span></th>
+		<th><class="button" style="font-size: 500%;" onClick="toggleAll();" title="Auswahl für alle umkehren">↺</span></th>
 %i = 1
 %for b in books:
 	%if b.workbook:
@@ -35,7 +37,7 @@
 	%if b.workbook or b.classsets:
 		%continue
 	%end
-		<td class="rotate">\\
+		<td class="rotate" id="{{b.id}}">\\
 	%if b.subject is not None:
 {{b.subject.tag}}\\
 	%end
@@ -63,6 +65,7 @@
 	%if b.workbook or b.classsets:
 		%continue
 	%end
+	%total[b.id] = 0
 		<td><span class="button" onClick="toggleCol({{b.id}});" title="Auswahl für dieses Buch umkehren">↺</span></td>
 	%if i % 3 == 0:
 		<td></td>
@@ -91,11 +94,12 @@
 		%end
 		%id = '%i_%i' % (s.id, b.id)
 		%if loans.isRequested(s, b):
+			%total[b.id] += 1
 			%checked = 'checked="checked"'
 		%else:
 			%checked = ''
 		%end
-		<td name="{{b.id}}"><input class="selection" type="checkbox" name="{{id}}" {{!checked}}/></td>
+		<td name="{{b.id}}" onmouseover="enterColumn({{b.id}});" onmouseOut="leaveColumn({{b.id}});"><input class="selection" type="checkbox" name="{{id}}" {{!checked}}/></td>
 		%if j % 3 == 0:
 		<td></td>
 		%end
@@ -104,6 +108,22 @@
 		<td><span class="button" onClick="toggleRow({{s.id}});" title="Auswahl für diesen Schüler umkehren">↺</span></td>
 	</tr>
 %end
+	<tr>
+		<td></td>
+		<td></td>
+		<td>Summe:</td>
+%j = 1
+%for b in books:
+	%if b.workbook or b.classsets:
+		%continue
+	%end
+		<td>{{total[b.id]}}</td>
+	%if j % 3 == 0:
+		<td></td>
+	%end
+	%j += 1
+%end
+	</tr>
 </table>
 
 <input type="submit" value="Änderungen speichern" /><input type="button" value="Abbrechen" onclick="history.back()" />

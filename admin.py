@@ -129,7 +129,7 @@ def books_edit_post(id):
 	b = db.Book[id]
 	b.title   = request.forms.title
 	b.isbn    = request.forms.isbn
-	b.price   = Currency.fromString(request.forms.price)
+	b.price   = Currency.fromString(request.forms.price) if request.forms.price is not '' else 0
 	b.publisher = db.Publisher[int(request.forms.publisher_id)]
 	b.stock     = int(request.forms.stock)
 	b.inGrade   = int(request.forms.inGrade)
@@ -207,7 +207,8 @@ def demand_report():
 		
 		data[b.id] = {
 			'free': free,
-			'parents': required - free,
+			'required': required,
+			'parents': required - free if required >= free else 0,
 			'diff': diff,
 			'price': price,
 		}

@@ -46,7 +46,8 @@ table.books th, table.books td {
 	font-size: small;
 }
 
-table tr.select:hover td.name a {
+table tr.select:hover td.name a,
+table td.highlight {
 	color: red;
 }
 

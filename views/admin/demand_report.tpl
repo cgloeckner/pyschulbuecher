@@ -8,7 +8,7 @@
 %year = int(s.data['general']['school_year'])
 <h1>Bedarfsbericht für Schuljahr {{year}}/{{year+1}}</h1>
 
-<p><b>Gesamtsumme:</b> {{Currency.toString(total)}} &euro;</p>
+<p><b>Gesamtsumme:</b> {{Currency.toString(total)}}</p>
 
 <h3>Zusammenfassung:</h3>
 
@@ -20,8 +20,9 @@
 		<th>Verlag</th>
 		
 		<th class="rotate">Bestand</th>
-		<th class="rotate">Freiexemplare</th>
-		<th class="rotate">Beschaffung Eltern</th>
+		<th class="rotate">Benötigt</th>
+		<th class="rotate">davon Freiexemplare</th>
+		<th class="rotate">davon Beschaffung Eltern</th>
 		
 		<th class="rotate">Beschaffung Schule</th>
 		<th class="rotate">Kosten</th>
@@ -36,10 +37,11 @@
 	<tr>
 		<td>{{b.title}}</td>
 		<td>{{b.isbn}}</td>
-		<td>{{Currency.toString(b.price)}}€</td>
+		<td>{{Currency.toString(b.price)}}</td>
 		<td>{{b.publisher.name}}</td>
 		
 		<td>{{b.stock}}</td>
+		<td>{{data[b.id]["required"]}}</td>
 		<td>{{data[b.id]["free"]}}</td>
 		<td>{{data[b.id]["parents"]}}</td>
 		
@@ -62,6 +64,7 @@
 		<th>Verlag</th>
 		
 		<th class="rotate">Bestand</th>
+		<th class="rotate">Benötigt</th>
 		<th class="rotate">Freiexemplare</th>
 		<th class="rotate">Beschaffung Eltern</th>
 		
@@ -75,10 +78,11 @@
 	<tr>
 		<td>{{b.title}}</td>
 		<td>{{b.isbn}}</td>
-		<td>{{Currency.toString(b.price)}}€</td>
+		<td>{{Currency.toString(b.price)}}</td>
 		<td>{{b.publisher.name}}</td>
 		
 		<td>{{b.stock}}</td>
+		<td>{{data[b.id]["required"]}}</td>
 		<td>{{data[b.id]["free"]}}</td>
 		<td>{{data[b.id]["parents"]}}</td>
 		

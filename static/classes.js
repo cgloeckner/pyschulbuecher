@@ -22,3 +22,12 @@ function toggleCol(id) {
 		objs[i].checked = !objs[i].checked;
 	}
 }
+
+function enterColumn(id) {
+	$('td#' + id).addClass('highlight');
+}
+
+function leaveColumn(id) {
+	$('td#' + id).removeClass('highlight');
+}
+

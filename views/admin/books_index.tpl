@@ -27,7 +27,7 @@
 	%if old is None or old != tag:
 		%if old is not None:
 	<tr>
-		<td colspan="13"><hr /><a name="{{tag}}"></a></td>
+		<td colspan="14"><hr /><a name="{{tag}}"></a></td>
 	</tr>
 		%end
 		%old = tag
@@ -61,7 +61,7 @@
 		<td>{{b.title}}</td>
 		<td>{{b.isbn}}</td>
 	%if b.price is not None:
-		<td>{{Currency.toString(b.price)}}€</td>
+		<td>{{Currency.toString(b.price)}}</td>
 	%else:
 		<td>-</td>
 	%end
