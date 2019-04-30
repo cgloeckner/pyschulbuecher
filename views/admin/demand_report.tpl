@@ -21,12 +21,13 @@
 		<th>Verlag</th>
 		
 		<th class="rotate">Bestand</th>
-		<th class="rotate">Benötigt</th>
-		<th class="rotate">davon Freiexemplare</th>
-		<th class="rotate">Klassensätze</th>
-		<th class="rotate">davon Beschaffung Eltern</th>
+		<th title="nach Schülerzahlen" class="rotate">Benötigt</th>
+		<th title="nach Bücherzettel" class="rotate">Freiexemplare</th>
+		<th title="nach Klassenstärken" class="rotate">Klassensätze</th>
+		<th title="10&#37; Puffer auf F/KS" class="rotate">Gesamtbedarf</th>
+		<th title="= TODO" class="rotate">Beschaffung Eltern</th>
 		
-		<th class="rotate">Beschaffung Schule</th>
+		<th title="= TODO" class="rotate">Beschaffung Schule</th>
 		<th class="rotate">Kosten</th>
 	</tr>
 %for b in bks:
@@ -54,7 +55,7 @@ versch. \\
 		<td>{{Currency.toString(b.price)}}</td>
 		<td>{{b.publisher.name}}</td>
 		
-		<td>{{b.stock}}</td>
+		<td class="gray">{{b.stock}}</td>
 		<td>{{data[b.id]["required"]}}</td>
 	%if b.classsets:
 		<td>0</td>
@@ -63,7 +64,8 @@ versch. \\
 		<td>{{data[b.id]["free"]}}</td>
 		<td>0</td>
 	%end
-		<td>{{data[b.id]["parents"]}}</td>
+		<td class="gray">{{data[b.id]["buffered_free"]}}</td>
+		<td class="gray">{{data[b.id]["parents"]}}</td>
 		<td>{{!data[b.id]["diff"]}}</td>
 		<td>{{Currency.toString(data[b.id]["price"])}}</td>
 	</tr>
@@ -85,8 +87,10 @@ versch. \\
 		
 		<th class="rotate">Bestand</th>
 		<th class="rotate">Benötigt</th>
+		<th class="rotate">mit Puffer</th>
 		<th class="rotate">Freiexemplare</th>
 		<th class="rotate">Klassensätze</th>
+		<th class="rotate">mit Puffer</th>
 		<th class="rotate">Beschaffung Eltern</th>
 		
 		<th class="rotate">Beschaffung Schule</th>
@@ -115,13 +119,16 @@ versch. \\
 		<td>{{b.publisher.name}}</td>
 		
 		<td title="Bestand">{{b.stock}}</td>
-		<td title="Benötigt">{{data[b.id]["required"]}}</td>
+		<td title="Benötigt OHNE Puffer">{{data[b.id]["required"]}}</td>
+		<td title="Benötigt MIT Puffer">{{data[b.id]["buffered_required"]}}</td>
 	%if b.classsets:
-		<td title="Freiexemplare">0</td>
-		<td title="Klassensätze">{{data[b.id]["free"]}}</td>
+		<td title="Freiexemplare OHNE Puffer">0</td>
+		<td title="Klassensätze OHNE Puffer">{{data[b.id]["free"]}}</td>
+		<td title="F/KS MIT Puffer">0</td>
 	%else:
-		<td title="Freiexemplare">{{data[b.id]["free"]}}</td>
-		<td title="Klassensätze">0</td>
+		<td title="Freiexemplare OHNE Puffer">{{data[b.id]["free"]}}</td>
+		<td title="Klassensätze OHNE Puffer">0</td>
+		<td title="F/KS MIT Puffer">{{data[b.id]["buffered_free"]}}</td>
 	%end
 		
 		<td title="Beschaffung Eltern">{{data[b.id]["parents"]}}</td>

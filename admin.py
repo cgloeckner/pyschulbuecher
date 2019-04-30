@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-import os, time
+import os, time, math
 from datetime import datetime
 
 from bottle import *
@@ -198,7 +198,11 @@ def demand_report():
 	for b in bks:
 		free = demand.getNeededBooks(b)
 		required = demand.getMaxDemand(b)
-		diff = free - b.stock
+		# add buffer
+		buffered_free     = free + math.ceil(0.1 * free)
+		buffered_required = required + math.ceil(0.1 * free)
+		# calculate price
+		diff = buffered_free - b.stock
 		if diff > 0:
 			price = b.price * diff
 		else:
@@ -208,7 +212,9 @@ def demand_report():
 		data[b.id] = {
 			'free': free,
 			'required': required,
-			'parents': required - free if required >= free else 0,
+			'buffered_free': buffered_free,
+			'buffered_required': buffered_required,
+			'parents': buffered_required - free if buffered_required >= free else 0,
 			'diff': diff,
 			'price': price,
 		}

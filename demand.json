@@ -43,71 +43,71 @@
     },
     "11": {
         "Bio": {
-            "novices": 28,
-            "advanced": 0
+            "novices": 12,
+            "advanced": 52
         },
         "Ch": {
-            "novices": 28,
-            "advanced": 0
+            "novices": 22,
+            "advanced": 5
         },
         "Deu": {
-            "novices": 28,
-            "advanced": 0
+            "novices": 37,
+            "advanced": 42
         },
         "Eng": {
-            "novices": 28,
-            "advanced": 0
+            "novices": 0,
+            "advanced": 79
         },
         "Ge": {
-            "novices": 28,
-            "advanced": 0
+            "novices": 57,
+            "advanced": 22
         },
         "Geo": {
-            "novices": 28,
-            "advanced": 0
+            "novices": 11,
+            "advanced": 25
         },
         "MNT": {
-            "novices": 28,
+            "novices": 0,
             "advanced": 0
         },
         "Ma": {
-            "novices": 28,
-            "advanced": 0
+            "novices": 42,
+            "advanced": 37
         },
         "Mu": {
-            "novices": 28,
+            "novices": 55,
             "advanced": 0
         },
         "Ph": {
-            "novices": 28,
-            "advanced": 0
+            "novices": 23,
+            "advanced": 22
         },
         "Sk": {
-            "novices": 28,
-            "advanced": 0
+            "novices": 6,
+            "advanced": 10
         },
         "WR": {
-            "novices": 28,
-            "advanced": 0
+            "novices": 3,
+            "advanced": 22
         },
         "Et": {
-            "novices": 28,
+            "novices": 0,
             "advanced": 0
         },
         "Fr": {
-            "novices": 28,
+            "novices": 0,
             "advanced": 0
         },
         "La": {
-            "novices": 28,
+            "novices": 42,
             "advanced": 0
         },
         "Ru": {
-            "novices": 28,
+            "novices": 0,
             "advanced": 0
         },
         "eR": {
-            "novices": 28,
+            "novices": 0,
             "advanced": 0
         }
     },

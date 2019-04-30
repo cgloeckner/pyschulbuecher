@@ -61,6 +61,10 @@ tr.gray td, tr.gray th {
 	background-color: rgb(200, 200, 200);
 }
 
+td.gray {
+	background-color: rgb(200, 200, 200);
+}
+
 td.demand {
 	background-color: rgb(255, 255, 100);
 }
