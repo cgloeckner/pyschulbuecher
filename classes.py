@@ -40,7 +40,10 @@ def classes_students_index(grade, tag):
 @get('/classes/requests/<grade:int>/<tag>')
 @view('classes/request_form')
 def classes_requests_form(grade, tag):
-	bks = books.getBooksStartedIn(grade+1, True)
+	if tag.lower() == 'neu':
+		bks = books.getBooksUsedIn(grade+1, True)
+	else:
+		bks = books.getBooksStartedIn(grade+1, True)
 	bks = books.orderBooksList(bks)
 	c = orga.db.Class.get(grade=grade, tag=tag)
 	if c is None:
