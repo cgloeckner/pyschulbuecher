@@ -90,3 +90,8 @@ td.low {
 	background-color: orange;
 }
 
+td.booksum {
+	font-size: smaller;
+	text-align: center;
+}
+

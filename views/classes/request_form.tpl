@@ -99,7 +99,18 @@
 		%else:
 			%checked = ''
 		%end
-		<td name="{{b.id}}" onmouseover="enterColumn({{b.id}});" onmouseOut="leaveColumn({{b.id}});"><input class="selection" type="checkbox" name="{{id}}" {{!checked}}/></td>
+		<td title="\\
+		%if b.subject is not None:
+{{b.subject.name}}\\
+		%else:
+versch.\\
+		%end
+		%if b.inGrade < b.outGrade:
+ {{b.inGrade}}-{{b.outGrade}}\\
+		%else:
+ {{b.inGrade}}\\
+		%end
+ &#8222{{b.title}}&#8220" name="{{b.id}}" onmouseover="enterColumn({{b.id}});" onmouseOut="leaveColumn({{b.id}});"><input class="selection" type="checkbox" name="{{id}}" {{!checked}}/></td>
 		%if j % 3 == 0:
 		<td></td>
 		%end
@@ -117,7 +128,7 @@
 	%if b.workbook or b.classsets:
 		%continue
 	%end
-		<td>{{total[b.id]}}</td>
+		<td class="booksum">{{total[b.id]}}</td> <!-- TODO kleinere schrift !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
 	%if j % 3 == 0:
 		<td></td>
 	%end
