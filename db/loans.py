@@ -74,27 +74,6 @@ def updateLoan(person: db.Person, book: db.Book, count: int):
 			# update it
 			l.count = count
 
-def countNeededBooks(book: db.Book):
-	"""Count how many books are required considering current loans, returning
-	loans and new requested loans.
-	"""
-
-	# consider new requests
-	n = len(book.request)
-		
-	# consider books already in used
-	for l in book.loan:
-		n += l.count
-		
-	# consider books being returned by last grade that uses it
-	for c in orga.getClassesByGrade(book.outGrade):
-		for s in c.student:
-			if s.person in book.loan:
-				l = db.Loan.get(person=s.person, book=book)
-				n -= l.count
-	
-	return n
-
 def getLoanCount(person: db.Person, book: db.Book):
 	"""Return number of this specific book loaned by that person.
 	"""
@@ -158,6 +137,44 @@ class DemandManager(object):
 		else:
 			# consider course levels
 			return self.data[str(grade)][subject.tag][level]
+	
+	def getNeededBooks(self, book: db.Book):
+		"""Count how many books are required considering current loans, returning
+		loans and new requested loans.
+		"""
+
+		# consider new requests
+		n = len(book.request)
+			
+		# consider books already in used
+		for l in book.loan:
+			n += l.count
+			
+		# consider books being returned by last grade that uses it
+		for c in orga.getClassesByGrade(book.outGrade):
+			for s in c.student:
+				if s.person in book.loan:
+					l = db.Loan.get(person=s.person, book=book)
+					n -= l.count
+		
+		# consider classsets
+		if book.classsets:
+			for g in range(book.inGrade, book.outGrade+1):
+				if book.subject is None:
+					# use student count (e.g. cross-subject books)
+					# note that the n th grade is currently (n-1)th grade
+					n += self.grade_query(g-1)
+				elif g <= 10:
+					# use regular class size
+					n += self.getStudentNumber(g, book.subject)
+				else:
+					# consider course level
+					if book.novices:
+						n += self.getStudentNumber(g, book.subject, 'novices')
+					if book.advanced:
+						n += self.getStudentNumber(g, book.subject, 'advanced')
+		
+		return n
 	
 	def getMaxDemand(self, book: db.Book):
 		"""Calculate worst case demand of the given book assuming.

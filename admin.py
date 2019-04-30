@@ -196,7 +196,7 @@ def demand_report():
 	total = 0
 	data = dict()
 	for b in bks:
-		free = loans.countNeededBooks(b)
+		free = demand.getNeededBooks(b)
 		required = demand.getMaxDemand(b)
 		diff = free - b.stock
 		if diff > 0:
