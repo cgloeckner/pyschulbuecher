@@ -13,19 +13,19 @@
 		<td>August</td>
 		<td><ul>
 			<li>Bücherausgabe durchführen</li>
-			<li>ggf. Nachbestellung durchführen</li>
+			<li>ggf. Nachbestellung durchführen (TODO: Details)</li>
 		</ul></td>
 	</tr>
 	<tr>
 		<td>Januar</td>
 		<td><ul>
-			<li>Bedarfsermittlung Fachschaften</li>
+			<li>Bedarfsermittlung Fachschaften (inkl. Wörterbücher etc.)</li>
 		</ul></td>
 	</tr>
 	<tr>
 		<td>März</td>
 		<td><ul>
-			<li>Ausgabe Bücherzettel</li>
+			<li>Ausgabe Bücherzettel (neues Schuljahr)</li>
 		</ul></td>
 	</tr>
 	<tr>
@@ -39,7 +39,15 @@
 		<td>Mai</td>
 		<td><ul>
 			<li>Bücherrückgabe vorbereiten</li>
-			<li>Bücherbestellung durchführen</li>
+			<li>Bücherbestellung vorbereiten
+				<ol>
+					<li>Download <a href="https://www.schulportal-thueringen.de/werkzeuge/schulbuchkatalog" target="_blank">KDL- und Schulbuchkatalog</a></li>
+					<li>Schuletat von Schulleitung beantragen lassen</li>
+					<li>KDL ausfüllen (P1_1, P2_1, P3_1)</li>
+					<li>Angebote an Buchhändler senden</li>
+				</ol>
+			</li>
+			<li>Bücherbestellung durchführen (TODO: Details)</li>
 		</ul></td>
 	</tr>
 	<tr>

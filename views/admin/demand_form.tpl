@@ -46,7 +46,7 @@
 	<tr>
 		<td>{{grade}} {{'gA' if level == 'novices' else 'eA'}}</td>
 		%for s in subjects:
-		<td><input type="text" class="short" maxLength="3" name="{{grade}}_{{s.tag}}_{{level}}" value="{{demand.getStudentNumber(grade, sub, level)}}"  /></td>
+		<td><input type="text" class="short" maxLength="3" name="{{grade}}_{{s.tag}}_{{level}}" value="{{demand.getStudentNumber(grade, s, level)}}"  /></td>
 		%end
 	</tr>
 	%end
