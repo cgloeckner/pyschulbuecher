@@ -198,34 +198,46 @@ def demand_report():
 	for b in bks:
 		free = demand.getNeededBooks(b)
 		required = demand.getMaxDemand(b)
-		if not b.classsets:
-			# add buffer
-			buffered_free     = free + math.ceil(0.1 * free)
-			buffered_required = required + math.ceil(0.1 * free)
-		else:
-			# classsets without buffer
-			buffered_free     = free
-			buffered_required = required
-		# calculate price
-		diff = buffered_free - b.stock
-		if diff > 0:
-			price = b.price * diff
-		else:
-			price = 0
-			diff = "&mdash;"
-		# calculate how many books are bought by parents
-		parents = buffered_required - free
+		required = max(required, free) # to fix problems with more books marked as free
+		
+		lower_stock = math.floor(b.stock * 0.9)
+		
+		# number of additional books (to fulfill free books)
+		additional = free - lower_stock
+		if additional < 0:
+			additional = 0
+		
+		# total number of parents (gap between number of free and total required)
+		parents = required - free
 		if parents < 0:
 			parents = 0
+			
+		if b.classsets:
+			# no books by parents if classsets
+			parents = 0
+		
+		# total number of pending free books (acquisition by school)
+		school = additional - parents
+		
+		# total number of leftover books
+		leftover = lower_stock - free
+		
+		# total price
+		if school > 0:
+			price = b.price * school
+		else:
+			price = 0
+			school = "&mdash;"
 		
 		data[b.id] = {
 			'free': free,
 			'required': required,
-			'buffered_free': buffered_free,
-			'buffered_required': buffered_required,
 			'parents': parents,
-			'diff': diff,
+			'school': school,
 			'price': price,
+			'stock': lower_stock,
+			'leftover': leftover,
+			'critical': leftover < math.ceil(0.1 * lower_stock)
 		}
 		total += price
 	

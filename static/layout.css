@@ -69,6 +69,10 @@ td.demand {
 	background-color: rgb(255, 255, 100);
 }
 
+td.critical {
+	background-color: rgb(255, 0, 0);
+}
+
 input[type=checkbox].selection {
 	width: 20px;
 	height: 15px;

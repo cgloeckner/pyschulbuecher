@@ -145,7 +145,7 @@ class DemandManager(object):
 
 		# consider new requests
 		n = len(book.request)
-			
+		
 		# consider books already in used
 		for l in book.loan:
 			n += l.count
@@ -183,7 +183,7 @@ class DemandManager(object):
 		E.g. the new 10th grade is currently 9th grade now.
 		"""
 		total = 0
-		for grade in range(book.inGrade, book.outGrade+1):
+		for grade in [book.inGrade]:# range(book.inGrade, book.outGrade+1):
 			if book.subject is None:
 				# use student count (e.g. cross-subject books)
 				# note that the n th grade is currently (n-1)th grade
