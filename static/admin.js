@@ -7,3 +7,11 @@ function showBooks(css_class) {
 	}
 }
 
+function toggleDemand() {
+	if ($('.trivial').css('display') == 'table-row') {
+		$('.trivial').css('display', 'none');
+	} else {
+		$('.trivial').css('display', 'table-row');
+	}
+}
+

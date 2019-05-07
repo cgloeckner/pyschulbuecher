@@ -168,7 +168,7 @@ def demand_form():
 	demand = loans.DemandManager()
 	with open(demand_json, 'r') as h:
 		demand.load_from(h)
-
+	
 	return dict(s=s, demand=demand)
 
 @post('/admin/demand')
@@ -182,6 +182,9 @@ def demand_report():
 		# keep default values
 		pass
 	
+	# percentage of lowering the actual stock to gain buffer
+	lowering = int(request.forms.lowering)
+
 	# fetch demand from UI input
 	demand = loans.DemandManager()
 	demand.parse(request.forms.get)
@@ -200,12 +203,17 @@ def demand_report():
 		required = demand.getMaxDemand(b)
 		required = max(required, free) # to fix problems with more books marked as free
 		
-		lower_stock = math.floor(b.stock * 0.9)
+		lower_stock = math.floor(b.stock * (100.0 - lowering) / 100.0)
 		
-		# number of additional books (to fulfill free books)
-		additional = free - lower_stock
-		if additional < 0:
-			additional = 0
+		# number of acquire books (to fulfill free books)
+		acquire = free - lower_stock
+		if acquire < 0:
+			acquire = 0
+		
+		# number of left over books
+		left = lower_stock - free
+		if left < 0:
+			left = '0(!)'
 		
 		# total number of parents (gap between number of free and total required)
 		parents = required - free
@@ -217,10 +225,7 @@ def demand_report():
 			parents = 0
 		
 		# total number of pending free books (acquisition by school)
-		school = additional - parents
-		
-		# total number of leftover books
-		leftover = lower_stock - free
+		school = acquire - parents
 		
 		# total price
 		if school > 0:
@@ -230,14 +235,14 @@ def demand_report():
 			school = "&mdash;"
 		
 		data[b.id] = {
+			'acquire': acquire,
 			'free': free,
 			'required': required,
+			'left': left,
 			'parents': parents,
 			'school': school,
 			'price': price,
-			'stock': lower_stock,
-			'leftover': leftover,
-			'critical': leftover < math.ceil(0.1 * lower_stock)
+			'stock': lower_stock
 		}
 		total += price
 	

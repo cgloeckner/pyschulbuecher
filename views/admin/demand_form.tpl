@@ -12,6 +12,10 @@
 
 <form action="/admin/demand" id="demand" method="post">
 
+<label for="lowering">Bestand senken um</label><input type="text" id="lowering" name="lowering" value="10" maxlength="2" size="1" />&percnt;
+
+<br /><br />
+
 <table class="books">
 	<tr>
 		<th class="rotate">Klassenstufe</th>
