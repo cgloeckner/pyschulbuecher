@@ -198,9 +198,14 @@ def demand_report():
 	for b in bks:
 		free = demand.getNeededBooks(b)
 		required = demand.getMaxDemand(b)
-		# add buffer
-		buffered_free     = free + math.ceil(0.1 * free)
-		buffered_required = required + math.ceil(0.1 * free)
+		if not b.classsets:
+			# add buffer
+			buffered_free     = free + math.ceil(0.1 * free)
+			buffered_required = required + math.ceil(0.1 * free)
+		else:
+			# classsets without buffer
+			buffered_free     = free
+			buffered_required = required
 		# calculate price
 		diff = buffered_free - b.stock
 		if diff > 0:
@@ -208,13 +213,17 @@ def demand_report():
 		else:
 			price = 0
 			diff = "&mdash;"
+		# calculate how many books are bought by parents
+		parents = buffered_required - free
+		if parents < 0:
+			parents = 0
 		
 		data[b.id] = {
 			'free': free,
 			'required': required,
 			'buffered_free': buffered_free,
 			'buffered_required': buffered_required,
-			'parents': buffered_required - free if buffered_required >= free else 0,
+			'parents': parents,
 			'diff': diff,
 			'price': price,
 		}
