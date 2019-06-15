@@ -46,12 +46,22 @@
 		<button class="dropbtn"><a href="/admin/settings">Verwaltung <span class="downarrow">&#9660;</span></a>
 		</button>
 		<div class="dropdown-content">
-			<a href="/admin/subjects">Fächer</a>
-			<a href="/admin/publishers">Verlage</a>
+			<div class="submenu">
+				<span class="section">Allgemein <span class="rightarrow">&#9654;</span></span>
+				<div class="dropdown-content">
+					<a href="/admin/subjects">Fächer</a>
+					<a href="/admin/publishers">Verlage</a>
+				</div>
+			</div>
+			<div class="submenu">
+				<span class="section">Organisation <span class="rightarrow">&#9654;</span></span>
+				<div class="dropdown-content">
+					<a href="/admin/teachers">Lehrer</a>
+					<a href="/admin/classes">Klassen</a>
+					<a href="/admin/students">Schüler</a>
+				</div>
+			</div>
 			<a href="/admin/books">Bücher</a>
-			<a href="/admin/teachers">Lehrer</a>
-			<a href="/admin/classes">Klassen</a>
-			<a href="/admin/students">Schüler</a>
 			<a href="/admin/lists">Listen</a>
 			<a href="/admin/settings">Einstellungen</a>
 		</div>

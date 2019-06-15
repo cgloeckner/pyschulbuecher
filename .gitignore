@@ -1,4 +1,5 @@
 data*.db
+demand.json
 export/*
 *~
 # Byte-compiled / optimized / DLL files
