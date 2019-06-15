@@ -40,8 +40,11 @@ class Class(db.Entity):
 	# reverse attribute
 	student   = Set("Student", cascade_delete=False) # restrict if students assigned
 	
-	def toString(self):
-		return "%d%s" % (self.grade, self.tag.upper() if len(self.tag) > 1 else self.tag)
+	def toString(self, advance=False):
+		g = self.grade
+		if advance:
+			g += 1
+		return "%d%s" % (g, self.tag.upper() if len(self.tag) > 1 else self.tag)
 
 class Student(db.Entity):
 	id        = PrimaryKey(int, auto=True)

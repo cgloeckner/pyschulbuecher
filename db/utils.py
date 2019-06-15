@@ -175,7 +175,71 @@ class BookreturnPdf(object):
 			self.header = f.read()
 		with open('docs/bookreturn/footer.tpl') as f:
 			self.footer = f.read()
-		with open('docs/bookreturn/noexam.tpl') as f:
+		with open('docs/bookreturn/content.tpl') as f:
+			self.content = f.read()
+		with open('docs/bookreturn/overview.tpl') as f:
+			self.overview = f.read()
+		# prepare output directory
+		self.export = export
+		self.texdir = os.path.join(export, 'tex')
+		if not os.path.isdir(self.export):
+			os.mkdir(self.export)
+		if not os.path.isdir(self.texdir):
+			os.mkdir(self.texdir)
+		# load settings
+		self.s = Settings()
+		self.s.load_from(settings_handle)
+		
+		self.tex  = template(self.header)
+	
+	def addOverview(self, grade):
+		"""Generate overviews for class teachers about returning books.
+		"""
+		# fetch and order books that are used next year by this class
+		bks = books.getBooksFinishedIn(grade)
+		bks = books.orderBooksList(bks)
+		
+		# render template
+		self.tex += template(self.overview, s=self.s, grade=grade, bks=bks)
+	
+	def __call__(self, class_):
+		"""Generate requestlist pdf file for the given class.
+		"""
+		# fetch and order books that are used next year by this class
+		bks = books.getBooksFinishedIn(class_.grade)
+		bks = books.orderBooksList(bks)
+		
+		# query students
+		students = orga.getStudentsIn(class_.grade, class_.tag)
+		
+		# render template
+		self.tex += template(self.content, s=self.s, class_=class_, bks=bks, students=students)
+	
+	def saveToFile(self):
+		self.tex += template(self.footer)
+		
+		# export tex (debug purpose)
+		dbg_fname = os.path.join(self.texdir, 'Rückgaben.tex')
+		with open(dbg_fname, 'w') as h:
+			h.write(self.tex)
+		
+		# export PDF
+		fname = os.path.join(self.export, 'Rückgaben.pdf')
+		pdf = build_pdf(self.tex)
+		pdf.save_to(fname)
+
+
+# -----------------------------------------------------------------------------
+
+class BookloanPdf(object):
+
+	def __init__(self, settings_handle, export='export'):
+		# load LaTeX templates
+		with open('docs/bookloan/header.tpl') as f:
+			self.header = f.read()
+		with open('docs/bookloan/footer.tpl') as f:
+			self.footer = f.read()
+		with open('docs/bookloan/content.tpl') as f:
 			self.content = f.read()
 		# prepare output directory
 		self.export = export
@@ -193,23 +257,26 @@ class BookreturnPdf(object):
 	def __call__(self, class_):
 		"""Generate requestlist pdf file for the given class.
 		"""
-		# fetch and order books that are used next year by this class
-		bks = books.getBooksStartedIn(class_.grade + 1)
+		# fetch and order books that were requested by this class
+		bks = books.getBooksStartedIn(class_.grade+1)
 		bks = books.orderBooksList(bks)
 		
+		# query students
+		students = orga.getStudentsIn(class_.grade, class_.tag)
+		
 		# render template
-		self.tex += template(self.content, s=self.s, class_=class_, bks=bks)
+		self.tex += template(self.content, s=self.s, class_=class_, bks=bks, students=students)
 	
 	def saveToFile(self):
 		self.tex += template(self.footer)
 		
 		# export tex (debug purpose)
-		dbg_fname = os.path.join(self.texdir, 'Bücherrückgabe_Klasse12.tex')
+		dbg_fname = os.path.join(self.texdir, 'Ausgaben.tex')
 		with open(dbg_fname, 'w') as h:
 			h.write(self.tex)
 		
 		# export PDF
-		fname = os.path.join(self.export, 'Bücherrückgabe_Klasse12.pdf')
+		fname = os.path.join(self.export, 'Ausgaben.pdf')
 		pdf = build_pdf(self.tex)
 		pdf.save_to(fname)
 

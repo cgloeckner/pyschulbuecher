@@ -9,7 +9,7 @@ from pony import orm
 
 from db.orm import db, db_session, Currency
 from db import orga, books, loans
-from db.utils import Settings, BooklistPdf, RequestlistPdf, BookreturnPdf
+from db.utils import Settings, BooklistPdf, RequestlistPdf, BookreturnPdf, BookloanPdf
 from utils import errorhandler
 
 
@@ -495,9 +495,27 @@ def bookreturn_generate():
 	with open('settings.ini') as h:
 		bookreturn = BookreturnPdf(h)
 	
-	# exclude 12th grade (last grade)
-	for c in orga.getClassesByGrade(12):
-		bookreturn(c)
+	# generate overview lists for all grades
+	for grade in range(5, 12+1):
+		bookreturn.addOverview(grade)
+	
+	# generate return lists for all grades
+	for grade in range(5, 12+1):
+		for c in orga.getClassesByGrade(grade):
+			bookreturn(c)
+	bookreturn.saveToFile()
+
+	return 'Fertig'
+
+@get('/admin/lists/generate/bookloan')
+def bookreturn_generate():
+	with open('settings.ini') as h:
+		bookreturn = BookloanPdf(h)
+	
+	# generate return lists for all new grades (for next year)
+	for grade in range(4, 11+1):
+		for c in orga.getClassesByGrade(grade):
+			bookreturn(c)
 	bookreturn.saveToFile()
 
 	return 'Fertig'

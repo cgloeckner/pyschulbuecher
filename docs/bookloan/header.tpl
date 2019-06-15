@@ -24,4 +24,3 @@
 \pagenumbering{gobble}
 
 \def\arraystretch{1}
-

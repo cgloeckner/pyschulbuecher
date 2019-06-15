@@ -62,7 +62,7 @@
 				</div>
 			</div>
 			<a href="/admin/books">Bücher</a>
-			<a href="/admin/lists">Listen</a>
+			<a href="/admin/lists">Ausdrucke</a>
 			<a href="/admin/settings">Einstellungen</a>
 		</div>
 	</div>
