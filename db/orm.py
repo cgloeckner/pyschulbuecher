@@ -88,6 +88,21 @@ class Book(db.Entity):
 	loan      = Set("Loan", cascade_delete=False) # restrict if loans assigned
 	request   = Set("Request", cascade_delete=False) # restrict if request assigned
 
+	def toString(self):
+		caption = self.title
+		comments = list()
+		if self.novices:
+			comments.append('gA')
+		if self.advanced:
+			comments.append('eA')
+		if self.comment:
+			comments.append(self.comment)
+		if self.classsets:
+			comments.append('Klassensatz')
+		comments.append(self.publisher.name)
+		
+		return caption + ' (%s)' % (', '.join(comments))
+
 
 class Currency(object):
 	@staticmethod

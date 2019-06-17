@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-import os, time
+import os, time, json
 from datetime import datetime
 
 from bottle import *
@@ -23,6 +23,63 @@ def loan_person_overview(id):
 	loan    = loans.orderLoanOverview(person.loan)
 	request = loans.orderRequestOverview(person.request)
 	return dict(person=person, loan=loan, request=request)
+
+
+@get('/loan/person/<person_id:int>/add')
+@view('loan/person_add')
+def loan_person_add(person_id):
+	bks = books.getPureBooksByGradeAndSubject(None, None)
+	return dict(id=person_id, bks=bks)
+
+
+@post('/loan/person/<person_id:int>/add')
+@errorhandler
+def loan_person_add(person_id):
+	person = db.Person[person_id]
+	book   = db.Book[int(request.forms.book_id)]
+	count  = int(request.forms.count)
+	
+	loans.updateLoan(person, book, count)
+	
+	db.commit()
+	redirect('/loan/person/%d' % person_id)
+
+
+@post('/loan/person/<person_id:int>/back')
+@errorhandler
+def loan_person_add(person_id):
+	person = db.Person[person_id]
+	
+	for l in person.loan:
+		if request.forms.get(str(l.book.id)) == 'on':
+			loans.updateLoan(person, db.Book[l.book.id], 0)
+	
+	db.commit()
+	redirect('/loan/person/%d' % person_id)
+
+
+@get('/loan/ajax/books')
+@get('/loan/ajax/books/grade/<grade:int>')
+@get('/loan/ajax/books/subject/<subject_id:int>')
+@get('/loan/ajax/books/grade/<grade:int>/subject/<subject_id:int>')
+def loan_ajax_queryBooks(grade=None, subject_id=None):
+	subject = db.Subject[subject_id] if subject_id is not None else None
+	bks = books.getPureBooksByGradeAndSubject(grade, subject)
+	
+	# copy relevant data
+	data = dict()
+	for b in bks:
+		data[b.id] = b.toString()
+
+	return json.dumps(data)
+
+
+@get('/loan/ajax/count/<person_id:int>/<book_id:int>')
+def loan_ajax_queryBookCount(person_id, book_id):
+	person = db.Person[person_id]
+	book   = db.Book[book_id]
+	
+	return str(loans.getLoanCount(person, book))
 
 
 # -----------------------------------------------------------------------------

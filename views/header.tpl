@@ -18,6 +18,7 @@
 	<script src="/static/jquery-3.3.1.min.js"></script>
 	<script src="/static/admin.js"></script>
 	<script src="/static/classes.js"></script>
+	<script src="/static/loans.js"></script>
 	<link rel="stylesheet" type="text/css" href="/static/normalize.css">
 	<link rel="stylesheet" type="text/css" href="/static/layout.css">
 	<link rel="stylesheet" type="text/css" href="/static/navigation.css">

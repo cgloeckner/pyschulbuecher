@@ -10,11 +10,13 @@ from db.orm import db
 
 __author__ = "Christian Glöckner"
 
-def getClassGrades():
+def getClassGrades(regular=False):
 	"""Return a list of grades for which classes exist.
+	If regular class grades are queried, entry and alumni grade are excluded.
 	"""
 	return select(c.grade
 		for c in db.Class
+			if c.grade in range(5, 12+1)
 	).order_by(lambda g: g)
 
 def getClassTags(grade: int):

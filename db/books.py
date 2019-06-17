@@ -138,6 +138,27 @@ def getBooksByIsbn(isbn: str):
 			if isbn == b.isbn
 	)
 
+def getPureBooksByGradeAndSubject(grade: int, subject: db.Subject):
+	"""Returns a list of books used in the given grade and subject.
+	If any of those is provided with None, this aspect is ignored. Hence all
+	books are queried of None is given twice.
+	Note that only real books (no workbooks) are queried
+	"""
+	if grade is not None:
+		return select(b
+			for b in db.Book
+				if not b.workbook
+				and b.inGrade <= grade
+				and grade <= b.outGrade
+				and b.subject == subject
+		)
+	
+	else:
+		return select(b
+			for b in db.Book
+				if not b.workbook
+				and b.subject == subject
+		)
 
 # -----------------------------------------------------------------------------
 
