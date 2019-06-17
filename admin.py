@@ -575,17 +575,16 @@ def bookpending_generate():
 	with open('settings.ini') as h:
 		pending = BookpendingPdf(h)
 	n = 0
-	for g in range(5, 12+1):
-		for c in orga.getClassesByGrade(g):
-			for s in c.student:
-				n += pending(s.person)
+	#for g in range(5, 12+1):
+	for c in orga.getClassesByGrade(12):
+		for s in c.student:
+			n += pending(s.person)
 	
-	msg = 'keine Bücher ausstehend'
-	if n > 0:
-		fname = pending.saveToFile(with_date=True)
-		msg = '<a href="/admin/lists/download/%s.pdf">%d ausstehende Bücher gefunden</a>' % (fname, n)
+	if n == 0:
+		pending.tex += 'keine Bücher ausstehend'
 	
-	return msg
+	fname = pending.saveToFile()
+	return '<a href="/admin/lists/download/%s.pdf">%d ausstehende Bücher gefunden</a>' % (fname, n)
 	
 
 # -----------------------------------------------------------------------------
