@@ -1,5 +1,16 @@
 %import db.orga as orga
+%from db.utils import Settings
 
+%s = Settings()
+%try:
+%	with open('settings.ini') as h:
+%		s.load_from(h)
+%	end
+%	year = int(s.data['general']['school_year'])
+%except FileNotFoundError:
+%	# keep default values
+%	year = 0
+%end
 <!DOCTYPE html>
 <html>
 <head>
@@ -11,7 +22,7 @@
 	<link rel="stylesheet" type="text/css" href="/static/layout.css">
 	<link rel="stylesheet" type="text/css" href="/static/navigation.css">
 	<link rel="stylesheet" type="text/css" href="/static/subnavigation.css">
-	<title>Schulbuchverwaltung</title>
+	<title>Schulbuchverwaltung {{year}}/{{year+1}}</title>
 </head>
 
 <body>
@@ -67,7 +78,7 @@
 		</div>
 	</div>
 	
-	<span class="info">Schulbuchverwaltung - v0.1-alpha</span>
+	<span class="info">Schulbuchverwaltung ({{year}}/{{year+1}}) - v0.1-alpha</span>
 </div>
 <div class="content">
 

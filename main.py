@@ -45,6 +45,5 @@ def landingpage():
 
 import admin, classes, loans
 
-	
-run(host='localhost', reloader=True, debug=debug, port=8080)
 
+run(host='localhost', reloader=True, debug=debug, port=8080)

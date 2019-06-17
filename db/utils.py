@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-import os, configparser
+import os, configparser, datetime
 import PyPDF2
 
 from bottle import template
@@ -280,9 +280,64 @@ class BookloanPdf(object):
 		pdf = build_pdf(self.tex)
 		pdf.save_to(fname)
 
+# -----------------------------------------------------------------------------
+
+class BookpendingPdf(object):
+
+	def __init__(self, settings_handle, export='export'):
+		# load LaTeX templates
+		with open('docs/bookpending/header.tpl') as f:
+			self.header = f.read()
+		with open('docs/bookpending/footer.tpl') as f:
+			self.footer = f.read()
+		with open('docs/bookpending/content.tpl') as f:
+			self.content = f.read()
+		# prepare output directory
+		self.export = export
+		self.texdir = os.path.join(export, 'tex')
+		if not os.path.isdir(self.export):
+			os.mkdir(self.export)
+		if not os.path.isdir(self.texdir):
+			os.mkdir(self.texdir)
+		# load settings
+		self.s = Settings()
+		self.s.load_from(settings_handle)
+		
+		self.tex  = template(self.header)
+	
+	def __call__(self, person):
+		"""Generate pending books pdf file for the given person.
+		"""
+		count = len(person.loan)
+		if count > 0:
+			self.tex += template(self.content, s=self.s, person=person)
+		
+		return count
+	
+	def saveToFile(self, with_date=False):
+		self.tex += template(self.footer)
+		
+		ext = ''
+		if with_date:
+			ext = '_%s' % datetime.datetime.now().strftime('%Y_%m_%d__%H_%M_%S')
+		
+		# export tex (debug purpose)
+		dbg_fname = os.path.join(self.texdir, 'AusstehendeBücher%s.tex' % ext)
+		with open(dbg_fname, 'w') as h:
+			h.write(self.tex)
+		
+		# export PDF
+		fname = os.path.join(self.export, 'AusstehendeBücher%s.pdf' % ext)
+		pdf = build_pdf(self.tex)
+		pdf.save_to(fname)
 
 
 # -----------------------------------------------------------------------------
+
+
+
+# -----------------------------------------------------------------------------
+
 
 
 import unittest

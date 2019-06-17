@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-import os, time, math
+import os, time, math, sys, shutil
 from datetime import datetime
 
 from bottle import *
@@ -9,7 +9,7 @@ from pony import orm
 
 from db.orm import db, db_session, Currency
 from db import orga, books, loans
-from db.utils import Settings, BooklistPdf, RequestlistPdf, BookreturnPdf, BookloanPdf
+from db.utils import Settings, BooklistPdf, RequestlistPdf, BookreturnPdf, BookloanPdf, BookpendingPdf
 from utils import errorhandler
 
 
@@ -411,17 +411,77 @@ def settings_form():
 @post('/admin/settings')
 def settings_form_post():
 	s = Settings()
-	s.data['general']['school_year']         = request.forms.school_year
-	s.data['general']['planner_price']       = str(Currency.fromString(request.forms.planner_price))
-	s.data['deadline']['booklist_changes']   = request.forms.deadline_booklist_changes
-	s.data['deadline']['booklist_return']    = request.forms.deadline_booklist_return
+	try:
+		with open('settings.ini') as h:
+			s.load_from(h)	
+		current_year = s.data['general']['school_year']
+	except FileNotFoundError:
+		# keep default values
+		current_year = None
+
+	s = Settings()
+	s.data['general']['school_year']        = request.forms.school_year
+	s.data['general']['planner_price']      = str(Currency.fromString(request.forms.planner_price))
+	s.data['deadline']['booklist_changes']  = request.forms.deadline_booklist_changes
+	s.data['deadline']['booklist_return']   = request.forms.deadline_booklist_return
 	s.data['deadline']['bookreturn_noexam'] = request.forms.deadline_bookreturn_noexam
-	
+		
 	with open('settings.ini', 'w') as h:
 		s.save_to(h)
 	
 	db.commit()
+	
+	next_year = s.data['general']['school_year']
+	
+	if current_year is not None and (current_year != next_year):
+		# copy database for new year
+		print('Copying database...')
+		shutil.copyfile('data%s.db' % current_year, 'data%s.db' % next_year)
+		print('Finished')
+		
+		# notify admin about restart
+		print('=' * 80)
+		print('\nPlease Restart Application and browse http://localhost:8080/admin/advance\n')
+		print('=' * 80)
+		sys.exit(0)
+	
 	redirect('/admin/settings')
+
+# -----------------------------------------------------------------------------
+
+@get('/admin/advance')
+@view('admin/advance')
+def advance_info():
+	return dict()
+
+@get('/admin/advance/confirm')
+def advance_confirm():
+	"""
+	# query pending books from 12th grade
+	with open('settings.ini') as h:
+		pending = BookpendingPdf(h)
+	n = 0
+	for c in orga.getClassesByGrade(12):
+		for s in c.student:
+			n += pending(s.person)
+	
+	if n > 0:
+		pending.saveToFile(with_date=True)
+		print("WARNING: pending books found and listed.")
+	"""
+	
+	for c in orga.getClasses():
+		# advance every class
+		c.grade += 1
+	
+		# convert book requests to loans
+		for s in c.student:
+			loans.applyRequest(s)
+	
+	db.commit()
+	
+	redirect('/')
+	
 
 # -----------------------------------------------------------------------------
 

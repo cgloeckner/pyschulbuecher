@@ -83,6 +83,21 @@ def getLoanCount(person: db.Person, book: db.Book):
 	return 0
 
 
+def applyRequest(student: db.Student):
+	"""Apply person's request be transfering to loaning these books.
+	Note that the requests are deleted after that.
+	"""
+	# add loaning
+	bks = list()
+	for l in student.person.request:
+		updateLoan(student.person, l.book, 1)
+		bks.append(l.book)
+	
+	# drop as requests
+	for b in bks:
+		updateRequest(student, b, False)
+
+	
 # -----------------------------------------------------------------------------
 
 class DemandManager(object):

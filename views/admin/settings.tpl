@@ -32,6 +32,8 @@
 	</tr>
 </table>
 
+<a href="/admin/advance">Schuljahreswechsel</a>
+
 </form>
 
 %include("footer")
