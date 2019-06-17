@@ -14,10 +14,15 @@ def getClassGrades(regular=False):
 	"""Return a list of grades for which classes exist.
 	If regular class grades are queried, entry and alumni grade are excluded.
 	"""
-	return select(c.grade
-		for c in db.Class
-			if c.grade in range(5, 12+1)
-	).order_by(lambda g: g)
+	if regular:
+		return select(c.grade
+			for c in db.Class
+				if c.grade in range(5, 12+1)
+		).order_by(lambda g: g)
+	else:
+		return select(c.grade
+			for c in db.Class
+		).order_by(lambda g: g)
 
 def getClassTags(grade: int):
 	"""Return a list of tags for which classes exist in the given grade.
