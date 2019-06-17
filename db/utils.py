@@ -320,16 +320,19 @@ class BookpendingPdf(object):
 		ext = ''
 		if with_date:
 			ext = '_%s' % datetime.datetime.now().strftime('%Y_%m_%d__%H_%M_%S')
+		pdfname = 'AusstehendeBücher%s' % ext
 		
 		# export tex (debug purpose)
-		dbg_fname = os.path.join(self.texdir, 'AusstehendeBücher%s.tex' % ext)
+		dbg_fname = os.path.join(self.texdir, '%s.tex' % pdfname)
 		with open(dbg_fname, 'w') as h:
 			h.write(self.tex)
 		
 		# export PDF
-		fname = os.path.join(self.export, 'AusstehendeBücher%s.pdf' % ext)
+		fname = os.path.join(self.export, '%s.pdf' % pdfname)
 		pdf = build_pdf(self.tex)
 		pdf.save_to(fname)
+		
+		return pdfname
 
 
 # -----------------------------------------------------------------------------

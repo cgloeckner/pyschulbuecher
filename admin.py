@@ -455,21 +455,7 @@ def advance_info():
 	return dict()
 
 @get('/admin/advance/confirm')
-def advance_confirm():
-	"""
-	# query pending books from 12th grade
-	with open('settings.ini') as h:
-		pending = BookpendingPdf(h)
-	n = 0
-	for c in orga.getClassesByGrade(12):
-		for s in c.student:
-			n += pending(s.person)
-	
-	if n > 0:
-		pending.saveToFile(with_date=True)
-		print("WARNING: pending books found and listed.")
-	"""
-	
+def advance_confirm():	
 	for c in orga.getClasses():
 		# advance every class
 		c.grade += 1
@@ -579,6 +565,28 @@ def bookreturn_generate():
 	bookreturn.saveToFile()
 
 	return 'Fertig'
+
+@get('/admin/lists/generate/bookpending')
+def bookpending_generate():
+	with open('settings.ini') as h:
+		bookreturn = BookloanPdf(h)
+	
+	# query pending books
+	with open('settings.ini') as h:
+		pending = BookpendingPdf(h)
+	n = 0
+	for g in range(5, 12+1):
+		for c in orga.getClassesByGrade(g):
+			for s in c.student:
+				n += pending(s.person)
+	
+	msg = 'keine Bücher ausstehend'
+	if n > 0:
+		fname = pending.saveToFile(with_date=True)
+		msg = '<a href="/admin/lists/download/%s.pdf">%d ausstehende Bücher gefunden</a>' % (fname, n)
+	
+	return msg
+	
 
 # -----------------------------------------------------------------------------
 
