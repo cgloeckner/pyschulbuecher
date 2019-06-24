@@ -1,10 +1,10 @@
 %from utils import tex_escape
 %from db import loans
 
-{\LARGE Leihexemplare zur Ausgabe {{class_.toString(advance=True)}} }
+{\LARGE Ausgabe der Leihexemplare in Klasse {{class_.toString()}} }
 \hfill
 %year = int(s.data['general']['school_year'])
-{\large Schuljahr {{year+1}}/{{year+2}} }
+{\large Schuljahr {{year}}/{{year+1}} }\\
 
 %if class_.teacher is not None:
 	Klassenleiter(in):
@@ -12,21 +12,24 @@
 	{{class_.teacher.person.name}}, {{class_.teacher.person.firstname}}
 %end
 
-Ihre Schüler haben mit dem Bücherzettel um folgende Leihexemplare gebeten. Beachten Sie dabei:
+Bitte beachten Sie:
 \begin{enumerate}
-	\item Überprüfen Sie die Anzahl der Ihnen zur Verfügung gestellten Bücher.
-	\item \textbf{Markieren} Sie in der untenstehenden Tabelle bitte \textbf{fehlende oder beschädigte Bücher} farbig.
-	\item \textbf{Verzichten} Sie bitte auf eine Kennzeichnung ausgegebener Bücher.
+	\item Überprüfen Sie die Anzahl der Ihnen zur Verfügung gestellten Bücher. Bitten melden Sie \textbf{fehlende oder beschädigte Bücher} umgehend, sodass Sie Ersatz erhalten können.
+	\item Bitte kennzeichnen Sie in der untenstehenden Tabelle \textbf{keine ausgegebenen Bücher}, sondern \textbf{nur Änderungen} farbig. (z.B. wenn Bücher doch gekauft wurden) 
 	\item Stellen Sie jedem Schüler seine \textbf{Ausleihliste} zur Verfügung, damit die Eltern den Erhalt quittieren.
+%if class_.grade in [5, 7, 9, 11]:
+	\newline Die Schüler der Klassenstufen 5, 7, 9 und 11 erhalten \textbf{neue Ausleihlisten}, um eine übersichtliche Dokumentation der Leihexemplare zu ermöglichen. Alte Leihlisten \textbf{verbleiben} im Hefter.
+	\item Fordern Sie die Ausleihlisten bitte binnen einer Woche zurück und geben Sie den Hefter möglichst vollständig beim Schulbuchverantwortlichen ab.
+%end
 \end{enumerate}
-
-Bitte fordern Sie die Ausleihlisten binnen einer Woche zurück und geben Sie die Hefter möglichst vollständig beim Schulbuchverantwortlichen ab.
 
 \begin{flushright}
 
 	\textit{Vielen Dank!}
 
 \end{flushright}
+
+Ihre Schüler haben um folgende Leihexemplare gebeten:
 
 %num_bks = len([b for b in bks if not b.workbook and not b.classsets])
 
@@ -99,9 +102,10 @@ Bitte fordern Sie die Ausleihlisten binnen einer Woche zurück und geben Sie die
 	%for b in bks:
 		%if not b.workbook and not b.classsets:
 		&
-			%if loans.isRequested(s, b):
-		{\scriptsize $\times$}
-				%count[b] += 1
+			%n = loans.getLoanCount(s.person, b)
+			%if n > 0:
+		{\scriptsize ${{n}}$}
+				%count[b] += n
 			%end		
 		%end
 	%end

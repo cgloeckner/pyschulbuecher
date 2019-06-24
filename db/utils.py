@@ -258,7 +258,7 @@ class BookloanPdf(object):
 		"""Generate requestlist pdf file for the given class.
 		"""
 		# fetch and order books that were requested by this class
-		bks = books.getBooksStartedIn(class_.grade+1)
+		bks = books.getBooksStartedIn(class_.grade)
 		bks = books.orderBooksList(bks)
 		
 		# query students
