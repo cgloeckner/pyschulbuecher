@@ -13,7 +13,13 @@
 		<td>August</td>
 		<td><ul>
 			<li>Bücherausgabe durchführen</li>
-			<li>ggf. Nachbestellung durchführen (TODO: Details)</li>
+			<li>ggf. Nachbestellung durchführen
+				<ol>
+					<li>KDL ausfüllen (P1_2, P2_2, P3_2 oder _3)</li>
+					<li>Bestätigung durch Schulamt</li>
+					<li>Angebote an Buchhändler senden</li>
+				</ol>
+			</li>
 		</ul></td>
 	</tr>
 	<tr>
@@ -44,10 +50,10 @@
 					<li>Download <a href="https://www.schulportal-thueringen.de/werkzeuge/schulbuchkatalog" target="_blank">KDL- und Schulbuchkatalog</a></li>
 					<li>Schuletat von Schulleitung beantragen lassen</li>
 					<li>KDL ausfüllen (P1_1, P2_1, P3_1)</li>
-					<li>Angebote an Buchhändler senden</li>
+					<li>Bestätigung durch Schulamt</li>
 				</ol>
 			</li>
-			<li>Bücherbestellung durchführen (TODO: Details)</li>
+			<li>Bücherbestellung durch Händler (Losverfahren)</li>
 		</ul></td>
 	</tr>
 	<tr>
