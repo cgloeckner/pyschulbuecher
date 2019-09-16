@@ -7,7 +7,7 @@ import PyPDF2
 from bottle import template
 from latex import build_pdf
 
-from db import books, orga
+from db import books, orga, loans
 
 
 class Settings(object):
@@ -33,6 +33,51 @@ class Settings(object):
 	def save_to(self, fhandle):
 		self.data.write(fhandle)
 
+# -----------------------------------------------------------------------------
+
+class LoanReportPdf(object):
+	def __init__(self, prefix, settings_handle, export='export'):
+		# load LaTeX templates
+		with open('docs/loanreport/header.tpl') as f:
+			self.header = f.read()
+		with open('docs/loanreport/footer.tpl') as f:
+			self.footer = f.read()
+		with open('docs/loanreport/content.tpl') as f:
+			self.content = f.read()
+		# prepare output directory
+		self.prefix = prefix
+		self.export = export
+		self.texdir = os.path.join(export, 'tex')
+		if not os.path.isdir(self.export):
+			os.mkdir(self.export)
+		if not os.path.isdir(self.texdir):
+			os.mkdir(self.texdir)
+		# load settings
+		self.s = Settings()
+		self.s.load_from(settings_handle)
+		
+		self.tex  = template(self.header)
+	
+	def __call__(self, person):
+		"""Generate loan report pdf file for the given person. This will contain
+		all books that are currently given to this person
+		"""
+		lns = loans.orderLoanOverview(person.loan)
+		self.tex += template(self.content, s=self.s, p=person, lns=lns)
+	
+	def saveToFile(self):
+		self.tex += template(self.footer)
+		
+		# export tex (debug purpose)
+		dbg_fname = os.path.join(self.texdir, 'Leihübersicht_%s.tex' % self.prefix)
+		with open(dbg_fname, 'w') as h:
+			h.write(self.tex)
+		
+		# export PDF
+		fname = os.path.join(self.export, 'Leihübersicht_%s.pdf' % self.prefix)
+		pdf = build_pdf(self.tex)
+		pdf.save_to(fname)
+		
 # -----------------------------------------------------------------------------
 
 class BooklistPdf(object):
@@ -258,7 +303,7 @@ class BookloanPdf(object):
 		"""Generate requestlist pdf file for the given class.
 		"""
 		# fetch and order books that were requested by this class
-		bks = books.getBooksStartedIn(class_.grade)
+		bks = books.getBooksUsedIn(class_.grade)
 		bks = books.orderBooksList(bks)
 		
 		# query students

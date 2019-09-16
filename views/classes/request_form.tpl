@@ -25,6 +25,7 @@
 	%end
 	%i += 1
 %end
+		<th class="rotate">Schulplaner</th>
 		<th></th>
 	</tr>
 	<!-- ==================== subjects titles ==================== //-->
@@ -53,6 +54,7 @@
 	%i += 1
 %end
 		<td></td>
+		<td></td>
 	</tr>
 	
 	<!-- ==================== book negation switches ==================== //-->
@@ -72,6 +74,7 @@
 	%end
 	%i += 1
 %end
+		<td></td>
 		<td></td>
 	</tr>
 	
@@ -116,6 +119,7 @@ versch.\\
 		%end
 		%j += 1
 	%end
+		<td><input class="selection" type="checkbox" name="planner" {{!s.planner}}/></td>
 		<td><span class="button" onClick="toggleRow({{s.id}});" title="Auswahl für diesen Schüler umkehren">↺</span></td>
 	</tr>
 %end
@@ -134,6 +138,7 @@ versch.\\
 	%end
 	%j += 1
 %end
+		<td></td>
 	</tr>
 </table>
 

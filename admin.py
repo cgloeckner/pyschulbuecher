@@ -9,7 +9,7 @@ from pony import orm
 
 from db.orm import db, db_session, Currency
 from db import orga, books, loans
-from db.utils import Settings, BooklistPdf, RequestlistPdf, BookreturnPdf, BookloanPdf, BookpendingPdf
+from db.utils import Settings, LoanReportPdf, BooklistPdf, RequestlistPdf, BookreturnPdf, BookloanPdf, BookpendingPdf
 from utils import errorhandler
 
 
@@ -301,9 +301,18 @@ def classes_move_post(id):
 	redirect('/admin/classes/move/%d' % new_id)
 
 @post('/admin/classes/delete/<id:int>')
+@view('admin/classes_delete')
+def class_delete_prompt(id):
+	return dict(c=db.Class[id])
+
+@get('/admin/classes/delete/<id:int>/confirm')
 @errorhandler
 def classes_delete_post(id):
-	db.Class[id].delete()
+	c = db.Class[id]
+	for s in c.student:
+		s.delete()
+	
+	c.delete()
 	
 	db.commit()
 	redirect('/admin/classes')
@@ -498,6 +507,23 @@ def lists_index():
 	# sort by name
 	data.sort(key=lambda d: d["name"])
 	return dict(data=data, full=full)
+
+@get('/admin/lists/generate/teacherloans')
+def teacherloans_generate():
+	with open('settings.ini') as h:
+		loanreport = LoanReportPdf('Lehrer', h)
+	
+	print('Generating Loan Reports')
+	d = time.time()
+	yield 'Bitte warten...'
+	for t in db.Teacher.select().order_by(lambda t: t.person.firstname).order_by(lambda t: t.person.name):
+		loanreport(t.person)
+	loanreport.saveToFile()
+	
+	print('Done')
+	d = time.time() - d
+	
+	yield '<hr /><br />Erledigt in %f Sekunden' % (d)
 
 @get('/admin/lists/generate/booklist')
 def booklist_generate():

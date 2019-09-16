@@ -50,6 +50,7 @@ class Student(db.Entity):
 	id        = PrimaryKey(int, auto=True)
 	person    = Required("Person")
 	class_    = Required(Class)
+	planner   = Required(bool, default=False)
 	
 	def delete(self):
 		self.person.delete()
