@@ -117,6 +117,30 @@ def books_add_post():
 	db.commit()
 	redirect('/admin/books')
 
+@post('/admin/books/addSingle')
+@errorhandler
+def books_add_post():
+	args = [request.forms.title, request.forms.isbn, request.forms.price]
+	
+	args.append(db.Publisher[int(request.forms.publisher_id)].name)
+	args.append(request.forms.inGrade)
+	args.append(request.forms.outGrade)
+	args.append(db.Subject[int(request.forms.subject_id)].tag if request.forms.subject_id != "" else "")
+	 
+	args.append("True" if request.forms.novices   == 'on' else "False")
+	args.append("True" if request.forms.advanced  == 'on' else "False")
+	args.append("True" if request.forms.workbook  == 'on' else "False")
+	args.append("True" if request.forms.classsets == 'on' else "False")
+	args.append("True" if request.forms.for_loan  == 'on' else "False")
+	args.append(request.forms.comment)
+
+	print(args)
+
+	books.addBook('\t'.join(args))
+	
+	db.commit()
+	redirect('/admin/books')
+
 @get('/admin/books/edit/<id:int>')
 @errorhandler
 @view('admin/books_edit')
@@ -332,6 +356,16 @@ def students_add_post():
 	db.commit()
 	redirect('/admin/students')
 
+@post('/admin/students/addSingle')
+@errorhandler
+def students_add_post():
+	c = db.Class[request.forms.class_id]
+	raw = '{0}\t{1}\t{2}'.format(c.toString(twoPlace=True), request.forms.name, request.forms.firstname)
+	orga.addStudent(raw)
+	
+	db.commit()
+	redirect('/admin/students')
+
 @post('/admin/students/search')
 @errorhandler
 @view('admin/students_search')
@@ -369,6 +403,15 @@ def students_delete_post(id):
 @view('admin/teachers_index')
 def teachers_index():
 	return dict()
+
+@post('/admin/teachers/addSingle')
+@errorhandler
+def students_add_post():
+	raw = '{0}\t{1}\t{2}'.format(request.forms.tag, request.forms.name, request.forms.firstname)
+	orga.addTeacher(raw)
+	
+	db.commit()
+	redirect('/admin/teachers')
 
 @post('/admin/teachers/add')
 @errorhandler

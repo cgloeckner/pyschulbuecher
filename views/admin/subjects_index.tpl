@@ -28,6 +28,11 @@
 </table>
 
 <h2>Neue Fächer hinzufügen</h2>
+
+<!-- Batch API -->
+
+<h2>Excel-Export</h2>
+
 <i>Kürzel &lt;tab&gt; Name</i>
 <form action="/admin/subjects/add" id="subjects" method="post">
 	<textarea rows="5" cols="50" name="data" form="subjects"></textarea><br />

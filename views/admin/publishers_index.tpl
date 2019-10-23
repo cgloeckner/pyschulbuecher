@@ -14,6 +14,11 @@
 %end
 
 <h2>Neue Verlage hinzufügen</h2>
+
+<!-- Batch API -->
+
+<h2>Excel-Export</h2>
+
 <form action="/admin/publishers/add" id="publishers" method="post">
 	<textarea rows="5" cols="50" name="data" form="publishers"></textarea><br />
 	<input type="submit" value="Hinzufügen" />

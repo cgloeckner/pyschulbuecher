@@ -93,8 +93,97 @@
 %end
 </table>
 
+<!-- Single API -->
+
 <h2>Neue Bücher hinzufügen</h2>
-<i>Titel &lt;tab&gt; ISBN &lt;tab&gt; Preis &lt;tab&gt; Verlag &lt;tab&gt; Bestand &lt;tab&gt; ab Klasse &lt;tab&gt; bis Klasse &lt;tab&gt; Fach &lt;tab&gt; für eA &lt;tab&gt; für gA &lt;tab&gt; AH? &lt;tab&gt; Klassensatz? &lt;tab&gt; Kommentar</i>
+
+<form action="/admin/books/addSingle" id="books" method="post">
+<b>Pflichtfelder</b> - <i>optional</i>
+	<table class="simple">
+		<tr>
+			<td><b>Titel</b></td>
+			<td><input type="text" name="title" value="" /></td>
+		</tr>
+		<tr>
+			<td><i>ISBN</i></td>
+			<td><input type="text" name="isbn" value="" /></td>
+		</tr>
+		<tr>
+			<td><i>Preis</i></td>
+			<td><input type="text" name="price" value="" />€</td>
+		</tr>
+		<tr>
+			<td><b>Verlag</b></td>
+			<td><select name="publisher_id">
+%for p in books.getPublishers():
+				<option value="{{p.id}}"\\
+%if p.id == b.publisher.id:
+ selected\\
+%end
+>{{p.name}}</option>
+%end
+			</select></td>
+		</tr>
+		<tr>
+			<td><b>ab Klasse</b></td>
+			<td><input type="text" name="inGrade" value="" /></td>
+		</tr>
+		<tr>
+			<td><b>bis Klasse</b></td>
+			<td><input type="text" name="outGrade" value="" /></td>
+		</tr>
+		<tr>
+			<td><b>Fach</b></td>
+			<td><select name="subject_id">
+				<option value="">verschiedene</option>
+%for s in books.getSubjects():
+				<option value="{{s.id}}">{{s.tag}} ({{s.name}})</option>
+%end
+			</select></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><input type="checkbox" name="novices" id="novices" />
+				<label for="novices"><i>für gA geeignet</i></label></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><input type="checkbox" name="advanced" id="advanced" />
+				<label for="advanced"><i>für eA geeignet</i></label><td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><input type="checkbox" name="workbook" id="workbook" />
+				<label for="workbook"><i>ist Arbeitsheft</i></label></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><input type="checkbox" name="classsets" id="classsets" />
+				<label for="classsets"><i>als Klassensätze</i></label></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><input type="checkbox" name="for_loan" id="for_loan" checked="checked" />
+				<label for="for_loan"><i>auf Bücherzettel</i></label></td>
+		</tr>
+		<tr>
+			<td><i>Kommentare</i></td>
+			<td><input type="text" name="comment" value="" /></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><input type="submit" value="Hinzufügen" /></td>
+		</tr>
+	</table>
+</form>
+
+<hr />
+
+<!-- Batch API -->
+
+<h2>Excel-Export</h2>
+
+<i>Titel &lt;tab&gt; ISBN &lt;tab&gt; Preis &lt;tab&gt; Verlag &lt;tab&gt; ab Klasse &lt;tab&gt; bis Klasse &lt;tab&gt; Fach &lt;tab&gt; für gA &lt;tab&gt; für EA &lt;tab&gt; AH? &lt;tab&gt; Klassensatz? &lt;tab&gt; Kommentar</i>
 <form action="/admin/books/add" id="books" method="post">
 	<textarea rows="5" cols="50" name="data" form="books"></textarea><br />
 	<input type="submit" value="Hinzufügen" />
