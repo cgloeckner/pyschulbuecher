@@ -28,18 +28,19 @@ def loan_person_overview(id):
 @get('/loan/person/<person_id:int>/add')
 @view('loan/person_add')
 def loan_person_add(person_id):
-	bks = books.getPureBooksByGradeAndSubject(None, None)
-	return dict(id=person_id, bks=bks)
+	return dict(id=person_id)
 
 
 @post('/loan/person/<person_id:int>/add')
 @errorhandler
 def loan_person_add(person_id):
 	person = db.Person[person_id]
-	book   = db.Book[int(request.forms.book_id)]
-	count  = int(request.forms.count)
 	
-	loans.updateLoan(person, book, count)
+	for b in db.Book.select():
+		value = int(request.forms.get(str(b.id), '0'))
+		if value > 0:
+			print(b.title, value)
+			loans.addLoan(person, b, value)
 	
 	db.commit()
 	redirect('/loan/person/%d' % person_id)
@@ -59,28 +60,24 @@ def loan_person_add(person_id):
 
 
 @get('/loan/ajax/books')
-@get('/loan/ajax/books/grade/<grade:int>')
-@get('/loan/ajax/books/subject/<subject_id:int>')
-@get('/loan/ajax/books/grade/<grade:int>/subject/<subject_id:int>')
-def loan_ajax_queryBooks(grade=None, subject_id=None):
-	subject = db.Subject[subject_id] if subject_id is not None else None
-	bks = books.getPureBooksByGradeAndSubject(grade, subject)
+@view('loan/book_list')
+def loan_ajax_queryBooks():
+	classsets = request.query.classsets != "false"
+	value     = request.query.value
+	if value != '':
+		value = int(value)
+	else:
+		value = None
 	
-	# copy relevant data
-	data = dict()
-	for b in bks:
-		data[b.id] = b.toString()
-
-	return json.dumps(data)
-
-
-@get('/loan/ajax/count/<person_id:int>/<book_id:int>')
-def loan_ajax_queryBookCount(person_id, book_id):
-	person = db.Person[person_id]
-	book   = db.Book[book_id]
+	person = db.Person[int(request.query.person_id)]
+	if request.query.by == 'subject':
+		subject = db.Subject[value] if value is not None else None
+		bks     = books.getRealBooksBySubject(subject, classsets)
+	else:
+		bks    = books.getRealBooksByGrade(value, classsets)
 	
-	return str(loans.getLoanCount(person, book))
-
+	bks = books.orderBooksIndex(bks)
+	return dict(person=person, bks=bks)
 
 # -----------------------------------------------------------------------------
 

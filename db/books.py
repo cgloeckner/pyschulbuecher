@@ -138,26 +138,44 @@ def getBooksByIsbn(isbn: str):
 			if isbn == b.isbn
 	)
 
-def getPureBooksByGradeAndSubject(grade: int, subject: db.Subject):
-	"""Returns a list of books used in the given grade and subject.
-	If any of those is provided with None, this aspect is ignored. Hence all
-	books are queried of None is given twice.
+def getRealBooksBySubject(subject: db.Subject, classsets: bool):
+	"""Returns a list of books used in the given subject. If classsets is
+	provided with `false`, now classset books are included.
 	Note that only real books (no workbooks) are queried
 	"""
-	if grade is not None:
+	if classsets:
 		return select(b
 			for b in db.Book
 				if not b.workbook
-				and b.inGrade <= grade
-				and grade <= b.outGrade
 				and b.subject == subject
 		)
-	
 	else:
 		return select(b
 			for b in db.Book
 				if not b.workbook
 				and b.subject == subject
+				and not b.classsets
+		)
+
+def getRealBooksByGrade(grade: int, classsets: bool):
+	"""Returns a list of books used in the given grade. If classsets is
+	provided with `false`, now classset books are included.
+	Note that only real books (no workbooks) are queried
+	"""
+	if classsets:
+		return select(b
+			for b in db.Book
+				if not b.workbook
+				and b.inGrade <= grade
+				and grade <= b.outGrade
+		)
+	else:
+		return select(b
+			for b in db.Book
+				if not b.workbook
+				and b.inGrade <= grade
+				and grade <= b.outGrade
+				and not b.classsets
 		)
 
 # -----------------------------------------------------------------------------

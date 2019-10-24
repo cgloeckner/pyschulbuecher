@@ -56,6 +56,16 @@ def updateRequest(student: db.Student, book: db.Book, status: bool):
 		r.delete()
 	# else: nothing to update
 
+def addLoan(person: db.Person, book: db.Book, count: int):
+	"""Add the given number of books to the given person's loaning."""
+	l = db.Loan.get(person=person, book=book)
+	if l is None and count > 0:
+		# create new loan
+		db.Loan(person=person, book=book, given=date.today(), count=count)
+	elif l is not None:
+		# update it
+		l.count += count 
+
 def updateLoan(person: db.Person, book: db.Book, count: int):
 	"""Update the loan status for the given book and the given person. If the
 	count is set to zero, the loan object is deleted from the database.
