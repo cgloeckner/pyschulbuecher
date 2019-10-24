@@ -9,7 +9,7 @@ from pony import orm
 
 from db.orm import db, db_session, Currency
 from db import orga, books, loans
-from db.utils import Settings, LoanReportPdf, BooklistPdf, RequestlistPdf, BookreturnPdf, BookloanPdf, BookpendingPdf
+from db.utils import Settings, LoanReportPdf, LoanContractPdf, BooklistPdf, RequestlistPdf, BookreturnPdf, BookloanPdf, BookpendingPdf
 from utils import errorhandler
 
 
@@ -564,6 +564,30 @@ def teacherloans_generate():
 	loanreport.saveToFile()
 	
 	print('Done')
+	d = time.time() - d
+	
+	yield '<hr /><br />Erledigt in %f Sekunden' % (d)
+
+@get('/admin/lists/generate/studentloans')
+def studentsloan_generate():
+	print('Generating Loan Contracts')
+	d = time.time()
+	yield 'Bitte warten...'
+	
+	for c in db.Class.select().order_by(lambda c: c.tag).order_by(lambda c: c.grade):
+		# start new pdf
+		with open('settings.ini') as h:
+			loancontract = LoanContractPdf(c.toString(), h)
+	
+		for s in c.student.order_by(lambda s: s.person.firstname).order_by(lambda s: s.person.name):
+			loancontract(s)
+		
+		# save pdf
+		loancontract.saveToFile()
+		
+		yield ' %s...' % c.toString()
+	
+	print('. Done')
 	d = time.time() - d
 	
 	yield '<hr /><br />Erledigt in %f Sekunden' % (d)

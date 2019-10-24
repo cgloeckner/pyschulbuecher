@@ -80,6 +80,51 @@ class LoanReportPdf(object):
 		
 # -----------------------------------------------------------------------------
 
+class LoanContractPdf(object):
+	def __init__(self, prefix, settings_handle, export='export'):
+		# load LaTeX templates
+		with open('docs/loancontract/header.tpl') as f:
+			self.header = f.read()
+		with open('docs/loancontract/footer.tpl') as f:
+			self.footer = f.read()
+		with open('docs/loancontract/content.tpl') as f:
+			self.content = f.read()
+		# prepare output directory
+		self.prefix = prefix
+		self.export = export
+		self.texdir = os.path.join(export, 'tex')
+		if not os.path.isdir(self.export):
+			os.mkdir(self.export)
+		if not os.path.isdir(self.texdir):
+			os.mkdir(self.texdir)
+		# load settings
+		self.s = Settings()
+		self.s.load_from(settings_handle)
+		
+		self.tex  = template(self.header)
+	
+	def __call__(self, student):
+		"""Generate loan contract pdf file for the given student. This contains
+		all books that are currently given to him or her.
+		"""
+		lns = loans.orderLoanOverview(student.person.loan)
+		self.tex += template(self.content, s=self.s, student=student, lns=lns)
+	
+	def saveToFile(self):
+		self.tex += template(self.footer)
+		
+		# export tex (debug purpose)
+		dbg_fname = os.path.join(self.texdir, 'Leihverträge_%s.tex' % self.prefix)
+		with open(dbg_fname, 'w') as h:
+			h.write(self.tex)
+		
+		# export PDF
+		fname = os.path.join(self.export, 'Leihverträge_%s.pdf' % self.prefix)
+		pdf = build_pdf(self.tex)
+		pdf.save_to(fname)
+		
+# -----------------------------------------------------------------------------
+
 class BooklistPdf(object):
 	def __init__(self, settings_handle, export='export'):
 		# load LaTeX templates
