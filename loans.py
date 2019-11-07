@@ -39,7 +39,6 @@ def loan_person_add(person_id):
 	for b in db.Book.select():
 		value = int(request.forms.get(str(b.id), '0'))
 		if value > 0:
-			print(b.title, value)
 			loans.addLoan(person, b, value)
 	
 	db.commit()
@@ -79,6 +78,7 @@ def loan_ajax_queryBooks():
 	bks = books.orderBooksIndex(bks)
 	return dict(person=person, bks=bks)
 
+
 # -----------------------------------------------------------------------------
 
 import unittest, webtest
@@ -106,7 +106,7 @@ class Tests(unittest.TestCase):
 	# -------------------------------------------------------------------------
 
 	@db_session
-	def test_loan_person_overview(self):
+	def test_loan_person_overview_request_unrequest_borrow_return(self):
 		Tests.prepare()
 		
 		s = db.Student[3]
@@ -149,4 +149,37 @@ class Tests(unittest.TestCase):
 		ret = self.app.get('/loan/person/%d' % (s.person.id))
 		self.assertEqual(ret.status_int, 200)
 		
+	@db_session
+	def test_loan_person_loan_adding_form(self):
+		Tests.prepare()
 		
+		s = db.Student[3]
+		
+		# show person's loan add ui
+		ret = self.app.get('/loan/person/%d/add' % (s.person.id))
+		self.assertEqual(ret.status_int, 200)
+		
+		# query books by subject #1
+		args = {}
+		args["classsets"] = "true"
+		args["value"]     = 1
+		args["person_id"] = s.person.id
+		args["by"]        = "subject"
+		ret = self.app.get('/loan/ajax/books', args)
+		self.assertEqual(ret.status_int, 200)
+		
+		# query books by 7th grade
+		args = {}
+		args["classsets"] = "true"
+		args["value"]     = 7
+		args["person_id"] = s.person.id
+		args["by"]        = "grade"
+		ret = self.app.get('/loan/ajax/books', args)
+		self.assertEqual(ret.status_int, 200)
+		
+		# borrow some books
+		args = {}
+		args[3] = '5'
+		ret = self.app.post('/loan/person/%d/add' % (s.person.id), args)
+		self.assertEqual(ret.status_int, 302) # redirect
+
