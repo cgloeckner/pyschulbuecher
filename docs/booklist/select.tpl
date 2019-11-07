@@ -60,7 +60,7 @@
 		%if b.isbn is not None and b.price is not None:
 		{\small {{!tex_escape(b.isbn)}} }
 		&
-		{\small {{!tex_escape(Currency.toString(b.price))}} \euro }
+		{\small {{!tex_escape(Currency.toString(b.price, addSymbol=False))}} \euro }
 		%else:
 	\multicolumn{2}{c|}{\small {\textit {{nicht mehr verf\"ugbar}} } }
 		%end

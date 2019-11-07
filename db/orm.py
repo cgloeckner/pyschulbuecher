@@ -111,8 +111,12 @@ class Book(db.Entity):
 
 class Currency(object):
 	@staticmethod
-	def toString(cents: int):
-		return locale.currency(cents / 100.0, grouping=True).replace(' ', '')
+	def toString(cents: int, addSymbol=True):
+		raw = locale.currency(cents / 100.0, grouping=True).replace(' ', '')
+		if not addSymbol:
+			return raw.split('€')[0]
+		else:
+			return raw
 	
 	@staticmethod
 	def fromString(raw: str):
@@ -416,6 +420,9 @@ class Tests(unittest.TestCase):
 		
 		s = Currency.toString(895)
 		self.assertEqual(s, '8,95€')
+		
+		s = Currency.toString(895, addSymbol=False)
+		self.assertEqual(s, '8,95')
 	
 	def test_canParseCurrencyString(self):
 		i = Currency.fromString('123,45 €')
