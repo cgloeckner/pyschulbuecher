@@ -116,8 +116,12 @@ class Currency(object):
 	
 	@staticmethod
 	def fromString(raw: str):
-		euro, cents = raw.split('€')[0].split(',')
-		return int(euro) * 100 + int(cents)
+		tmp = raw.split('€')[0]
+		if ',' in tmp:
+			euro, cents = tmp.split(',')
+			return int(euro) * 100 + int(cents)		
+		else:
+			return int(tmp) * 100
 
 class Loan(db.Entity):
 	id        = PrimaryKey(int, auto=True)
@@ -434,6 +438,9 @@ class Tests(unittest.TestCase):
 		
 		i = Currency.fromString('0,00€')
 		self.assertEqual(i, 0)
+		
+		i = Currency.fromString('12€')
+		self.assertEqual(i, 1200)
 		
 		i = Currency.fromString('8,95€')
 		self.assertEqual(i, 895)
