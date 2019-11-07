@@ -116,8 +116,8 @@ class Currency(object):
 	
 	@staticmethod
 	def fromString(raw: str):
-		return int(float(raw.split('€')[0].replace(',', '.')) * 100)
-
+		euro, cents = raw.split('€')[0].split(',')
+		return int(euro) * 100 + int(cents)
 
 class Loan(db.Entity):
 	id        = PrimaryKey(int, auto=True)
@@ -390,45 +390,51 @@ class Tests(unittest.TestCase):
 
 	def test_canStringifyCurrency(self):
 		s = Currency.toString(0)
-		self.assertEqual(s, '0,00')
+		self.assertEqual(s, '0,00€')
 		
 		s = Currency.toString(1)
-		self.assertEqual(s, '0,01')
+		self.assertEqual(s, '0,01€')
 		
 		s = Currency.toString(12)
-		self.assertEqual(s, '0,12')
+		self.assertEqual(s, '0,12€')
 		
 		s = Currency.toString(10)
-		self.assertEqual(s, '0,10')
+		self.assertEqual(s, '0,10€')
 		
 		s = Currency.toString(123)
-		self.assertEqual(s, '1,23')
+		self.assertEqual(s, '1,23€')
 		
 		s = Currency.toString(1234)
-		self.assertEqual(s, '12,34')
+		self.assertEqual(s, '12,34€')
 		
 		s = Currency.toString(12345)
-		self.assertEqual(s, '123,45')
+		self.assertEqual(s, '123,45€')
+		
+		s = Currency.toString(895)
+		self.assertEqual(s, '8,95€')
 	
 	def test_canParseCurrencyString(self):
 		i = Currency.fromString('123,45 €')
 		self.assertEqual(i, 12345)
 		
-		i = Currency.fromString('12,34')
+		i = Currency.fromString('12,34€')
 		self.assertEqual(i, 1234)
 		
-		i = Currency.fromString('1,23')
+		i = Currency.fromString('1,23€')
 		self.assertEqual(i, 123)
 		
-		i = Currency.fromString('0,12')
+		i = Currency.fromString('0,12€')
 		self.assertEqual(i, 12)
 		
-		i = Currency.fromString('0,10')
+		i = Currency.fromString('0,10€')
 		self.assertEqual(i, 10)
 		
-		i = Currency.fromString('0,01')
+		i = Currency.fromString('0,01€')
 		self.assertEqual(i, 1)
 		
-		i = Currency.fromString('0,00')
+		i = Currency.fromString('0,00€')
 		self.assertEqual(i, 0)
+		
+		i = Currency.fromString('8,95€')
+		self.assertEqual(i, 895)
 
