@@ -630,9 +630,9 @@ C.C. Buchner"""
 		ma = db.Subject.get(tag="Ma")
 		eng = db.Subject.get(tag="Eng")
 		
-		raw = """Mathematik Live\t0815-1234\t2395\tKlett\t11\t12\tMa\tTrue\tFalse\tFalse\tFalse\tTrue\t
-Tafelwerk\t12-52-6346\t1999\tKlett\t7\t12\t\tFalse\tFalse\tFalse\tFalse\tfächerübergreifend
-Englisch Oberstufe\t433-5213-6246\t4995\tCornelsen\t11\t12\tEng\tTrue\tTrue\tFalse\tFalse\tTrue\t
+		raw = """Mathematik Live\t0815-1234\t23,95\tKlett\t11\t12\tMa\tTrue\tFalse\tFalse\tFalse\tTrue\t
+Tafelwerk\t12-52-6346\t19,99\tKlett\t7\t12\t\tFalse\tFalse\tFalse\tFalse\tfächerübergreifend
+Englisch Oberstufe\t433-5213-6246\t49,95\tCornelsen\t11\t12\tEng\tTrue\tTrue\tFalse\tFalse\tTrue\t
 Das Große Tafelwerk\t\t\tKlett\t7\t12\t\tFalse\tFalse\tFalse\tFalse\tTrue\tfächerübergreifend"""
 	
 		addBooks(raw)

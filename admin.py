@@ -223,6 +223,10 @@ def demand_report():
 	total = 0
 	data = dict()
 	for b in bks:
+		if b.price is None:
+			# skip because this book cannot be bought anymore
+			continue
+	
 		free = demand.getNeededBooks(b)
 		required = demand.getMaxDemand(b)
 		required = max(required, free) # to fix problems with more books marked as free
@@ -1270,8 +1274,12 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 		ret = self.app.post('/admin/classes/add', args)
 		self.assertEqual(ret.status_int, 302) # 302=redirect
 		
-		# delete class
+		# delete class --> prompt
 		ret = self.app.post('/admin/classes/delete/4')
+		self.assertEqual(ret.status_int, 200) # 302=redirect
+		
+		# delete class --> prompt
+		ret = self.app.get('/admin/classes/delete/4/confirm')
 		self.assertEqual(ret.status_int, 302) # 302=redirect
 		
 		# try access deleted class
@@ -1486,7 +1494,7 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 		demand_json = '/tmp/demand.json'
 		
 		args = dict()
-		
+		args ["lowering"] = '10'
 		for grade in range(5, 10+1):
 			for sub in books.getSubjects(elective=True):
 				key = "%s_%s" % (grade, sub.tag)
