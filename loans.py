@@ -37,9 +37,11 @@ def loan_person_add(person_id):
 	person = db.Person[person_id]
 	
 	for b in db.Book.select():
-		value = int(request.forms.get(str(b.id), '0'))
-		if value > 0:
-			loans.addLoan(person, b, value)
+		raw = request.forms.get(str(b.id), '')
+		if raw.isnumeric():
+			value = int()
+			if value > 0:
+				loans.addLoan(person, b, value)
 	
 	db.commit()
 	redirect('/loan/person/%d' % person_id)
@@ -180,6 +182,7 @@ class Tests(unittest.TestCase):
 		# borrow some books
 		args = {}
 		args[3] = '5'
+		args[3] = 'foo' # should be ignored
 		ret = self.app.post('/loan/person/%d/add' % (s.person.id), args)
 		self.assertEqual(ret.status_int, 302) # redirect
 
