@@ -17,6 +17,7 @@ Required Python Modules (e.g. through `pip`)
 Also a LaTeX-installation is required including
 * Requires eurosym package (ubuntu: texlive-fonts-recommended)
 * Requires makecell package (ubuntu: texlive-latex-extra)
+* Requires german babel package (buntu: texlive-lang-german)
 
 ### Running the Test Suite
 
