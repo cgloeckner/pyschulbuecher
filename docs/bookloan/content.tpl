@@ -1,5 +1,6 @@
 %from utils import tex_escape
 %from db import loans
+%from utils import shortName
 
 {\LARGE Ausgabe der Leihexemplare in Klasse {{class_.toString()}} }
 \hfill
@@ -98,7 +99,7 @@ Ihre Schüler haben um folgende Leihexemplare gebeten:
 		{\small {{i}} } &
 	%i += 1
 		{\footnotesize {{!tex_escape(s.person.name)}} } &
-		{\footnotesize {{!tex_escape(s.person.firstname)}} }
+		{\footnotesize {{!tex_escape(shortName(s.person.firstname))}} }
 	%for b in bks:
 		%if not b.workbook and not b.classsets:
 		&

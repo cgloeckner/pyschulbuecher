@@ -51,3 +51,13 @@ def bool2str(b: bool):
 
 def bool2checked(b: bool):
 	return 'checked' if b else ''
+
+def shortName(firstname):
+	"""Abbreviate first name by reducing secondary first names to a single
+	letter."""
+	parts = firstname.split(' ')
+	out = parts[0]
+	for i in range(1, len(parts)):
+		out += ' %s.' % parts[i][0]
+	return out
+
