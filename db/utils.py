@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import os, configparser, datetime
-import PyPDF2
+import PyPDF2, xlsxwriter
 
 from bottle import template
 from latex import build_pdf
 
 from db import books, orga, loans
-
+from db.orm import Currency
 
 class Settings(object):
 
@@ -32,6 +32,60 @@ class Settings(object):
 	
 	def save_to(self, fhandle):
 		self.data.write(fhandle)
+
+# -----------------------------------------------------------------------------
+
+class SubjectCouncilXls(object):
+	def __init__(self, settings_handle, export='export'):
+		# prepare output directory
+		if not os.path.isdir(export): # base dir
+			os.mkdir(export)
+		self.export = os.path.join(export, 'councils')
+		if not os.path.isdir(self.export): # councils dir
+			os.mkdir(self.export)
+		# load settings
+		self.s = Settings()
+		self.s.load_from(settings_handle)
+		
+		self.data = None
+
+	def __call__(self, subject):
+		path = os.path.join(self.export, '%s.xlsx' % subject.tag)
+		self.data = xlsxwriter.Workbook(path)
+		
+		# create sheets
+		sheets = [
+			{'name': 'Lehrbücher', 'items': books.getRealBooksBySubject(subject, False)},
+			{'name': 'Arbeitshefte', 'items': books.getWorkbooksBySubject(subject)},
+			{'name': 'Klassensätze', 'items': books.getClasssetsBySubject(subject)},
+		]
+		
+		for s in sheets:
+			tab = self.data.add_worksheet(s['name'])
+		
+			for col, caption in enumerate(['Titel', 'Verlag', 'ISBN', 'Preis', 'Klassenstufe']):
+				tab.write(0, col, caption)
+			tab.set_column(0, 0, 50)
+			tab.set_column(1, 1, 10)
+			tab.set_column(2, 2, 20)
+			tab.set_column(3, 3, 10)
+			tab.set_column(4, 4, 10)
+		
+			for row, b in enumerate(s['items']):
+				tab.write(row+1, 0, b.title)
+				if b.publisher is not None:
+					tab.write(row+1, 1, b.publisher.name)
+				if b.isbn is not None:
+					tab.write(row+1, 2, b.isbn)
+				if b.price is not None:
+					tab.write(row+1, 3, Currency.toString(b.price, addSymbol=False))
+				if b.inGrade == b.outGrade:
+					tab.write(row+1, 4, b.inGrade)
+				else:
+					tab.write(row+1, 4, '%d-%d' % (b.inGrade, b.outGrade)) 
+		
+	def saveToFile(self):
+		assert(self.data is not None)
 
 # -----------------------------------------------------------------------------
 
@@ -91,9 +145,11 @@ class LoanContractPdf(object):
 			self.content = f.read()
 		# prepare output directory
 		self.prefix = prefix
-		self.export = export
+		if not os.path.isdir(export): # base dir
+			os.mkdir(export)
+		self.export = os.path.join(export, 'contracts')
 		self.texdir = os.path.join(export, 'tex')
-		if not os.path.isdir(self.export):
+		if not os.path.isdir(self.export): # specific dir
 			os.mkdir(self.export)
 		if not os.path.isdir(self.texdir):
 			os.mkdir(self.texdir)
@@ -141,9 +197,11 @@ class BooklistPdf(object):
 		with open('docs/booklist/planner.tpl') as f:
 			self.planner = f.read()
 		# prepare output directory
-		self.export = export
+		if not os.path.isdir(export): # base dr
+			os.mkdir(export)
+		self.export = os.path.join(export, 'booklists')
 		self.texdir = os.path.join(export, 'tex')
-		if not os.path.isdir(self.export):
+		if not os.path.isdir(self.export): # specific dir
 			os.mkdir(self.export)
 		if not os.path.isdir(self.texdir):
 			os.mkdir(self.texdir)

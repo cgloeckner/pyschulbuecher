@@ -9,7 +9,7 @@ from pony import orm
 
 from db.orm import db, db_session, Currency
 from db import orga, books, loans
-from db.utils import Settings, LoanReportPdf, LoanContractPdf, BooklistPdf, RequestlistPdf, BookreturnPdf, BookloanPdf, BookpendingPdf
+from db.utils import Settings, SubjectCouncilXls, LoanReportPdf, LoanContractPdf, BooklistPdf, RequestlistPdf, BookreturnPdf, BookloanPdf, BookpendingPdf
 from utils import errorhandler
 
 
@@ -554,6 +554,26 @@ def lists_index():
 	# sort by name
 	data.sort(key=lambda d: d["name"])
 	return dict(data=data, full=full)
+
+@get('/admin/lists/generate/councils')
+def councils_generate():
+	with open('settings.ini') as h:
+		# generate Excel sheet for demand of councils (file per subject council)
+		
+		print('Generating Loan Reports')
+		d = time.time()
+		yield 'Bitte warten...'
+		
+		for s in db.Subject.select():
+			yield '%s<br />' % s.name
+			councils = SubjectCouncilXls(h)
+			councils(s)
+			councils.saveToFile()
+		
+		print('Done')
+		d = time.time() - d
+	
+		yield '<hr /><br />Erledigt in %f Sekunden' % (d)
 
 @get('/admin/lists/generate/teacherloans')
 def teacherloans_generate():

@@ -138,6 +138,7 @@ def getBooksByIsbn(isbn: str):
 			if isbn == b.isbn
 	)
 
+# TODO: add unittest
 def getRealBooksBySubject(subject: db.Subject, classsets: bool):
 	"""Returns a list of books used in the given subject. If classsets is
 	provided with `false`, now classset books are included.
@@ -157,6 +158,26 @@ def getRealBooksBySubject(subject: db.Subject, classsets: bool):
 				and not b.classsets
 		)
 
+# TODO: add unittest
+def getWorkbooksBySubject(subject: db.Subject):
+	"""Returns a list of workbooks used in the given subject."""
+	return select(b
+		for b in db.Book
+			if b.workbook
+			and b.subject == subject
+	)
+
+# TODO: add unittest
+def getClasssetsBySubject(subject: db.Subject):
+	"""Returns a list of workbooks used in the given subject."""
+	return select(b
+		for b in db.Book
+			if not b.workbook
+			and b.classsets
+			and b.subject == subject
+	)
+
+# TODO: add unittest
 def getRealBooksByGrade(grade: int, classsets: bool):
 	"""Returns a list of books used in the given grade. If classsets is
 	provided with `false`, now classset books are included.

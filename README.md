@@ -12,6 +12,7 @@ Required Python Modules (e.g. through `pip`)
 * bottle
 * PyPDF2
 * latex
+* xlsxwriter
 (might need `pip install six --upgrade`)
 
 Also a LaTeX-installation is required including
