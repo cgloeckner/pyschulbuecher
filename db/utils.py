@@ -60,16 +60,26 @@ class SubjectCouncilXls(object):
 			{'name': 'Klassensätze', 'items': books.getClasssetsBySubject(subject)},
 		]
 		
+		title_format = self.data.add_format()
+		title_format.set_bold()
+		
+		euro_format = self.data.add_format({'num_format': '#,##0.00€'})
+		
+		grade_format = self.data.add_format()
+		grade_format.set_align('center')
+		
 		for s in sheets:
 			tab = self.data.add_worksheet(s['name'])
 		
-			for col, caption in enumerate(['Titel', 'Verlag', 'ISBN', 'Preis', 'Klassenstufe']):
-				tab.write(0, col, caption)
-			tab.set_column(0, 0, 50)
-			tab.set_column(1, 1, 10)
+			tab.set_column(0, 0, 40)
+			tab.set_column(1, 1, 25)
 			tab.set_column(2, 2, 20)
-			tab.set_column(3, 3, 10)
-			tab.set_column(4, 4, 10)
+			tab.set_column(3, 3, 8, euro_format)
+			tab.set_column(4, 4, 15, grade_format)
+			tab.set_column(5, 5, 30)
+			
+			for col, caption in enumerate(['Titel', 'Verlag', 'ISBN', 'Preis', 'Klassenstufe', 'Bemerkungen']):
+				tab.write(0, col, caption, title_format)
 		
 			for row, b in enumerate(s['items']):
 				tab.write(row+1, 0, b.title)
@@ -78,11 +88,12 @@ class SubjectCouncilXls(object):
 				if b.isbn is not None:
 					tab.write(row+1, 2, b.isbn)
 				if b.price is not None:
-					tab.write(row+1, 3, Currency.toString(b.price, addSymbol=False))
+					tab.write(row+1, 3, b.price / 100.0)
 				if b.inGrade == b.outGrade:
 					tab.write(row+1, 4, b.inGrade)
 				else:
-					tab.write(row+1, 4, '%d-%d' % (b.inGrade, b.outGrade)) 
+					tab.write(row+1, 4, '%d-%d' % (b.inGrade, b.outGrade))
+				tab.write(row+1, 5, b.comment)
 		
 	def saveToFile(self):
 		assert(self.data is not None)
