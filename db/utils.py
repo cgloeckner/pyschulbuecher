@@ -93,7 +93,15 @@ class SubjectCouncilXls(object):
 					tab.write(row+1, 4, b.inGrade)
 				else:
 					tab.write(row+1, 4, '%d-%d' % (b.inGrade, b.outGrade))
-				tab.write(row+1, 5, b.comment)
+				
+				comments = list()
+				if b.comment != '':
+					comments.append(b.comment)
+				if b.novices:
+					comments.append('gA')
+				if b.advanced:
+					comments.append('eA')
+				tab.write(row+1, 5, ' '.join(comments))
 		
 	def saveToFile(self):
 		assert(self.data is not None)
