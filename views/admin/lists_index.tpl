@@ -16,6 +16,8 @@ Neues Schuljahr:
 <a href="/admin/lists/generate/bookloan" target="_blank">Bückerausgabe</a>
 <hr />
 
+<a href="file://{{export}}">Export-Verzeichnis</a> 
+
 %#if full:
 %#<a href="/admin/booklist/download/BücherzettelKomplett.pdf">als eine Datei</a>
 %#end
