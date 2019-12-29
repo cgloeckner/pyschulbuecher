@@ -536,6 +536,9 @@ def admin_lists_download(fname):
 @get('/admin/lists')
 @view('admin/lists_index')
 def lists_index():
+	if not os.path.isdir('export'):
+		os.mkdir('export')
+	"""
 	# fetch data
 	data = list()
 	full = False
@@ -554,6 +557,8 @@ def lists_index():
 	# sort by name
 	data.sort(key=lambda d: d["name"])
 	return dict(data=data, full=full)
+	"""
+	return dict()
 
 @get('/admin/lists/generate/councils')
 def councils_generate():

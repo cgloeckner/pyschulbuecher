@@ -121,8 +121,6 @@ class LoanReportPdf(object):
 		self.prefix = prefix
 		self.export = export
 		self.texdir = os.path.join(export, 'tex')
-		if not os.path.isdir(self.export):
-			os.mkdir(self.export)
 		if not os.path.isdir(self.texdir):
 			os.mkdir(self.texdir)
 		# load settings
@@ -296,8 +294,6 @@ class RequestlistPdf(object):
 		# prepare output directory
 		self.export = export
 		self.texdir = os.path.join(export, 'tex')
-		if not os.path.isdir(self.export):
-			os.mkdir(self.export)
 		if not os.path.isdir(self.texdir):
 			os.mkdir(self.texdir)
 		# load settings
@@ -349,8 +345,6 @@ class BookreturnPdf(object):
 		# prepare output directory
 		self.export = export
 		self.texdir = os.path.join(export, 'tex')
-		if not os.path.isdir(self.export):
-			os.mkdir(self.export)
 		if not os.path.isdir(self.texdir):
 			os.mkdir(self.texdir)
 		# load settings
@@ -411,8 +405,6 @@ class BookloanPdf(object):
 		# prepare output directory
 		self.export = export
 		self.texdir = os.path.join(export, 'tex')
-		if not os.path.isdir(self.export):
-			os.mkdir(self.export)
 		if not os.path.isdir(self.texdir):
 			os.mkdir(self.texdir)
 		# load settings
@@ -462,8 +454,6 @@ class BookpendingPdf(object):
 		# prepare output directory
 		self.export = export
 		self.texdir = os.path.join(export, 'tex')
-		if not os.path.isdir(self.export):
-			os.mkdir(self.export)
 		if not os.path.isdir(self.texdir):
 			os.mkdir(self.texdir)
 		# load settings
