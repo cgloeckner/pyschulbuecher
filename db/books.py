@@ -51,6 +51,14 @@ def getAllBooks():
 		for b in db.Book
 	)
 
+def getRealBooks():
+	"""Return a list of all real books (which are no workbooks).
+	"""
+	return select(b
+		for b in db.Book
+			if not b.workbook
+	)
+
 def getBooksWithoutSubject():
 	"""Return a list of books which are not assigned to a specific subject.
 	Those books are supposed to be used across subjects.

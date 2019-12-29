@@ -5,9 +5,10 @@
 %include("header")
 <h1>Übersicht Bücher</h1>
 
-<a href="/admin/demand" target="_blank">Bedarfsbericht</a>
+<a href="/admin/demand" target="_blank">Bedarfsbericht</a> &dash;
+<a href="/loan/report">Leihbericht</a>
 
-<br /><br />
+<hr />
 
 
 <!-- Single API -->

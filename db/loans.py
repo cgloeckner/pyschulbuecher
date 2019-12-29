@@ -84,13 +84,23 @@ def updateLoan(person: db.Person, book: db.Book, count: int):
 			# update it
 			l.count = count
 
+
+# TODO: add unittest
 def getLoanCount(person: db.Person, book: db.Book):
-	"""Return number of this specific book loaned by that person.
+	"""Return number of this specific book, either loaned by that person
+	or all together.
 	"""
-	for l in person.loan:
-		if l.book == book:
-			return l.count
-	return 0
+	if person is not None:
+		# determine loan count
+		for l in person.loan:
+			if l.book == book:
+				return l.count
+		return 0
+		
+	else:
+		# determine total loan count for all persons
+		return sum(l.count for l in db.Loan if l.book == book)
+	
 
 
 def applyRequest(student: db.Student):

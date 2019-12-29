@@ -15,6 +15,17 @@ from utils import errorhandler
 __author__ = "Christian Glöckner"
 
 
+@get('/loan/report')
+@view('loan/report')
+def loan_report():
+	all_bks = books.getRealBooks()
+	all_bks = books.orderBooksIndex(all_bks)
+	
+	report = dict()
+	for b in all_bks:
+		report[b] = loans.getLoanCount(person=None, book=b)
+	
+	return dict(report=report)
 
 @get('/loan/person/<id:int>')
 @view('loan/person_listing')
