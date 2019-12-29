@@ -105,6 +105,7 @@ class SubjectCouncilXls(object):
 		
 	def saveToFile(self):
 		assert(self.data is not None)
+		self.data.close()
 
 # -----------------------------------------------------------------------------
 
