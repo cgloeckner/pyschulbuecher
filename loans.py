@@ -39,7 +39,7 @@ def loan_person_add(person_id):
 	for b in db.Book.select():
 		raw = request.forms.get(str(b.id), '')
 		if raw.isnumeric():
-			value = int()
+			value = int(raw)
 			if value > 0:
 				loans.addLoan(person, b, value)
 	
