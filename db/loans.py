@@ -349,7 +349,21 @@ class Tests(unittest.TestCase):
 		self.assertEqual(getLoanCount(s.person, db.Book[5]), 0)
 
 	@db_session
-	def test_countNeededBooks(self):
+	def test_getLoanCount_without_person(self):
+		Tests.prepare()
+		
+		# register some books
+		updateLoan(db.Student[3].person, db.Book[3], 2)
+		updateLoan(db.Student[1].person, db.Book[3], 1)
+		updateLoan(db.Student[2].person, db.Book[3], 4)
+		updateLoan(db.Teacher[2].person, db.Book[3], 30)
+		
+		# query total loan count without specifying a single person
+		n = getLoanCount(person=None, book=db.Book[3])
+		self.assertEqual(n, 37)
+
+	@db_session
+	def test_getNeededBooks(self):
 		Tests.prepare()
 		
 		# prepare book
@@ -380,8 +394,9 @@ class Tests(unittest.TestCase):
 		# give 4th student two books		
 		s2 = db.Student(person=db.Person(name='Foo', firstname='Bar'), class_=c_cont)
 		db.Loan(person=s2.person, book=b, given=date.today(), count=2)
-			
-		n = countNeededBooks(b)
+		
+		d = DemandManager()
+		n = d.getNeededBooks(b)
 		# 5 new, 6+1 already used, 4+1 returning --> 17 needed
 		self.assertEqual(n, 17)
 
@@ -469,7 +484,7 @@ class Tests(unittest.TestCase):
 		# expected returns for 7th grade
 		db.Student[1].class_.grade = 7
 		ln = list(getExpectedReturns(db.Student[1]))
-		self.assertEqual(len(ln), 0)
+		self.assertEqual(len(ln), 1)
 	
 	@db_session
 	def test_DemandManager(self):

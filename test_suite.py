@@ -9,7 +9,10 @@ __author__ = "Christian Glöckner"
 import unittest
 
 from db import orm, orga, books, loans, utils
-import admin, classes, loans
+
+import admin as admin_routes
+import classes as classes_routes
+import loans as loans_routes
 
 def register(suite, class_):
 	"""Register all testcase methods of the given test case class to the given
@@ -28,9 +31,9 @@ def suite():
 	register(suite, books.Tests)
 	register(suite, loans.Tests)
 	register(suite, utils.Tests)
-	register(suite, admin.Tests)
-	register(suite, classes.Tests)
-	register(suite, loans.Tests)
+	register(suite, admin_routes.Tests)
+	register(suite, classes_routes.Tests)
+	register(suite, loans_routes.Tests)
 	return suite
 
 if __name__ == '__main__':

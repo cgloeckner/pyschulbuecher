@@ -1450,7 +1450,7 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 			s.load_from(h)
 		
 		args = {
-			'school_year'       : '2018',
+			'school_year'       : s.data['general']['school_year'],
 			'planner_price'     : '5,00€',
 			'deadline_changes'  : '19.06.2017',
 			'deadline_booklist' : '23.03.2017',
