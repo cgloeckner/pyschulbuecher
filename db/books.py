@@ -51,14 +51,6 @@ def getAllBooks():
 		for b in db.Book
 	)
 
-def getRealBooks():
-	"""Return a list of all real books (which are no workbooks).
-	"""
-	return select(b
-		for b in db.Book
-			if not b.workbook
-	)
-
 def getBooksWithoutSubject():
 	"""Return a list of books which are not assigned to a specific subject.
 	Those books are supposed to be used across subjects.
@@ -146,7 +138,14 @@ def getBooksByIsbn(isbn: str):
 			if isbn == b.isbn
 	)
 
-# TODO: add unittest
+def getRealBooks():
+	"""Return a list of all real books (which are no workbooks).
+	"""
+	return select(b
+		for b in db.Book
+			if not b.workbook
+	)
+
 def getRealBooksBySubject(subject: db.Subject, classsets: bool):
 	"""Returns a list of books used in the given subject. If classsets is
 	provided with `false`, now classset books are included.
@@ -166,26 +165,6 @@ def getRealBooksBySubject(subject: db.Subject, classsets: bool):
 				and not b.classsets
 		)
 
-# TODO: add unittest
-def getWorkbooksBySubject(subject: db.Subject):
-	"""Returns a list of workbooks used in the given subject."""
-	return select(b
-		for b in db.Book
-			if b.workbook
-			and b.subject == subject
-	)
-
-# TODO: add unittest
-def getClasssetsBySubject(subject: db.Subject):
-	"""Returns a list of workbooks used in the given subject."""
-	return select(b
-		for b in db.Book
-			if not b.workbook
-			and b.classsets
-			and b.subject == subject
-	)
-
-# TODO: add unittest
 def getRealBooksByGrade(grade: int, classsets: bool):
 	"""Returns a list of books used in the given grade. If classsets is
 	provided with `false`, now classset books are included.
@@ -206,6 +185,23 @@ def getRealBooksByGrade(grade: int, classsets: bool):
 				and grade <= b.outGrade
 				and not b.classsets
 		)
+
+def getWorkbooksBySubject(subject: db.Subject):
+	"""Returns a list of workbooks used in the given subject."""
+	return select(b
+		for b in db.Book
+			if b.workbook
+			and b.subject == subject
+	)
+
+def getClasssetsBySubject(subject: db.Subject):
+	"""Returns a list of workbooks used in the given subject."""
+	return select(b
+		for b in db.Book
+			if not b.workbook
+			and b.classsets
+			and b.subject == subject
+	)
 
 # -----------------------------------------------------------------------------
 
@@ -309,11 +305,11 @@ class Tests(unittest.TestCase):
 		db.Publisher(name='Klett')
 		
 		# create maths books
-		db.Book(title='Maths I', isbn='000-001', price=2495,
-			publisher=db.Publisher[1], inGrade=5, outGrade=6,
-			subject=db.Subject[1])
 		db.Book(title='Maths II', isbn='001-021', price=2999,
 			publisher=db.Publisher[1], inGrade=7, outGrade=8,
+			subject=db.Subject[1])
+		db.Book(title='Maths I', isbn='000-001', price=2495,
+			publisher=db.Publisher[1], inGrade=5, outGrade=6,
 			subject=db.Subject[1])
 		db.Book(title='Maths III', isbn='914-721', price=3499,
 			publisher=db.Publisher[1], inGrade=9, outGrade=10,
@@ -379,48 +375,46 @@ class Tests(unittest.TestCase):
 		self.assertIn(db.Subject[4], sb)
 	
 	@db_session
+	def test_orderBooksIndex(self):
+		Tests.prepare()
+		
+		bks = db.Book.select()
+		bks = orderBooksIndex(bks)
+		self.assertEqual(bks[0], db.Book[8])
+		self.assertEqual(bks[1], db.Book[9])
+		self.assertEqual(bks[2], db.Book[2])
+		self.assertEqual(bks[3], db.Book[1])
+		self.assertEqual(bks[4], db.Book[3])
+		self.assertEqual(bks[5], db.Book[5])
+		self.assertEqual(bks[6], db.Book[4])
+		self.assertEqual(bks[7], db.Book[6])
+		self.assertEqual(bks[8], db.Book[7])
+	
+	@db_session
+	def test_orderBooksList(self):
+		Tests.prepare()
+		
+		bks = db.Book.select()
+		bks = orderBooksList(bks)
+		self.assertEqual(bks[0], db.Book[8])
+		self.assertEqual(bks[1], db.Book[9])
+		self.assertEqual(bks[2], db.Book[5])
+		self.assertEqual(bks[3], db.Book[4])
+		self.assertEqual(bks[4], db.Book[2])
+		self.assertEqual(bks[5], db.Book[1])
+		self.assertEqual(bks[6], db.Book[3])
+		self.assertEqual(bks[7], db.Book[7])
+		self.assertEqual(bks[8], db.Book[6])
+
+	@db_session
 	def test_getAllBooks(self):
 		Tests.prepare()
 		
 		bs = set(getAllBooks())
 		self.assertEqual(len(bs), 9)
 		self.assertIn(db.Book[8], bs)
-		self.assertIn(db.Book[1], bs)
 		self.assertIn(db.Book[2], bs)
-		self.assertIn(db.Book[3], bs)
-		self.assertIn(db.Book[4], bs)
-		self.assertIn(db.Book[5], bs)
-		self.assertIn(db.Book[6], bs)
-		self.assertIn(db.Book[7], bs)
-		self.assertIn(db.Book[8], bs)
-		self.assertIn(db.Book[9], bs)
-	
-	@db_session
-	def test_getAllBooks_ordered_for_booklist(self):
-		Tests.prepare()
-		
-		bs = set(orderBooksList(getAllBooks()))
-		self.assertEqual(len(bs), 9)
-		self.assertIn(db.Book[8], bs)
 		self.assertIn(db.Book[1], bs)
-		self.assertIn(db.Book[2], bs)
-		self.assertIn(db.Book[3], bs)
-		self.assertIn(db.Book[4], bs)
-		self.assertIn(db.Book[5], bs)
-		self.assertIn(db.Book[6], bs)
-		self.assertIn(db.Book[7], bs)
-		self.assertIn(db.Book[8], bs)
-		self.assertIn(db.Book[9], bs)
-	
-	@db_session
-	def test_getAllBooks_ordered_for_booksindex(self):
-		Tests.prepare()
-		
-		bs = set(orderBooksIndex(getAllBooks()))
-		self.assertEqual(len(bs), 9)
-		self.assertIn(db.Book[8], bs)
-		self.assertIn(db.Book[1], bs)
-		self.assertIn(db.Book[2], bs)
 		self.assertIn(db.Book[3], bs)
 		self.assertIn(db.Book[4], bs)
 		self.assertIn(db.Book[5], bs)
@@ -443,23 +437,23 @@ class Tests(unittest.TestCase):
 		
 		bs = getBooksUsedIn(5)
 		self.assertEqual(len(bs), 3)
-		self.assertIn(db.Book[1], bs)
+		self.assertIn(db.Book[2], bs)
 		self.assertIn(db.Book[6], bs)
 		self.assertIn(db.Book[9], bs)
 		
 		bs = getBooksUsedIn(5, booklist=True)
 		self.assertEqual(len(bs), 2)
-		self.assertIn(db.Book[1], bs)
+		self.assertIn(db.Book[2], bs)
 		self.assertIn(db.Book[6], bs)
 		
 		bs = getBooksUsedIn(6)
 		self.assertEqual(len(bs), 2)
-		self.assertIn(db.Book[1], bs)
+		self.assertIn(db.Book[2], bs)
 		self.assertIn(db.Book[6], bs)
 		
 		bs = getBooksUsedIn(7)
 		self.assertEqual(len(bs), 3)
-		self.assertIn(db.Book[2], bs)
+		self.assertIn(db.Book[1], bs)
 		self.assertIn(db.Book[6], bs)
 		self.assertIn(db.Book[8], bs)
 		
@@ -491,13 +485,13 @@ class Tests(unittest.TestCase):
 		
 		bs = getBooksStartedIn(5)
 		self.assertEqual(len(bs), 3)
-		self.assertIn(db.Book[1], bs)
+		self.assertIn(db.Book[2], bs)
 		self.assertIn(db.Book[6], bs)
 		self.assertIn(db.Book[9], bs)
 		
 		bs = getBooksStartedIn(5, booklist=True)
 		self.assertEqual(len(bs), 2)
-		self.assertIn(db.Book[1], bs)
+		self.assertIn(db.Book[2], bs)
 		self.assertIn(db.Book[6], bs)
 		
 		bs = getBooksStartedIn(6)
@@ -505,7 +499,7 @@ class Tests(unittest.TestCase):
 		
 		bs = getBooksStartedIn(7)
 		self.assertEqual(len(bs), 2)
-		self.assertIn(db.Book[2], bs)
+		self.assertIn(db.Book[1], bs)
 		self.assertIn(db.Book[8], bs)
 		
 		bs = getBooksStartedIn(11)
@@ -532,7 +526,7 @@ class Tests(unittest.TestCase):
 		
 		bs = getBooksFinishedIn(6)
 		self.assertEqual(len(bs), 1)
-		self.assertIn(db.Book[1], bs)
+		self.assertIn(db.Book[2], bs)
 		
 		bs = getBooksFinishedIn(10)
 		self.assertEqual(len(bs), 2)
@@ -558,8 +552,8 @@ class Tests(unittest.TestCase):
 		
 		bs = getBooksByTitle('Maths')
 		self.assertEqual(len(bs), 5)
-		self.assertIn(db.Book[1], bs)
 		self.assertIn(db.Book[2], bs)
+		self.assertIn(db.Book[1], bs)
 		self.assertIn(db.Book[3], bs)
 		self.assertIn(db.Book[4], bs)
 		self.assertIn(db.Book[5], bs)
@@ -580,6 +574,87 @@ class Tests(unittest.TestCase):
 		self.assertIn(db.Book[5], bs)
 		self.assertIn(db.Book[9], bs)
 
+	@db_session
+	def test_getRealBooks(self):
+		Tests.prepare()
+		
+		# make some books become workbooks / classsets
+		db.Book[2].workbook = True
+		db.Book[7].workbook = True
+		db.Book[4].classsets = True
+		db.Book[5].classsets = False
+		
+		# query real books
+		bs = getRealBooks()
+		self.assertEqual(len(bs), 7)
+		self.assertIn(db.Book[1], bs)
+		self.assertNotIn(db.Book[2], bs)
+		self.assertIn(db.Book[3], bs)
+		self.assertIn(db.Book[4], bs)
+		self.assertIn(db.Book[5], bs)
+		self.assertIn(db.Book[6], bs)
+		self.assertNotIn(db.Book[7], bs)
+		self.assertIn(db.Book[8], bs)
+		self.assertIn(db.Book[9], bs)
+
+		# query real books by subject (including classsets)
+		bs = getRealBooksBySubject(db.Subject[1], True)
+		self.assertEqual(len(bs), 4)
+		self.assertIn(db.Book[1], bs)
+		self.assertNotIn(db.Book[2], bs)
+		self.assertIn(db.Book[3], bs)
+		self.assertIn(db.Book[4], bs)
+		self.assertIn(db.Book[5], bs)
+		
+		# query real books by subject (without classsets)
+		bs = getRealBooksBySubject(db.Subject[1], False)
+		self.assertEqual(len(bs), 3)
+		self.assertIn(db.Book[1], bs)
+		self.assertNotIn(db.Book[2], bs)
+		self.assertIn(db.Book[3], bs)
+		self.assertNotIn(db.Book[4], bs)
+		self.assertIn(db.Book[5], bs)
+
+		# query real books by grade (with classets)
+		bs = getRealBooksByGrade(11, True)
+		self.assertEqual(len(bs), 3)
+		self.assertIn(db.Book[4], bs)
+		self.assertIn(db.Book[5], bs)
+		self.assertNotIn(db.Book[7], bs)
+		self.assertIn(db.Book[8], bs)
+		
+		# query real books by grade (without classets)
+		bs = getRealBooksByGrade(11, False)
+		self.assertEqual(len(bs), 2)
+		self.assertNotIn(db.Book[4], bs)
+		self.assertIn(db.Book[5], bs)
+		self.assertNotIn(db.Book[7], bs)
+		self.assertIn(db.Book[8], bs)
+		
+	@db_session
+	def test_getWorkbooks(self):
+		Tests.prepare()
+		
+		# make some books become workbooks / classsets
+		db.Book[2].workbook = True
+		db.Book[3].workbook = True	
+		
+		# query math workbooks
+		wb = getWorkbooksBySubject(db.Subject[1])
+		self.assertEqual(len(wb), 2)
+		self.assertIn(db.Book[2], wb)
+		self.assertIn(db.Book[3], wb)
+	
+	@db_session
+	def test_getClassSets(self):
+		Tests.prepare()
+		
+		# query math classets
+		cb = getClasssetsBySubject(db.Subject[1])
+		self.assertEqual(len(cb), 2)
+		self.assertIn(db.Book[4], cb)
+		self.assertIn(db.Book[5], cb)
+	
 	@db_session
 	def test_addSubjects(self):
 		raw = """Mathematik\tMa
