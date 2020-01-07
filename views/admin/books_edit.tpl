@@ -5,6 +5,8 @@
 %include("header")
 <h1>Buch bearbeiten</h1>
 
+<a href="/loan/book/{{b.id}}">alle Leihen für dieses Buch anzeigen</a>
+
 <form action="/admin/books/edit/{{b.id}}" id="books" method="post">
 	<table class="simple">
 		<tr>

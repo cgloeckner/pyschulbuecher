@@ -92,6 +92,14 @@ def loan_ajax_queryBooks():
 	return dict(person=person, bks=bks)
 
 
+@get('/loan/book/<book_id:int>')
+@view('loan/book_loan')
+def loan_book_queryLoan(book_id):
+	book = db.Book[book_id]
+	l = loans.queryLoansByBook(book)
+	
+	return dict(book=book, loans=l)
+
 # -----------------------------------------------------------------------------
 
 import unittest, webtest

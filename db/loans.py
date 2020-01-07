@@ -85,7 +85,6 @@ def updateLoan(person: db.Person, book: db.Book, count: int):
 			l.count = count
 
 
-# TODO: add unittest
 def getLoanCount(person: db.Person, book: db.Book):
 	"""Return number of this specific book, either loaned by that person
 	or all together.
@@ -100,7 +99,18 @@ def getLoanCount(person: db.Person, book: db.Book):
 	else:
 		# determine total loan count for all persons
 		return sum(l.count for l in db.Loan if l.book == book)
-	
+
+
+def queryLoansByBook(book: db.Book):
+	"""Return a list of persons who loan that book.
+	"""
+	loans = select(l for l in db.Loan if l.book == book)
+	if loans is None:
+		loans = list()
+	else:
+		loans = list(loans.order_by(lambda l: (l.person.name, l.person.firstname)))
+		loans.sort(key=lambda l: l.person.student.class_.grade if l.person.student is not None else -1)
+	return loans
 
 
 def applyRequest(student: db.Student):
@@ -584,4 +594,29 @@ class Tests(unittest.TestCase):
 		d2 = DemandManager()
 		d2.load_from(handle)
 		
+	
+	@db_session
+	def test_queryLoansByBook(self):
+		Tests.prepare()
+		
+		# modify db to have two students in one class
+		db.Student[2].class_ = db.Class[3] 
+		
+		# setup some loans
+		updateLoan(db.Student[2].person, db.Book[2], 2)
+		updateLoan(db.Teacher[2].person, db.Book[2], 3)
+		updateLoan(db.Student[1].person, db.Book[2], 1)
+		updateLoan(db.Student[3].person, db.Book[2], 6)
+		
+		# query loans
+		loans = queryLoansByBook(db.Book[1])
+		self.assertEqual(len(loans), 0)
+		
+		loans = queryLoansByBook(db.Book[2])
+		self.assertEqual(len(loans), 4)
+		self.assertEqual(db.Teacher[2].person, loans[0].person) # teacher listed first
+		self.assertEqual(db.Student[1].person, loans[1].person) # 1st student in 8a
+		self.assertEqual(db.Student[2].person, loans[2].person) # 1st student in 12lip
+		self.assertEqual(db.Student[3].person, loans[3].person) # 2nd student in 12lip
+
 
