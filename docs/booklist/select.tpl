@@ -44,9 +44,8 @@
 			%end
 			%if cmt:
 		{\footnotesize {{!tex_escape(b.comment)}} }
-	}
 			%end
-			%if ga or ea:
+			%if cmt or ga or ea:
 	}
 			%end
 		%else:
