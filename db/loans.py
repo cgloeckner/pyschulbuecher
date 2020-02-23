@@ -120,8 +120,13 @@ def applyRequest(student: db.Student):
 	# add loaning
 	bks = list()
 	for l in student.person.request:
-		updateLoan(student.person, l.book, 1)
-		bks.append(l.book)
+		if l.book.inGrade == 0:
+			# ignore special books
+			l.delete()
+		else:
+			updateLoan(student.person, l.book, 1)
+			bks.append(l.book)
+			
 	
 	# drop as requests
 	for b in bks:

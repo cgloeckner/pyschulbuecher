@@ -6,7 +6,8 @@
 <h1>Übersicht Bücher</h1>
 
 <a href="/admin/demand" target="_blank">Bedarfsbericht</a> &dash;
-<a href="/loan/report">Leihbericht</a>
+<a href="/loan/report">Leihbericht</a> &dash;
+<a href="/admin/apply_requests">Bücherzettel in Leihen umbuchen</a>
 
 <hr />
 

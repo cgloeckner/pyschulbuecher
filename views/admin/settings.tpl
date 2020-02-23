@@ -11,10 +11,6 @@
 		<td><input type="text" name="school_year" value="{{s.data['general']['school_year']}}" /></td>
 	</tr>
 	<tr>
-		<td>Preis Schulplaner</td>
-		<td><input type="text" name="planner_price" value="{{Currency.toString(int(s.data['general']['planner_price']))}}" />€</td>
-	</tr>
-	<tr>
 		<td>Spätester Abgabetermin Bücherzettel</td>
 		<td><input type="text" name="deadline_booklist_return" value="{{s.data['deadline']['booklist_return']}}" /></td>
 	</tr>

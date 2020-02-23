@@ -8,11 +8,12 @@
 \begin{longtable}{ | p{5cm} | c | c | c |}
     \hline
 	& Preis & Erwerb ja & Erwerb nein \\ \hline
-	Schulplaner FSG (HA, Stundenplan, Noten, Termine) &
+%for bk in spec_bks:
+	{{bk.title}} ({{bk.comment}}) &
 	%if grade == 5:
 		kostenlos
 	%else:
-		{{Currency.toString(int(s.data['general']['planner_price']), addSymbol=False)}} \euro
+		{{Currency.toString(int(bk.price), addSymbol=False)}} \euro
 	%end
 	& & \\ \hline
 \end{longtable}

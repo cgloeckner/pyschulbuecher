@@ -276,6 +276,17 @@ def demand_report():
 	
 	return dict(bks=bks, data=data, total=total, s=s)
 
+@get('/admin/apply_requests')
+def apply_requests():
+	for c in orga.getClasses():
+		# convert book requests to loans
+		for s in c.student:
+			loans.applyRequest(s)
+	
+	db.commit()
+	
+	redirect('/')
+
 # -----------------------------------------------------------------------------
 
 @get('/admin/classes')
@@ -477,7 +488,6 @@ def settings_form_post():
 
 	s = Settings()
 	s.data['general']['school_year']        = request.forms.school_year
-	s.data['general']['planner_price']      = str(Currency.fromString(request.forms.planner_price))
 	s.data['deadline']['booklist_changes']  = request.forms.deadline_booklist_changes
 	s.data['deadline']['booklist_return']   = request.forms.deadline_booklist_return
 	s.data['deadline']['bookreturn_noexam'] = request.forms.deadline_bookreturn_noexam
@@ -511,19 +521,14 @@ def advance_info():
 	return dict()
 
 @get('/admin/advance/confirm')
-def advance_confirm():	
+def advance_confirm():
 	for c in orga.getClasses():
 		# advance every class
 		c.grade += 1
 	
-		# convert book requests to loans
-		for s in c.student:
-			loans.applyRequest(s)
-	
 	db.commit()
 	
-	redirect('/')
-	
+	redirect('/')	
 
 # -----------------------------------------------------------------------------
 
@@ -1451,7 +1456,6 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 		
 		args = {
 			'school_year'       : s.data['general']['school_year'],
-			'planner_price'     : '5,00€',
 			'deadline_changes'  : '19.06.2017',
 			'deadline_booklist' : '23.03.2017',
 			'bookreturn_noexam' : '23.03.2017'

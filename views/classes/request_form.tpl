@@ -25,7 +25,6 @@
 	%end
 	%i += 1
 %end
-		<th class="rotate">Schulplaner</th>
 		<th></th>
 	</tr>
 	<!-- ==================== subjects titles ==================== //-->
@@ -47,7 +46,10 @@
 	%elif b.novices and not b.advanced:
  (gA) \\
 	%end
-{{b.comment}}</td>
+	%if len(b.comment) < 10:
+{{b.comment}} \\
+	%end
+</td>
 	%if i % 3 == 0:
 		<td></td>
 	%end
@@ -119,7 +121,6 @@ versch.\\
 		%end
 		%j += 1
 	%end
-		<td><input class="selection" type="checkbox" name="planner" {{!s.planner}}/></td>
 		<td><span class="button" onClick="toggleRow({{s.id}});" title="Auswahl für diesen Schüler umkehren">↺</span></td>
 	</tr>
 %end

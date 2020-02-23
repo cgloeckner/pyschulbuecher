@@ -15,8 +15,7 @@ class Settings(object):
 	def __init__(self):
 		self.data = configparser.ConfigParser()
 		self.data['general'] = {
-			'school_year': '2019',
-			'planner_price': '600'
+			'school_year': '2019'
 		}
 		self.data['deadline'] = {
 			'booklist_return'  : '17.03.2017',
@@ -212,8 +211,8 @@ class BooklistPdf(object):
 			self.select = f.read()
 		with open('docs/booklist/empty.tpl') as f:
 			self.empty = f.read()
-		with open('docs/booklist/planner.tpl') as f:
-			self.planner = f.read()
+		with open('docs/booklist/special.tpl') as f:
+			self.special = f.read()
 		# prepare output directory
 		if not os.path.isdir(export): # base dr
 			os.mkdir(export)
@@ -234,6 +233,9 @@ class BooklistPdf(object):
 		can be generated for new_students, which include additional books other
 		students already have from earlier classes.
 		"""
+		# fetch specific books
+		spec_bks = books.getBooksUsedIn(0, True)
+		
 		# fetch and order books
 		if new_students:
 			bks    = books.getBooksUsedIn(grade, booklist=True)
@@ -257,7 +259,7 @@ class BooklistPdf(object):
 			tex += template(self.select, grade=grade, bs=bks, workbook=True)
 		else:
 			tex += template(self.empty, workbook=True)
-		tex += template(self.planner, grade=grade, s=self.s)
+		tex += template(self.special, grade=grade, s=self.s, spec_bks=spec_bks)
 		tex += template(self.footer)
 		
 		# export tex (debug purpose)
