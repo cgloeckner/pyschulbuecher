@@ -629,10 +629,37 @@ def studentsloan_generate():
 	
 	yield '<hr /><br />Erledigt in %f Sekunden' % (d)
 
-@get('/admin/lists/generate/booklist')
+@get('/admin/preview/booklist')
+@view('admin/booklist_preview')
+def booklist_preview():
+	all_books = dict()
+
+	for grade in range(5, 12+1):
+		# fetch specific books
+		spec_bks = books.getBooksUsedIn(0, True)
+		
+		# fetch and order books
+		bks_new = books.getBooksUsedIn(grade, booklist=True)
+		bks_old = books.getBooksStartedIn(grade, booklist=True)
+		
+		all_books['{0}_neu'.format(grade)] = books.orderBooksList(bks_new)
+		all_books['{0}'.format(grade)]     = books.orderBooksList(bks_old)
+	
+	return dict(all_books=all_books)
+		
+
+@post('/admin/lists/generate/booklist')
 def booklist_generate():
 	with open('settings.ini') as h:
 		booklist = BooklistPdf(h)
+	
+	print('Detecting excluded books')
+	exclude = set()
+	for g in range(5, 12+1):
+		for b in books.getBooksUsedIn(g):
+			key = '{0}_{1}'.format(g, b.id)
+			if request.forms.get(key) != 'on':
+				exclude.add(key)
 	
 	print('Generating Booklists')
 	d = time.time()
@@ -640,10 +667,10 @@ def booklist_generate():
 	#for g in orga.getClassGrades():
 	for g in range(5, 12+1):
 		yield '<br>Klasse %d' % g
-		booklist(g)
+		booklist(g, exclude)
 		if g > 5:
 			yield ' und Neuzugänge'
-			booklist(g, new_students=True)
+			booklist(g, exclude, new_students=True)
 	
 	# merging booklists
 	booklist.merge()

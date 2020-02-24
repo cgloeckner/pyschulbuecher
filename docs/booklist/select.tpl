@@ -10,18 +10,23 @@
 }
 
 %if workbook:
-	\begin{longtable}{ | c | p{6cm} | p{2.8cm} | c | r | }
+\begin{longtable}{ | c | p{6cm} | p{2.8cm} | c | r | }
 %else:
-	\begin{longtable}{ | c | p{4.5cm} | p{2cm} | c | r | p{0.66cm} | p{0.66cm} | p{0.66cm} | }
+\begin{longtable}{ | c | p{4.5cm} | p{2cm} | c | r | p{0.66cm} | p{0.66cm} | p{0.66cm} | }
 %end
-    \hline
-		\textbf{Fach} & \textbf{Titel} & \textbf{Verlag} & \textbf{ISBN} & \textbf{Preis}
+\hline
+\textbf{Fach} & \textbf{Titel} & \textbf{Verlag} & \textbf{ISBN} & \textbf{Preis}
 %if not workbook:
  & \textbf{\enspace V} & \textbf{\enspace K} & \textbf{\enspace F}
 %end
 \\ \hline
 %for b in bs:
+	%key = '{0}_{1}'.format(grade, b.id)
 	%if b.workbook == workbook:
+		%if key in exclude:
+			%print('Skip {0} for grade {1}'.format(b.title, grade))
+			%continue
+		%end
 		%if b.subject is not None:
 			%ga = b.novices
 			%ea = b.advanced
@@ -57,9 +62,9 @@
 	{\small {{!tex_escape(b.publisher.name)}}}
 	&
 		%if b.isbn is not None and b.price is not None:
-		{\small {{!tex_escape(b.isbn)}} }
+	{\small {{!tex_escape(b.isbn)}} }
 		&
-		{\small {{!tex_escape(Currency.toString(b.price, addSymbol=False))}} \euro }
+	{\small {{!tex_escape(Currency.toString(b.price, addSymbol=False))}} \euro }
 		%else:
 	\multicolumn{2}{c|}{\small {\textit {{nicht mehr verf\"ugbar}} } }
 		%end
