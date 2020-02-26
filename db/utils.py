@@ -228,10 +228,13 @@ class BooklistPdf(object):
 		# merged pdf
 		self.merger = PyPDF2.PdfFileMerger()
 	
-	def __call__(self, grade: int, new_students: bool=False):
+	def __call__(self, grade: int, exclude: dict, new_students: bool=False):
 		"""Generate booklist pdf file for the given grade. A separate booklist
 		can be generated for new_students, which include additional books other
 		students already have from earlier classes.
+		The provided exclude dict can be used to exclude books from the
+		booklist. The keys are built from <grade>_<bookid>, if excluded this
+		key's value is set to false.
 		"""
 		# fetch specific books
 		spec_bks = books.getBooksUsedIn(0, True)
@@ -251,12 +254,14 @@ class BooklistPdf(object):
 		# render templates
 		tex  = template(self.header, s=self.s, grade=grade, new_students=new_students)
 		tex += template(self.info, grade=grade, new_students=new_students, s=self.s)
+		# render pure books
 		if num_books > 0:
-			tex += template(self.select, grade=grade, bs=bks, workbook=False)
+			tex += template(self.select, grade=grade, bs=bks, workbook=False, exclude=exclude)
 		else:
 			tex += template(self.empty, workbook=False)
+		# render pure workbooks
 		if num_books < len(bks):
-			tex += template(self.select, grade=grade, bs=bks, workbook=True)
+			tex += template(self.select, grade=grade, bs=bks, workbook=True, exclude=exclude)
 		else:
 			tex += template(self.empty, workbook=True)
 		tex += template(self.special, grade=grade, s=self.s, spec_bks=spec_bks)
