@@ -20,7 +20,7 @@ Bitte für jedes gewünschte Freiexemplar ein Kreuz setzen:
 %i = 0
 %for b in bks:
 	%if not b.workbook and not b.classsets:
-		p{0.175cm} |
+		p{0.125cm} |
 		%i += 1
 		%if i % 3 == 0 and i != num_bks:
 			|
@@ -40,14 +40,14 @@ Bitte für jedes gewünschte Freiexemplar ein Kreuz setzen:
 %end	
 		& \rotatebox{90}{\footnotesize Schulplaner }
 	\\
-    	Nr & Name & Vorname
+    	\footnotesize Nr & \footnotesize Name & \footnotesize Vorname
 %for b in bks:
 	%if not b.workbook and not b.classsets:
 		& \rotatebox{90}{
 		%if b.subject is None:
 			\quad
 		%else:
-			{{!tex_escape(b.subject.tag)}}
+			\footnotesize {{!tex_escape(b.subject.tag)}}
 		%end
 		%if class_.grade + 1 >= 11:
 			%if b.advanced and not b.novices:
