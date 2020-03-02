@@ -228,15 +228,15 @@ class BooklistPdf(object):
 		# merged pdf
 		self.merger = PyPDF2.PdfFileMerger()
 	
-	def __call__(self, grade: int, exclude: dict, new_students: bool=False):
+	def __call__(self, grade: int, exclude: set, new_students: bool=False):
 		"""Generate booklist pdf file for the given grade. A separate booklist
 		can be generated for new_students, which include additional books other
 		students already have from earlier classes.
-		The provided exclude dict can be used to exclude books from the
+		The provided exclude set can be used to exclude books from the
 		booklist. The keys are built from <grade>_<bookid>, if excluded this
 		key's value is set to false.
 		"""
-		# fetch specific books
+		# fetch special books
 		spec_bks = books.getBooksUsedIn(0, True)
 		
 		# fetch and order books
@@ -313,6 +313,9 @@ class RequestlistPdf(object):
 	def __call__(self, class_):
 		"""Generate requestlist pdf file for the given class.
 		"""
+		# fetch specific books
+		spec_bks = books.getBooksUsedIn(0, True)
+		
 		# fetch and order books that are used next year by this class
 		bks = books.getBooksStartedIn(class_.grade + 1)
 		bks = books.orderBooksList(bks)
@@ -321,7 +324,7 @@ class RequestlistPdf(object):
 		students = orga.getStudentsIn(class_.grade, class_.tag)
 		
 		# render template
-		self.tex += template(self.content, s=self.s, class_=class_, bks=bks, students=students)
+		self.tex += template(self.content, s=self.s, class_=class_, bks=bks, students=students, spec_bks=spec_bks)
 	
 	def saveToFile(self):
 		self.tex += template(self.footer)
@@ -429,7 +432,7 @@ class BookloanPdf(object):
 		bks = books.getBooksUsedIn(class_.grade)
 		bks = books.orderBooksList(bks)
 		
-		# fetch specific books
+		# fetch special books
 		spec_bks = books.getBooksUsedIn(0, True)
 		
 		# query students
@@ -552,10 +555,13 @@ Old English Book			Klett	5	12	En	True	True	False	True	True
 Grundlagen der Physik			Cornelsen	5	12	Ph	True	True	False	False	True
 Tafelwerk	978-3-06-001611-2	13,50 €	Cornelsen	7	12		False	False	False	False	True""")
 
+		exclude = set()
+		exclude.add('11_1') # "Ein Mathe-Buch"
+		
 		# create booklist
 		with open('settings.ini') as h:
 			booklist = BooklistPdf(h, export='/tmp/export')
-		booklist(11, new_students=True)
+		booklist(11, new_students=True, exclude=exclude)
 		print('PLEASE MANUALLY VIEW /tmp/export/Buecherzettel11.pdf')
 
 	@db_session

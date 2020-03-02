@@ -1520,7 +1520,7 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 		
 		# create all booklists (some even without books)
 		# note: this may take some seconds
-		ret = self.app.get('/admin/lists/generate/booklist')
+		ret = self.app.post('/admin/lists/generate/booklist')
 		self.assertEqual(ret.status_code, 200)
 		
 		# show lists index
