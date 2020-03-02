@@ -27,7 +27,9 @@ Bitte für jedes gewünschte Freiexemplar ein Kreuz setzen:
 		%end
 	%end
 %end
-	| p{0.175cm} |
+%for b in spec_bks:
+	p{0.175cm} |
+%end
 }
 
 	\hiderowcolors
@@ -38,7 +40,9 @@ Bitte für jedes gewünschte Freiexemplar ein Kreuz setzen:
 		& \rotatebox{90}{\footnotesize {{!tex_escape(b.title)}} }
 	%end
 %end	
-		& \rotatebox{90}{\footnotesize Schulplaner }
+%for b in spec_bks:
+		& \rotatebox{90}{\footnotesize {{!tex_escape(b.title)}} }
+%end
 	\\
     	Nr & Name & Vorname
 %for b in bks:
@@ -61,7 +65,9 @@ Bitte für jedes gewünschte Freiexemplar ein Kreuz setzen:
 		}
 	%end
 %end
+%for b in spec_bks:
 		&
+%end
 	\\
 	\hline
 %i = 1
@@ -80,7 +86,9 @@ Bitte für jedes gewünschte Freiexemplar ein Kreuz setzen:
 		&
 		%end
 	%end
+	%for b in spec_bks:
 		&
+	%end
 	\\
 	\hline
 %end

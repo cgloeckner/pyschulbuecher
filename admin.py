@@ -713,13 +713,13 @@ def bookreturn_generate():
 @get('/admin/lists/generate/bookloan')
 def bookreturn_generate():
 	with open('settings.ini') as h:
-		bookreturn = BookloanPdf(h)
-	
+		bookloan = BookloanPdf(h)
+			
 	# generate return lists for all grades (for the current year)
 	for grade in range(5, 12+1):
 		for c in orga.getClassesByGrade(grade):
-			bookreturn(c)
-	bookreturn.saveToFile()
+			bookloan(c)
+	bookloan.saveToFile()
 
 	return 'Fertig'
 

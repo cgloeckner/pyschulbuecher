@@ -428,11 +428,14 @@ class BookloanPdf(object):
 		bks = books.getBooksUsedIn(class_.grade)
 		bks = books.orderBooksList(bks)
 		
+		# fetch specific books
+		spec_bks = books.getBooksUsedIn(0, True)
+		
 		# query students
 		students = orga.getStudentsIn(class_.grade, class_.tag)
 		
 		# render template
-		self.tex += template(self.content, s=self.s, class_=class_, bks=bks, students=students)
+		self.tex += template(self.content, s=self.s, class_=class_, bks=bks, students=students, spec_bks=spec_bks)
 	
 	def saveToFile(self):
 		self.tex += template(self.footer)
