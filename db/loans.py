@@ -41,6 +41,14 @@ def isRequested(student: db.Student, book: db.Book):
 			return True
 	return False
 
+def getRequestCount(person: db.Person, book: db.Book):
+	"""Returns whether the given book is requested by the given person.
+	"""
+	for r in person.request:
+		if r.book == book:
+			return 1
+	return 0
+
 def updateRequest(student: db.Student, book: db.Book, status: bool):
 	"""Update request status for the given book and the given student. If True
 	is provided, a request object is created. If not, no request object exists
@@ -126,7 +134,6 @@ def applyRequest(student: db.Student):
 		else:
 			updateLoan(student.person, l.book, 1)
 			bks.append(l.book)
-			
 	
 	# drop as requests
 	for b in bks:

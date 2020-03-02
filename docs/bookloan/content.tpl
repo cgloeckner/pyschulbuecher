@@ -46,7 +46,7 @@ Ihre Schüler haben um folgende Leihexemplare gebeten:
 		%end
 	%end
 %end
-%for b in misc:
+%for b in spec_bks:
 	p{0.05cm} |
 %end
 }
@@ -59,7 +59,7 @@ Ihre Schüler haben um folgende Leihexemplare gebeten:
 		& \rotatebox{90}{\scriptsize {{!tex_escape(b.title)}} }
 	%end
 %end
-%for b in misc:
+%for b in spec_bks:
 		& \rotatebox{90}{\scriptsize {{!tex_escape(b.title)}} }
 %end
 	\\
@@ -84,7 +84,7 @@ Ihre Schüler haben um folgende Leihexemplare gebeten:
 		}
 	%end
 %end
-%for b in misc:
+%for b in spec_bks:
 		&
 %end
 	\\
@@ -97,7 +97,7 @@ Ihre Schüler haben um folgende Leihexemplare gebeten:
 		%count[b] = 0
 	%end
 %end
-%for b in misc:
+%for b in spec_bks:
 	%count[b] = 0
 %end
 
@@ -115,16 +115,16 @@ Ihre Schüler haben um folgende Leihexemplare gebeten:
 	%for b in bks:
 		%if not b.workbook and not b.classsets:
 		&
-			%n = loans.getLoanCount(s.person, b)
+			%n = query_func(s.person, b)
 			%if n > 0:
 		{\scriptsize ${{n}}$}
 				%count[b] += n
 			%end		
 		%end
 	%end
-	%for b in misc:
+	%for b in spec_bks:
 		&
-		%n = loans.getLoanCount(s.person, b)
+		%n = query_func(s.person, b)
 		%if n > 0:
 			{\scriptsize ${{n}}$}
 			%count[b] += n
@@ -140,7 +140,7 @@ Ihre Schüler haben um folgende Leihexemplare gebeten:
 		{\scriptsize {{count[b]}} }
 		%end
 	%end
-	%for b in misc:
+	%for b in spec_bks:
 		&
 		{\scriptsize {{count[b]}} }
 	%end

@@ -421,8 +421,9 @@ class BookloanPdf(object):
 		
 		self.tex  = template(self.header)
 	
-	def __call__(self, class_):
-		"""Generate requestlist pdf file for the given class.
+	def __call__(self, class_, pre=False):
+		"""Generate requestlist pdf file for the given class. If `pre` is
+		provided with true, the request list for next year is used.
 		"""
 		# fetch and order books that were requested by this class
 		bks = books.getBooksUsedIn(class_.grade)
@@ -434,8 +435,13 @@ class BookloanPdf(object):
 		# query students
 		students = orga.getStudentsIn(class_.grade, class_.tag)
 		
+		if pre:
+			query_func = loans.getRequestCount
+		else:
+			query_func = loans.getLoanCount
+		
 		# render template
-		self.tex += template(self.content, s=self.s, class_=class_, bks=bks, students=students, spec_bks=spec_bks)
+		self.tex += template(self.content, s=self.s, class_=class_, bks=bks, students=students, spec_bks=spec_bks, query_func=query_func)
 	
 	def saveToFile(self):
 		self.tex += template(self.footer)
