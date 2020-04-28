@@ -44,7 +44,7 @@ Zur Annahme der Bücher und des Hefters stehe ich Ihnen am Bücherraum zur Verf�
 %i = 0
 %for b in bks:
 	%if not b.workbook and not b.classsets:
-		p{0.09cm} |
+		p{0.05cm} |
 		%i += 1
 		%if i % 3 == 0 and i != num_bks:
 			|
@@ -62,7 +62,7 @@ Zur Annahme der Bücher und des Hefters stehe ich Ihnen am Bücherraum zur Verf�
 	%end
 %end
 	\\
-    	Nr & Name & Vorname
+    	{\scriptsize Nr} & {\scriptsize Name} & {\scriptsize Vorname}
 %for b in bks:
 	%if not b.workbook and not b.classsets:
 		& \rotatebox{90}{
