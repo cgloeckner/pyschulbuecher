@@ -214,7 +214,8 @@ class DemandManager(object):
 					l = db.Loan.get(person=s.person, book=book)
 					n -= l.count
 		
-		# consider classsets
+		# ignore classsets (added by hand, based on teachers' report)
+		"""
 		if book.classsets:
 			for g in range(book.inGrade, book.outGrade+1):
 				if book.subject is None:
@@ -230,7 +231,8 @@ class DemandManager(object):
 						n += self.getStudentNumber(g, book.subject, 'novices')
 					if book.advanced:
 						n += self.getStudentNumber(g, book.subject, 'advanced')
-		
+		"""
+
 		return n
 	
 	def getMaxDemand(self, book: db.Book):
