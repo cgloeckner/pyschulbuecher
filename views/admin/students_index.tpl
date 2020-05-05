@@ -30,7 +30,7 @@
 
 <h2>Neue Schüler hinzufügen</h2>
 
-<form action="/admin/students/addSingle" id="students" method="post">
+<form action="/admin/students/addSingle" id="student" method="post">
 <table class="simple">
 	<tr>
 		<td>Name</td>
