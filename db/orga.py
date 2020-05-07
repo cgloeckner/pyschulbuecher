@@ -52,6 +52,11 @@ def getClassesCount():
 	"""
 	return db.Class.select().count()
 
+def sortClasses(classes: list):
+	"""Sort classes by grade (primary) and tag (secondary)."""
+	classes.sort(key=lambda c: locale.strxfrm(c.tag))
+	classes.sort(key=lambda c: c.grade)
+
 def getStudentsCount(grade: int):
 	"""Return total number of students in the given grade.
 	"""

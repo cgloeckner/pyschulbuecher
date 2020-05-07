@@ -9,7 +9,7 @@ from pony import orm
 
 from db.orm import db, db_session, Currency
 from db import orga, books, loans
-from db.utils import Settings, SubjectCouncilXls, LoanReportPdf, LoanContractPdf, BooklistPdf, RequestlistPdf, BookreturnPdf, BookloanPdf, BookpendingPdf
+from db.utils import Settings, SubjectCouncilXls, LoanReportPdf, LoanContractPdf, BooklistPdf, RequestlistPdf, BookreturnPdf, BookloanPdf, BookpendingPdf, ClassListPdf
 from utils import errorhandler
 
 
@@ -755,7 +755,18 @@ def bookpending_generate():
 	
 	fname = pending.saveToFile()
 	return '<a href="/admin/lists/download/%s.pdf">%d ausstehende Bücher gefunden</a>' % (fname, n)
+
+@get('/admin/lists/generate/classlist')
+def classlist_generate():
+	with open('settings.ini') as h:
+		classlist = ClassListPdf(h)
 	
+	classes = list(orga.getClasses())
+	orga.sortClasses(classes)
+	classlist(classes)
+	classlist.saveToFile()
+
+	return 'Fertig'
 
 # -----------------------------------------------------------------------------
 

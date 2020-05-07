@@ -8,6 +8,7 @@
 Aktuelles Schuljahr:
 <a href="/admin/lists/generate/bookreturn" target="_blank">Bücherrückgabe</a>
 <a href="/admin/lists/generate/bookpending" target="_blank">Ausstehende Bücher Kl. 12</a>
+<a href="/admin/lists/generate/classlist" target="_blank">Klassenliste</a>
 <hr />
 Neues Schuljahr:
 <a href="/admin/lists/generate/councils" target="_blank">Bedarf Fachschaften</a> &dash;
