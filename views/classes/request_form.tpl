@@ -59,7 +59,7 @@
 		<td></td>
 	</tr>
 	
-	<!-- ==================== book negation switches ==================== //-->
+	<!-- ==================== book toggle switches ==================== //-->
 	<tr>
 		<th></th>
 		<th>Nr.</th>
@@ -123,6 +123,41 @@ versch.\\
 	%end
 		<td><span class="button" onClick="toggleRow({{s.id}});" title="Auswahl für diesen Schüler umkehren">↺</span></td>
 	</tr>
+
+	%if i % 30 == 1:
+	<!-- ==================== repeated subjects ==================== //-->
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+%k = 1
+%for b in books:
+	%if b.workbook or b.classsets:
+		%continue
+	%end
+		<td class="rotate" id="{{b.id}}">\\
+	%if b.subject is not None:
+{{b.subject.tag}}\\
+	%end
+	%if b.advanced and not b.novices:
+ (eA) \\
+	%elif b.novices and not b.advanced:
+ (gA) \\
+	%end
+	%if len(b.comment) < 10:
+{{b.comment}} \\
+	%end
+</td>
+	%if k % 3 == 0:
+		<td></td>
+	%end
+	%k += 1
+%end
+		<td></td>
+		<td></td>
+	</tr>
+
+	%end
 %end
 	<tr>
 		<td></td>
