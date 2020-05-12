@@ -37,7 +37,7 @@
 	%if b.workbook or b.classsets:
 		%continue
 	%end
-		<td class="rotate" id="{{b.id}}">\\
+		<td class="rotate" name="{{b.id}}">\\
 	%if b.subject is not None:
 {{b.subject.tag}}\\
 	%end
@@ -135,7 +135,7 @@ versch.\\
 	%if b.workbook or b.classsets:
 		%continue
 	%end
-		<td class="rotate" id="{{b.id}}">\\
+		<td class="rotate" name="{{b.id}}">\\
 	%if b.subject is not None:
 {{b.subject.tag}}\\
 	%end

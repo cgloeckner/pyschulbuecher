@@ -24,10 +24,10 @@ function toggleCol(id) {
 }
 
 function enterColumn(id) {
-	$('td#' + id).addClass('highlight');
+	$('td[name="' + id + '"]').addClass('highlight');
 }
 
 function leaveColumn(id) {
-	$('td#' + id).removeClass('highlight');
+	$('td[name="' + id + '"]').removeClass('highlight');
 }
 
