@@ -741,20 +741,32 @@ def bookpending_generate():
 	with open('settings.ini') as h:
 		bookreturn = BookloanPdf(h)
 	
+	# --- books per student
 	# query pending books
 	with open('settings.ini') as h:
-		pending = BookpendingPdf(h)
+		pending_students = BookpendingPdf(h)
 	n = 0
 	#for g in range(5, 12+1):
 	for c in orga.getClassesByGrade(12):
 		for s in c.student:
-			n += pending(s.person)
+			n += pending_students.addPerson(s.person)
 	
 	if n == 0:
-		pending.tex += 'keine Bücher ausstehend'
+		pending_students.tex += 'keine Bücher ausstehend'
 	
-	fname = pending.saveToFile()
-	return '<a href="/admin/lists/download/%s.pdf">%d ausstehende Bücher gefunden</a>' % (fname, n)
+	fname1 = pending_students.saveToFile(suffix='nachSchülern')
+
+	# --- students per book
+	# query pending books
+	with open('settings.ini') as h:
+		pending_books = BookpendingPdf(h)
+
+	for b in books.getBooksUsedIn(12):
+		pending_books.addPersons(b)
+	
+	fname2 = pending_books.saveToFile(suffix='nachBüchern')
+
+	return '{0} ausstehende Bücher gefunden: <a href="/admin/lists/download/{1}.pdf">nach Schülern</a> oder <a href="/admin/lists/download/{2}.pdf">nach Büchern</a>'.format(n, fname1, fname2)
 
 @get('/admin/lists/generate/classlist')
 def classlist_generate():

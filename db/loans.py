@@ -14,6 +14,8 @@ def orderLoanOverview(loans):
 	loans = list(loans.order_by(lambda l: l.book.title))
 	loans.sort(key=lambda l: l.book.subject.tag if l.book.subject is not None else '')
 	loans.sort(key=lambda l: l.book.outGrade)
+	loans.sort(key=lambda l: l.person.student.class_.grade if l.person.student is not None and l.person.student.class_ is not None else -1)
+	loans.sort(key=lambda l: l.person.student.class_.tag if l.person.student is not None and l.person.student.class_ is not None else '')
 	return loans
 
 def orderRequestOverview(requests):
@@ -116,8 +118,9 @@ def queryLoansByBook(book: db.Book):
 	if loans is None:
 		loans = list()
 	else:
-		loans = list(loans.order_by(lambda l: (l.person.name, l.person.firstname)))
-		loans.sort(key=lambda l: l.person.student.class_.grade if l.person.student is not None else -1)
+		loans = orderLoanOverview(loans)
+		#loans = list(loans.order_by(lambda l: (l.person.name, l.person.firstname)))
+		#loans.sort(key=lambda l: l.person.student.class_.grade if l.person.student is not None else -1)
 	return loans
 
 

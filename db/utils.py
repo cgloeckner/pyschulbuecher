@@ -471,6 +471,8 @@ class BookpendingPdf(object):
 			self.footer = f.read()
 		with open('docs/bookpending/content.tpl') as f:
 			self.content = f.read()
+		with open('docs/bookpending/perbook.tpl') as f:
+			self.perbook = f.read()
 		# prepare output directory
 		self.export = export
 		self.texdir = os.path.join(export, 'tex')
@@ -480,10 +482,10 @@ class BookpendingPdf(object):
 		self.s = Settings()
 		self.s.load_from(settings_handle)
 		
-		self.tex  = template(self.header)
+		self.tex = template(self.header)
 	
-	def __call__(self, person):
-		"""Generate pending books pdf file for the given person.
+	def addPerson(self, person):
+		"""Generate pending books pdf page for the given person
 		"""
 		count = len(person.loan)
 		if count > 0:
@@ -491,13 +493,19 @@ class BookpendingPdf(object):
 		
 		return count
 	
-	def saveToFile(self, with_date=False):
+	def addPersons(self, book):
+		"""Generate pending books pdf page for the given book
+		"""
+		lns = loans.queryLoansByBook(book)
+		self.tex += template(self.perbook, s=self.s, book=book, loans=lns)
+
+	def saveToFile(self, suffix, with_date=False):
 		self.tex += template(self.footer)
 		
 		ext = ''
 		if with_date:
 			ext = '_%s' % datetime.datetime.now().strftime('%Y_%m_%d__%H_%M_%S')
-		pdfname = 'AusstehendeBücher%s' % ext
+		pdfname = 'AusstehendeBücher_%s%s' % (suffix, ext)
 		
 		# export tex (debug purpose)
 		dbg_fname = os.path.join(self.texdir, '%s.tex' % pdfname)
