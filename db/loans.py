@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-import json
+import json, math
 from datetime import date
 
 from db.orm import db
@@ -12,10 +12,12 @@ __author__ = "Christian Glöckner"
 def orderLoanOverview(loans):
 	# 1st: outGrade, 2nd: subject, 3rd: title
 	loans = list(loans.order_by(lambda l: l.book.title))
+	loans.sort(key=lambda l: l.person.firstname)
+	loans.sort(key=lambda l: l.person.name)
 	loans.sort(key=lambda l: l.book.subject.tag if l.book.subject is not None else '')
 	loans.sort(key=lambda l: l.book.outGrade)
-	loans.sort(key=lambda l: l.person.student.class_.grade if l.person.student is not None and l.person.student.class_ is not None else -1)
 	loans.sort(key=lambda l: l.person.student.class_.tag if l.person.student is not None and l.person.student.class_ is not None else '')
+	loans.sort(key=lambda l: l.person.student.class_.grade if l.person.student is not None and l.person.student.class_ is not None else -1)
 	return loans
 
 def orderRequestOverview(requests):
@@ -119,8 +121,6 @@ def queryLoansByBook(book: db.Book):
 		loans = list()
 	else:
 		loans = orderLoanOverview(loans)
-		#loans = list(loans.order_by(lambda l: (l.person.name, l.person.firstname)))
-		#loans.sort(key=lambda l: l.person.student.class_.grade if l.person.student is not None else -1)
 	return loans
 
 
@@ -176,6 +176,36 @@ class DemandManager(object):
 		# overwrite internal data
 		self.data = tmp
 	
+	def getUnavailableBooksCount(self, book):
+		"""Return total amount of books that are continued to be in use during
+		the next school year.
+		"""
+		continued = 0
+		for l in book.loan:
+			if l.person.student is None:
+				# count teacher books
+				continued += l.count
+			elif l.person.student.class_.grade < book.outGrade:
+				# count student books
+				continued += l.count
+		return continued
+	
+	def countBooksInUse(self, book):
+		"""Return total amount of books that will be used after the end of this
+		school year. Expected returns are not included, as well as requested
+		books.
+		"""
+		in_use = 0
+		for l in book.loan:
+			if l.person.student is None:
+				# teacher books are in use
+				in_use += l.count
+			elif l.person.student.class_.grade < book.outGrade:
+				# student books are in use if loan is continued
+				in_use += l.count
+		return in_use
+
+	# @TODO für Klassensätze nutzen?!
 	def getStudentNumber(self, grade: int, subject: db.Subject, level: str=None):
 		"""Return total number of students for the given grade and subject.
 		Optionally specified novice and/or advanced courses are considered.
@@ -198,46 +228,7 @@ class DemandManager(object):
 			# consider course levels
 			return self.data[str(grade)][subject.tag][level]
 	
-	def getNeededBooks(self, book: db.Book):
-		"""Count how many books are required considering current loans, returning
-		loans and new requested loans.
-		"""
-
-		# consider new requests
-		n = len(book.request)
-		
-		# consider books already in used
-		for l in book.loan:
-			n += l.count
-			
-		# consider books being returned by last grade that uses it
-		for c in orga.getClassesByGrade(book.outGrade):
-			for s in c.student:
-				if s.person in book.loan:
-					l = db.Loan.get(person=s.person, book=book)
-					n -= l.count
-		
-		# ignore classsets (added by hand, based on teachers' report)
-		"""
-		if book.classsets:
-			for g in range(book.inGrade, book.outGrade+1):
-				if book.subject is None:
-					# use student count (e.g. cross-subject books)
-					# note that the n th grade is currently (n-1)th grade
-					n += self.grade_query(g-1)
-				elif g <= 10:
-					# use regular class size
-					n += self.getStudentNumber(g, book.subject)
-				else:
-					# consider course level
-					if book.novices:
-						n += self.getStudentNumber(g, book.subject, 'novices')
-					if book.advanced:
-						n += self.getStudentNumber(g, book.subject, 'advanced')
-		"""
-
-		return n
-	
+	# @TODO für Klassensätze nutzen?!
 	def getMaxDemand(self, book: db.Book):
 		"""Calculate worst case demand of the given book assuming.
 		Note that this calculates the demand for the NEXT year, so all grades
@@ -390,44 +381,6 @@ class Tests(unittest.TestCase):
 		self.assertEqual(n, 37)
 
 	@db_session
-	def test_getNeededBooks(self):
-		Tests.prepare()
-		
-		# prepare book
-		b = db.Book(title='Example', isbn='000-001', price=2495,
-			publisher=db.Publisher[1], inGrade=5, outGrade=7,
-			subject=db.Subject[1])
-		
-		# prepare addition classes
-		c_new  = db.Class(grade=5, tag='a')
-		c_cont = db.Class(grade=6, tag='c')
-		c_ret  = db.Class(grade=7, tag='b')
-		for i in range(5):
-			s = db.Student(person=db.Person(name='Foo', firstname='Bar'), class_=c_new)
-			db.Request(person=s.person, book=b)
-		
-		for i in range(5):
-			s = db.Student(person=db.Person(name='Foo', firstname='Bar'), class_=c_cont)
-			db.Loan(person=s.person, book=b, given=date.today())
-
-		# give 6th student two books		
-		s = db.Student(person=db.Person(name='Foo', firstname='Bar'), class_=c_cont)
-		db.Loan(person=s.person, book=b, given=date.today(), count=2)
-			
-		for i in range(3):
-			s = db.Student(person=db.Person(name='Foo', firstname='Bar'), class_=c_ret)
-			db.Loan(person=s.person, book=b, given=date.today())
-		
-		# give 4th student two books		
-		s2 = db.Student(person=db.Person(name='Foo', firstname='Bar'), class_=c_cont)
-		db.Loan(person=s2.person, book=b, given=date.today(), count=2)
-		
-		d = DemandManager()
-		n = d.getNeededBooks(b)
-		# 5 new, 6+1 already used, 4+1 returning --> 17 needed
-		self.assertEqual(n, 17)
-
-	@db_session
 	def test_addLoans(self):
 		Tests.prepare()
 		
@@ -514,6 +467,30 @@ class Tests(unittest.TestCase):
 		self.assertEqual(len(ln), 1)
 	
 	@db_session
+	def test_queryLoansByBook(self):
+		Tests.prepare()
+		
+		# modify db to have two students in one class
+		db.Student[2].class_ = db.Class[2] 
+		
+		# setup some loans
+		updateLoan(db.Student[2].person, db.Book[2], 2)
+		updateLoan(db.Teacher[2].person, db.Book[2], 3)
+		updateLoan(db.Student[1].person, db.Book[2], 1)
+		updateLoan(db.Student[3].person, db.Book[2], 6)
+		
+		# query loans
+		loans = queryLoansByBook(db.Book[1])
+		self.assertEqual(len(loans), 0)
+		
+		loans = queryLoansByBook(db.Book[2])
+		self.assertEqual(len(loans), 4)
+		self.assertEqual(db.Teacher[2].person, loans[0].person) # teacher listed first
+		self.assertEqual(db.Student[1].person, loans[1].person) # 1st student in 8a
+		self.assertEqual(db.Student[2].person, loans[2].person) # 1st student in 12glö
+		self.assertEqual(db.Student[3].person, loans[3].person) # 2nd student in 12glö
+
+	@db_session
 	def test_DemandManager(self):
 		Tests.prepare()
 		
@@ -583,6 +560,8 @@ class Tests(unittest.TestCase):
 		d = DemandManager(grade_size.__getitem__)
 		d.parse(keys.__getitem__)
 		
+		# @TODO für Klassensätze nutzen?!
+		"""
 		# test student number queries
 		self.assertEqual(d.getStudentNumber(5, sub_la), 19)
 		self.assertEqual(d.getStudentNumber(5, sub_fr), 27)
@@ -601,7 +580,8 @@ class Tests(unittest.TestCase):
 		self.assertEqual(d.getMaxDemand(math3), 73+67+55) # grade 5,6,8		
 		self.assertEqual(d.getMaxDemand(de), 18+22+13+12) # all 11th/12th grade course use it
 		self.assertEqual(d.getMaxDemand(fr), 27+8) # 27 from 5th grade + 8 from 6th grade
-
+		"""
+		
 		# test saving and loading
 		import io
 		handle = io.StringIO()
@@ -610,30 +590,51 @@ class Tests(unittest.TestCase):
 		
 		d2 = DemandManager()
 		d2.load_from(handle)
-		
 	
 	@db_session
-	def test_queryLoansByBook(self):
+	def test_getBooksCounts(self):
 		Tests.prepare()
 		
-		# modify db to have two students in one class
-		db.Student[2].class_ = db.Class[3] 
+		# prepare book
+		b = db.Book(title='Example', isbn='000-001', price=2495,
+			publisher=db.Publisher[1], inGrade=5, outGrade=7,
+			subject=db.Subject[1])
+		b.stock = 30
 		
-		# setup some loans
-		updateLoan(db.Student[2].person, db.Book[2], 2)
-		updateLoan(db.Teacher[2].person, db.Book[2], 3)
-		updateLoan(db.Student[1].person, db.Book[2], 1)
-		updateLoan(db.Student[3].person, db.Book[2], 6)
+		# prepare addition classes
+		c_new  = db.Class(grade=5, tag='a')
+		c_cont = db.Class(grade=6, tag='c')
+		c_ret  = db.Class(grade=7, tag='b')
 		
-		# query loans
-		loans = queryLoansByBook(db.Book[1])
-		self.assertEqual(len(loans), 0)
+		# add 8 books for request (5th grade)
+		for i in range(8):
+			s = db.Student(person=db.Person(name='Foo', firstname='Bar'), class_=c_new)
+			db.Request(person=s.person, book=b)
 		
-		loans = queryLoansByBook(db.Book[2])
-		self.assertEqual(len(loans), 4)
-		self.assertEqual(db.Teacher[2].person, loans[0].person) # teacher listed first
-		self.assertEqual(db.Student[1].person, loans[1].person) # 1st student in 8a
-		self.assertEqual(db.Student[2].person, loans[2].person) # 1st student in 12lip
-		self.assertEqual(db.Student[3].person, loans[3].person) # 2nd student in 12lip
+		# add 2 books as loan (5th grade)
+		for i in range(2):
+			s = db.Student(person=db.Person(name='Foo', firstname='Bar'), class_=c_new)
+			db.Loan(person=s.person, book=b, given=date.today())
+		
+		# add 7 books for continued use (6th grade)
+		s = db.Student(person=db.Person(name='Foo', firstname='Bar'), class_=c_cont)
+		db.Loan(person=s.person, book=b, given=date.today(), count=2)
+		s2 = db.Student(person=db.Person(name='Foo', firstname='Bar'), class_=c_cont)
+		db.Loan(person=s2.person, book=b, given=date.today(), count=2)
+		for i in range(3):
+			s = db.Student(person=db.Person(name='Foo', firstname='Bar'), class_=c_cont)
+			db.Loan(person=s.person, book=b, given=date.today())
+
+		# add 3 books to be returned (7th grade)
+		for i in range(3):
+			s = db.Student(person=db.Person(name='Foo', firstname='Bar'), class_=c_ret)
+			db.Loan(person=s.person, book=b, given=date.today())
+		
+		d = DemandManager()
+		
+		in_use = d.countBooksInUse(b)
+		# 2 (5th loan) + 7 (6th loan)
+		self.assertEqual(in_use, 9)
+
 
 

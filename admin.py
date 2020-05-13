@@ -206,7 +206,7 @@ def demand_report():
 		# keep default values
 		pass
 	
-	# percentage of lowering the actual stock to gain buffer
+	# percentage of lowering the stock to gain buffer (e.g. for damaged books)
 	lowering = int(request.forms.lowering)
 
 	# fetch demand from UI input
@@ -214,7 +214,6 @@ def demand_report():
 	demand.parse(request.forms.get)
 	
 	# save total student numbers
-	print(demand_json)
 	with open(demand_json, 'w') as h:
 		demand.save_to(h)
 
@@ -223,56 +222,50 @@ def demand_report():
 	total = 0
 	data = dict()
 	for b in bks:
+		if b.classsets or b.workbook:
+			# only consider books for loan
+			continue
+		
 		if b.price is None:
 			# skip because this book cannot be bought anymore
 			continue
 	
-		free = demand.getNeededBooks(b)
-		required = demand.getMaxDemand(b)
-		required = max(required, free) # to fix problems with more books marked as free
+		# determine raw demand (books in use + requested)
+		available  = math.floor(b.stock * (100 - lowering) / 100.0)
+		in_use     = demand.countBooksInUse(b)
+		requested  = len(b.request)
+		raw_demand = in_use + requested
 		
-		lower_stock = math.floor(b.stock * (100.0 - lowering) / 100.0)
+		# determine number of required books
+		required = raw_demand - available
 		
-		# number of acquire books (to fulfill free books)
-		acquire = free - lower_stock
-		if acquire < 0:
-			acquire = 0
-		
-		# number of left over books
-		left = lower_stock - free
-		if left < 0:
-			left = '0(!)'
-		
-		# total number of parents (gap between number of free and total required)
-		parents = required - free
-		if parents < 0:
-			parents = 0
-			
-		if b.classsets:
-			# no books by parents if classsets
-			parents = 0
-		
-		# total number of pending free books (acquisition by school)
-		school = acquire - parents
-		
-		# total price
-		if school > 0:
-			price = b.price * school
+		if required > 0:
+			# calculate how many books will be bought by school / by parents.
+			# if enough books are available, the number of actually required
+			# books might be lower as the number requested books, hence the
+			# number of required books will be bought by the school.
+			# if the requested number is lower, more books are bought by parents
+			by_school = min(required, requested)
+			by_parents = required - by_school
 		else:
-			price = 0
-			school = "&mdash;"
+			required = 0
+			by_parents = 0
+			by_school  = 0
 		
+		costs = b.price * by_school
+		
+		# save data
 		data[b.id] = {
-			'acquire': acquire,
-			'free': free,
-			'required': required,
-			'left': left,
-			'parents': parents,
-			'school': school,
-			'price': price,
-			'stock': lower_stock
+			'raw_demand' : raw_demand,
+			'in_use'     : in_use,
+			'requested'  : requested,
+			'available'  : available,
+			'required'   : required,
+			'by_parents' : by_parents,
+			'by_school'  : by_school,
+			'costs'      : costs
 		}
-		total += price
+		total += costs
 	
 	return dict(bks=bks, data=data, total=total, s=s)
 

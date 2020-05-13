@@ -6,9 +6,13 @@
 %include("header")
 
 %year = int(s.data['general']['school_year'])
-<h1>Bedarfsbericht für Schuljahr {{year}}/{{year+1}}</h1>
+<h1>Bedarfsbericht für Schuljahr {{year+1}}/{{year+2}}</h1>
 
 <p><b>Gesamtsumme:</b> {{Currency.toString(total)}}</p>
+
+<center><b>Anmerkung:</b> In der untenstehenden Auflistung sind <b>keine</b> Klassensätze berücksichtigt.</center>
+
+<br />
 
 <a href="javascript:toggleDemand();">Ansicht umschalten</a>
 
@@ -17,44 +21,45 @@
 
 <table class="books">
 	<tr>
-		<th>Klasse</th>
 		<th>Fach</th>
+		<th>Klasse</th>
 	
 		<th>Titel</th>
 		<th>Verlag</th>
 		<th>ISBN</th>
 		<th>Preis</th>
 		
-		<th class="rotate">Gesamtbedarf</th>
-		<th class="rotate">Bestand</th>
-		<th class="rotate">Übrig</th>
-		
 		<th></th>
-		<th class="rotate">Beschaffung Summe</th>		
+		<th class="rotate">Gesamtbedarf</th>
+		<th class="rotate">Vorhanden</th>
+		<th class="rotate">Puffer</th>
+		
+		<th></th>		
+		<th class="rotate">Beschaffung</th>		
 		<th class="rotate">Beschaffung Eltern</th>
 		<th class="rotate">Beschaffung Schule</th>
-		<th></th>
 		
+		<th></th>
 		<th class="rotate">Kosten</th>
 	</tr>
 %for b in bks:
-	%if b.workbook or b.price is None:
+	%if b.id not in data:
 		%continue
 	%end
-	%if data[b.id]["price"] > 0:
+	%if data[b.id]["costs"] > 0:
 	<tr>
 	%else:
 	<tr class="trivial">
-	%end
-	%if b.inGrade < b.outGrade:
-		<td>{{b.inGrade}}-{{b.outGrade}}</td>
-	%else:
-		<td>{{b.inGrade}}</td>
 	%end
 	%if b.subject is not None:
 		<td>{{b.subject.tag}}</td>
 	%else:
 		<td>versch. </td>
+	%end
+	%if b.inGrade < b.outGrade:
+		<td>{{b.inGrade}}-{{b.outGrade}}</td>
+	%else:
+		<td>{{b.inGrade}}</td>
 	%end
 	
 		<td>{{b.title}}</td>
@@ -62,31 +67,27 @@
 		<td>{{b.isbn}}</td>
 		<td>{{Currency.toString(b.price)}}</td>
 	
-	%if b.classsets:
-		<td title="Bedarf">{{data[b.id]["required"]}}</td>
-		<td title="Bestand">{{data[b.id]["stock"]}}</td>
-		<td title="übrige Bücher">{{data[b.id]["left"]}}</td>
 		<td></td>
-		<td title="Beschaffung">{{data[b.id]["acquire"]}}</td>
-		<td>&mdash;</td>
-	%else:
-		<td title="Bedarf ({{data[b.id]["free"]}} Freiexemplare)">{{data[b.id]["required"]}}</td>
-		<td title="Bestand">{{data[b.id]["stock"]}}</td>
-		<td title="übrige Bücher">{{data[b.id]["left"]}}</td>
-		<td></td>
-		<td title="Beschaffung">{{data[b.id]["acquire"]}}</td>
-		<td title="Eltern">{{data[b.id]["parents"]}}</td>
+		<td title="{{data[b.id]["in_use"]}} weiterhin in Ausleihe, {{data[b.id]["requested"]}} via Bücherzettel">{{data[b.id]["raw_demand"]}}</td>
+		<td title="{{data[b.id]["available"]}} von {{b.stock}} vorhandenen Büchern">{{data[b.id]["available"]}}</td>
+	%remaining_books = data[b.id]["available"] - data[b.id]["raw_demand"]
+	%if remaining_books < 0:
+		%remaining_books = '-'
 	%end
-		
-		<td title="Beschaffung Schule">{{!data[b.id]["school"]}}</td>
+		<td title="übrig wenn {{data[b.id]["raw_demand"]}} von {{data[b.id]["available"]}} ausgegeben">{{remaining_books}}</td>
 		
 		<td></td>
-	%if data[b.id]["price"] > 0:
+		<td title="nötig um {{data[b.id]["raw_demand"]}} ausgeben zu können">{{data[b.id]["required"]}}</td>
+		<td title="Differenz aus \"Beschaffung\" und \"von Schule\"">{{data[b.id]["by_parents"]}}</td>
+		<td title="nötige Freiexemplare laut Bücherzettel">{{data[b.id]["by_school"]}}</td>
+		
+		<td></td>
+	%if data[b.id]["costs"] > 0:
 		%css = ' class="demand"'
 	%else:
 		%css = ''
 	%end
-		<td{{!css}}>{{Currency.toString(data[b.id]["price"])}}</td>
+		<td{{!css}}>{{Currency.toString(data[b.id]["costs"])}}</td>
 	</tr>
 %end
 </table>
