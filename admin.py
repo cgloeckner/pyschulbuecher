@@ -762,7 +762,9 @@ def bookpending_generate():
 		pending_books = BookpendingPdf(h)
 
 	for b in books.getBooksUsedIn(12):
-		pending_books.addPersons(b)
+		# ignore classsets
+		if not b.classsets:
+			pending_books.addPersons(b)
 	
 	fname2 = pending_books.saveToFile(suffix='nachBüchern')
 
