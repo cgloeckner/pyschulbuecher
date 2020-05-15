@@ -9,7 +9,10 @@
 
 <input type="submit" value="Bücherzettel erstellen" />
 
-%for grade, books in sorted(all_books.items(), key=lambda item: item[1]):
+%grades = list(all_books.keys())
+%grades.sort()
+%for grade in grades:
+	%books = all_books[grade]
 <h2>Klassenstufe {{grade}}</h2>
 <table>
 	<tr>

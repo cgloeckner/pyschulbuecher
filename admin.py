@@ -635,8 +635,9 @@ def booklist_preview():
 		bks_new = books.getBooksUsedIn(grade, booklist=True)
 		bks_old = books.getBooksStartedIn(grade, booklist=True)
 		
-		all_books['{0}_neu'.format(grade)] = books.orderBooksList(bks_new)
 		all_books['{0}'.format(grade)]     = books.orderBooksList(bks_old)
+		if grade > 5:
+			all_books['{0}_neu'.format(grade)] = books.orderBooksList(bks_new)
 	
 	return dict(all_books=all_books)
 		

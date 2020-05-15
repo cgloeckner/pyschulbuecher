@@ -12,7 +12,7 @@ Aktuelles Schuljahr:
 <hr />
 Neues Schuljahr:
 <a href="/admin/lists/generate/councils" target="_blank">Bedarf Fachschaften</a> &dash;
-<a href="/admin/lists/generate/booklist" target="_blank">Bücherzettel</a> &dash;
+<a href="/admin/preview/booklist" target="_blank">Bücherzettel</a> &dash;
 <a href="/admin/lists/generate/requestlist" target="_blank">Erfassungsliste</a> &dash;
 <a href="/admin/lists/generate/bookloan" target="_blank">Bückerausgabe (aktuelles Schuljahr)</a>
 <a href="/admin/lists/generate/requestloan" target="_blank">Bückerausgabe (nächstes Schuljahr)</a>
