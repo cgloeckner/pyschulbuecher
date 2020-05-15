@@ -41,6 +41,9 @@
 	%if b.advanced:
 		%comments.append('eA')
 	%end
+	%if b.classsets:
+		%comments.append('Klassensätze')
+	%end
 		<td>{{', '.join(comments)}}</td>
 		<td>{{b.stock}}</td>
 		<td>{{report[b]}}</td>
