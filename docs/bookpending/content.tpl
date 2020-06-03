@@ -7,10 +7,10 @@
 Folgende Leihexemplare wurden bislang \textbf{nicht} zurückgegeben:
 
 \rowcolors{1}{white}{black!10}
-\begin{longtable}[l]{ | c | c | c | p{5.75cm} | r | r | r | }
+\begin{longtable}[l]{ | c | c | c | p{5.75cm} | r | }
 	\hiderowcolors
 	\hline
-	& Fach & Klasse & Titel & Preis & Ausleihe am & Anzahl \\ \hline
+	& Fach & Klasse & Titel & Anzahl \\ \hline
 
 %wert = 0
 %i = 1
@@ -28,13 +28,12 @@ Folgende Leihexemplare wurden bislang \textbf{nicht} zurückgegeben:
 	%end
  &
  	{{!tex_escape(l.book.title)}} &
-	%if l.book.price is not None:
-	{{!tex_escape(Currency.toString(l.book.price))}} &
-	%wert += l.count * l.book.price
-	%else:
-	\textit{Nicht mehr lieferbar} &
-	%end
-	{{l.given.strftime("%d.%m.%Y")}} &
+	%#if l.book.price is not None:
+	%#{{!tex_escape(Currency.toString(l.book.price))}} &
+	%#wert += l.count * l.book.price
+	%#else:
+	%#	\textit{Nicht mehr lieferbar} &
+	%#end
 	{{l.count}} $\times$
 	\\
 	\hline
@@ -42,6 +41,11 @@ Folgende Leihexemplare wurden bislang \textbf{nicht} zurückgegeben:
 %end
 \end{longtable}
 
-\textbf{Gesamtwert:} {{!tex_escape(Currency.toString(wert))}}
+%#\textbf{Gesamtwert:} {{!tex_escape(Currency.toString(wert))}}
 
+%if n % 2 == 0:
 \pagebreak
+%else:
+\vspace{0.5\textheight}
+%end
+

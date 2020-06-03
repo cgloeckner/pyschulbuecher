@@ -483,13 +483,16 @@ class BookpendingPdf(object):
 		self.s.load_from(settings_handle)
 		
 		self.tex = template(self.header)
+
+		self.n = 0
 	
 	def addPerson(self, person):
 		"""Generate pending books pdf page for the given person
 		"""
 		count = len(person.loan)
 		if count > 0:
-			self.tex += template(self.content, s=self.s, person=person)
+			self.n += 1
+			self.tex += template(self.content, s=self.s, person=person, n=self.n)
 		
 		return count
 	
