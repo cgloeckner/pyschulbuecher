@@ -24,3 +24,13 @@ Also a LaTeX-installation is required including
 
 Required Python Modules (e.g. through `pip`)
 * webtest
+
+### Notes
+
+Convert XLSX to single PDF
+```soffice --headless --convert-to pdf *.xlsx
+pdfunite *.pdf out.pdf
+```
+
+
+

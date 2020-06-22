@@ -116,13 +116,13 @@ class SubjectCouncilXls(object):
 		tab.set_landscape()
 		tab.set_header('Bücherbedarf &A (Stand &D)')
 
-		tab.set_column(0, 0, 40)
-		tab.set_column(1, 1, 30)
+		tab.set_column(0, 0, 25)
+		tab.set_column(1, 1, 20)
 		tab.set_column(2, 2, 20)
 		tab.set_column(3, 3, 8, euro_format)
 		tab.set_column(4, 4, 8, center_format)
 		tab.set_column(5, 5, 10, center_format)
-		tab.set_column(6, 6, 30)
+		tab.set_column(6, 6, 25)
 			
 		for col, caption in enumerate(['Titel', 'Verlag', 'ISBN', 'Preis', 'Klasse', 'Art', 'Bemerkungen']):
 			tab.write(0, col, caption, title_format)
