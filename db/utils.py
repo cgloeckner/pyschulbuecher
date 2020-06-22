@@ -112,7 +112,7 @@ class SubjectCouncilXls(object):
 				tab.write(row+1, 5, ' '.join(comments))
 		"""
 
-		tab = self.data.add_worksheet('Bedarf')
+		tab = self.data.add_worksheet(subject.tag)
 		tab.set_landscape()
 
 		tab.set_column(0, 0, 40)
