@@ -10,6 +10,7 @@
 \usepackage{fancyhdr}
 \usepackage{rotating}
 \usepackage{cancel}
+\usepackage{amssymb}
 
 \pagestyle{fancy}
 \renewcommand{\headrulewidth}{0pt} %obere Trennlinie

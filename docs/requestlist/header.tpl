@@ -9,6 +9,7 @@
 \usepackage[table]{xcolor}
 \usepackage{fancyhdr}
 \usepackage{rotating}
+\usepackage{amssymb}
 
 \pagestyle{fancy}
 \renewcommand{\headrulewidth}{0pt} %obere Trennlinie

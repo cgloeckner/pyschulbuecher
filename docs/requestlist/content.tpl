@@ -16,7 +16,7 @@ Bitte für jedes gewünschte Freiexemplar ein Kreuz setzen:
 %num_bks = len([b for b in bks if not b.workbook and not b.classsets])
 
 \rowcolors{1}{white}{black!10}
-\begin{longtable}[l]{ | r | l l |
+\begin{longtable}[l]{ | c | r | l l |
 %i = 0
 %for b in bks:
 	%if not b.workbook and not b.classsets:
@@ -34,7 +34,7 @@ Bitte für jedes gewünschte Freiexemplar ein Kreuz setzen:
 
 	\hiderowcolors
 	\hline
-		& &
+		& & &
 %for b in bks:
 	%if not b.workbook and not b.classsets:
 		& \rotatebox{90}{\footnotesize {{!tex_escape(b.title)}} }
@@ -44,7 +44,7 @@ Bitte für jedes gewünschte Freiexemplar ein Kreuz setzen:
 		& \rotatebox{90}{\footnotesize {{!tex_escape(b.title)}} }
 %end
 	\\
-    	\footnotesize Nr & \footnotesize Name & \footnotesize Vorname
+    	\checkmark & \footnotesize Nr & \footnotesize Name & \footnotesize Vorname
 %for b in bks:
 	%if not b.workbook and not b.classsets:
 		& \rotatebox{90}{
@@ -77,6 +77,7 @@ Bitte für jedes gewünschte Freiexemplar ein Kreuz setzen:
 	%else:
 		\hiderowcolors
 	%end
+		$\square$ &
 		{\small {{i}} } &
 	%i += 1
 		{\footnotesize {{!tex_escape(s.person.name)}} } &

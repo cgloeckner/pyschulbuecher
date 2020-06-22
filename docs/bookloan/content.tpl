@@ -16,26 +16,17 @@
 Bitte beachten Sie:
 \begin{enumerate}
 	\item Überprüfen Sie die Anzahl der Ihnen zur Verfügung gestellten Bücher. Bitten melden Sie \textbf{fehlende oder beschädigte Bücher} umgehend, sodass Sie Ersatz erhalten können.
-	\item Bitte kennzeichnen Sie in der untenstehenden Tabelle \textbf{keine ausgegebenen Bücher}, sondern \textbf{nur Änderungen} farbig. (z.B. wenn Bücher doch gekauft wurden) 
+	\item Bitte kennzeichnen Sie in der Tabelle \textbf{nur Änderungen}, z.B. wenn Bücher doch gekauft wurden und nutzen Sie die erste Spalte zur Dokumentation Schüler, die ihre Bücher erhalten haben.
 	\item Stellen Sie jedem Schüler seine \textbf{Ausleihliste} zur Verfügung, damit die Eltern den Erhalt quittieren.
 %if class_.grade in [5, 7, 9, 11]:
-	\newline Die Schüler der Klassenstufen 5, 7, 9 und 11 erhalten \textbf{neue Ausleihlisten}, um eine übersichtliche Dokumentation der Leihexemplare zu ermöglichen. Alte Leihlisten \textbf{verbleiben} im Hefter.
 	\item Fordern Sie die Ausleihlisten bitte binnen einer Woche zurück und geben Sie den Hefter möglichst vollständig beim Schulbuchverantwortlichen ab.
 %end
 \end{enumerate}
 
-\begin{flushright}
-
-	\textit{Vielen Dank!}
-
-\end{flushright}
-
-Ihre Schüler haben um folgende Leihexemplare gebeten:
-
 %num_bks = len([b for b in bks if not b.workbook and not b.classsets])
 
 \rowcolors{1}{white}{black!10}
-\begin{longtable}[l]{ | r | l l |
+\begin{longtable}[l]{ | c | r | l l |
 %i = 0
 %for b in bks:
 	%if not b.workbook and not b.classsets:
@@ -53,6 +44,7 @@ Ihre Schüler haben um folgende Leihexemplare gebeten:
 
 	\hiderowcolors
 	\hline
+		&
 		& &
 %for b in bks:
 	%if not b.workbook and not b.classsets:
@@ -63,7 +55,7 @@ Ihre Schüler haben um folgende Leihexemplare gebeten:
 		& \rotatebox{90}{\scriptsize {{!tex_escape(b.title)}} }
 %end
 	\\
-    	{\scriptsize Nr} & {\scriptsize Name} & {\scriptsize Vorname}
+    	{\checkmark} & {\scriptsize Nr} & {\scriptsize Name} & {\scriptsize Vorname}
 %for b in bks:
 	%if not b.workbook and not b.classsets:
 		& \rotatebox{90}{
@@ -108,6 +100,7 @@ Ihre Schüler haben um folgende Leihexemplare gebeten:
 	%else:
 		\hiderowcolors
 	%end
+		$\square$ &
 		{\small {{i}} } &
 	%i += 1
 		{\footnotesize {{!tex_escape(s.person.name)}} } &
@@ -133,7 +126,7 @@ Ihre Schüler haben um folgende Leihexemplare gebeten:
 	\\
 	\hline
 %end
-	& & \textbf{Gesamt}:
+	& & & \textbf{Gesamt}:
 	%for b in bks:
 		%if not b.workbook and not b.classsets:
 		&
@@ -147,5 +140,15 @@ Ihre Schüler haben um folgende Leihexemplare gebeten:
 	\\
 	\hline
 \end{longtable}
+
+Bitte quittieren Sie die Durchführung der Bücherausgabe. \\
+\\
+
+\begin{flushright}
+
+	\rule{5cm}{0.1mm} \\
+	Unterschrift
+
+\end{flushright}
 
 \pagebreak
