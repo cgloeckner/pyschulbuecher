@@ -114,6 +114,7 @@ class SubjectCouncilXls(object):
 
 		tab = self.data.add_worksheet(subject.tag)
 		tab.set_landscape()
+		tab.set_header('Bücherbedarf &A (Stand &D)')
 
 		tab.set_column(0, 0, 40)
 		tab.set_column(1, 1, 30)
