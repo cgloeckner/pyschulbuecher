@@ -16,26 +16,18 @@
 %if class_.grade < 12:
 Bitte sammeln Sie die untenstehenden Bücher von Ihren Schülern ein. Beachten Sie dabei:
 \begin{enumerate}
-	\item Für jeden Schüler existiert eine Ausleihliste (in diesem Hefter). Bitte \textbf{quittieren} Sie dabei dabei den Erhalt der einzelnen Bücher.
-	\item \textbf{Markieren} Sie in der untenstehenden Tabelle bitte alle \textbf{noch nicht zurückgegebenen Bücher} (z.B. Rotstift oder Textmarker). Es liegt in der Verantwortung der entsprechenden Schüler diese beim Schulbuchverantwortlichen abzugeben.
-	\item \textbf{Verzichten} Sie bitte auf eine Kennzeichnung zurückgegebener Bücher.
+	\item Für jeden Schüler existiert eine Ausleihliste (in diesem Hefter). Bitte \textbf{quittieren SIE} dabei dabei den Erhalt der einzelnen Bücher.
+	\item \textbf{Markieren} Sie in der untenstehenden Tabelle bitte alle \textbf{bei Ihnen zurückgegebenen Bücher}. Es liegt in der Verantwortung der entsprechenden Schüler alle fehlenden Bücher beim Schulbuchverantwortlichen abzugeben.
+	\item Gelegentlich entstehen \textbf{Fehler}. Sollte ein Schüler ein Buch zurückgeben, das nicht auf der Liste erwähnt ist, so tragen Sie dieses bitte \textbf{farbig} nach. Hat ein Schüler \textit{nachweislich} (vgl. Ausleihliste) ein angegebenes Buch nicht ausgeliehen, streichen Sie dieses bitte \textbf{farbig}.
 \end{enumerate}
 %else:
 Bitte sammeln Sie die untenstehenden Bücher von Ihren Schülern ein. Die Vorgehensweise unterscheidet sich dabei von der regulären Bücherrückgabe. Beachten Sie dabei:
 \begin{enumerate}
 	\item Die Schüler \textbf{behalten} alle Bücher in \textbf{Prüfungsfächern} bis zum \textbf{Tag der Prüfung}; diese werden an diesem Tag gesondern eingesammelt.
-	\item Die zurückgegebenen Bücher müssen \textbf{nicht} quf den Leihlisten der Schüler quittiert werden.
+	\item Die zurückgegebenen Bücher müssen \textbf{nicht} auf den Leihlisten der Schüler quittiert werden.
 	\item Bitte \textbf{markieren} Sie alle \textbf{zurückgegebenen Bücher}, damit übersichtlich klar ist, welche Bücher noch offen sind.
 \end{enumerate}
 %end
-
-Zur Annahme der Bücher und des Hefters stehe ich Ihnen am Bücherraum zur Verfügung.
-
-\begin{flushright}
-
-	\textit{Vielen Dank!}
-
-\end{flushright}
 
 %num_bks = len([b for b in bks if not b.workbook and not b.classsets])
 
@@ -109,5 +101,15 @@ Zur Annahme der Bücher und des Hefters stehe ich Ihnen am Bücherraum zur Verf�
 	\hline
 %end
 \end{longtable}
+
+Bitte quittieren Sie die Durchführung der Bücherrückgabe. Zur Annahme der Bücher und des Hefters stehe ich Ihnen am Bücherraum zur Verfügung. \\
+\\
+
+\begin{flushright}
+
+	\rule{5cm}{0.1mm} \\
+	Unterschrift
+
+\end{flushright}
 
 \pagebreak
