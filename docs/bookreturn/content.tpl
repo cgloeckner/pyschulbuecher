@@ -16,9 +16,11 @@
 %if class_.grade < 12:
 Bitte sammeln Sie die untenstehenden Bücher von Ihren Schülern ein. Beachten Sie dabei:
 \begin{enumerate}
-	\item Für jeden Schüler existiert eine Ausleihliste (in diesem Hefter). Bitte \textbf{quittieren SIE} dabei dabei den Erhalt der einzelnen Bücher.
-	\item \textbf{Markieren} Sie in der untenstehenden Tabelle bitte alle \textbf{bei Ihnen zurückgegebenen Bücher}. Es liegt in der Verantwortung der entsprechenden Schüler alle fehlenden Bücher beim Schulbuchverantwortlichen abzugeben.
-	\item Gelegentlich entstehen \textbf{Fehler}. Sollte ein Schüler ein Buch zurückgeben, das nicht auf der Liste erwähnt ist, so tragen Sie dieses bitte \textbf{farbig} nach. Hat ein Schüler \textit{nachweislich} (vgl. Ausleihliste) ein angegebenes Buch nicht ausgeliehen, streichen Sie dieses bitte \textbf{farbig}.
+	\item Für jeden Schüler existiert eine \textbf{Ausleihliste} (in diesem Hefter). Bitte \textbf{quittieren Sie} dabei dabei den Erhalt der einzelnen Bücher.
+	\item Markieren Sie alle \textbf{bei Ihnen abgegebenen Bücher} in der Tabelle durch \textbf{einfaches Streichen} $\cancel{1}$.
+	\item Die Rückgabe \textbf{vergessener Bücher} erfolgt in der Regel \textbf{beim Klassenleiter}.
+	\item Hat ein Schüler \textit{nachweislich} (vgl. Ausleihliste) ein angegebenes Buch nicht ausgeliehen, kennzeichnen Sie dies bitte durch \textbf{farbiges, doppeltes Streichen} $\xcancel{1}$.
+	\item \textbf{Ersatzexemplare} müssen \textbf{unbedingt} auf \textbf{einem separaten Stapel} bei mir abgegeben werden.
 \end{enumerate}
 %else:
 Bitte sammeln Sie die untenstehenden Bücher von Ihren Schülern ein. Die Vorgehensweise unterscheidet sich dabei von der regulären Bücherrückgabe. Beachten Sie dabei:
@@ -102,7 +104,7 @@ Bitte sammeln Sie die untenstehenden Bücher von Ihren Schülern ein. Die Vorgeh
 %end
 \end{longtable}
 
-Bitte quittieren Sie die Durchführung der Bücherrückgabe. Zur Annahme der Bücher und des Hefters stehe ich Ihnen am Bücherraum zur Verfügung. \\
+Bitte quittieren Sie die Durchführung der Bücherrückgabe. Zur Annahme der Bücher und des Hefters stehe ich Ihnen am Bücherraum zur Verfügung. Bitte sorieren Sie die Bücher fächerweise vor. \\
 \\
 
 \begin{flushright}
