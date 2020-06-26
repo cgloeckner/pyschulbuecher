@@ -10,6 +10,17 @@ from latex import build_pdf
 from db import books, orga, loans
 from db.orm import Currency
 
+
+def shortName(firstname):
+	"""Abbreviate first name by reducing secondary first names to a single
+	letter."""
+	parts = firstname.split(' ')
+	out = parts[0]
+	for i in range(1, len(parts)):
+		out += ' %s.' % parts[i][0]
+	return out
+
+
 class Settings(object):
 
 	def __init__(self):
@@ -124,7 +135,7 @@ class SubjectCouncilXls(object):
 		tab.set_column(4, 4, 8, center_format)
 		tab.set_column(5, 5, 10, center_format)
 		tab.set_column(6, 6, 25)
-			
+		
 		for col, caption in enumerate(['Titel', 'Verlag', 'ISBN', 'Preis', 'Klasse', 'Art', 'Bemerkungen']):
 			tab.write(0, col, caption, title_format)
 		
@@ -154,6 +165,55 @@ class SubjectCouncilXls(object):
 				tab.write(row+1, 6, ' '.join(comments))
 
 				row += 1
+		
+	def saveToFile(self):
+		assert(self.data is not None)
+		self.data.close()
+
+# -----------------------------------------------------------------------------
+
+class DatabaseDumpXls(object):
+	def __init__(self, settings_handle, export='export'):
+		# prepare output directory
+		if not os.path.isdir(export): # base dir
+			os.mkdir(export)
+		self.export = export
+		# load settings
+		self.s = Settings()
+		self.s.load_from(settings_handle)
+		# setup xlsx file
+		path = os.path.join(self.export, '%s.xlsx' % self.s.data['general']['school_year'])		
+		self.data = xlsxwriter.Workbook(path)
+
+	def __call__(self, class_, bks):
+		# local import to avoid cycles
+		from db import loans
+		
+		# pre-order students abd books
+		bks = books.orderBooksList(bks)
+		students = list(class_.student)
+		orga.sortStudents(students)
+		
+		title_format = self.data.add_format()
+		title_format.set_bold()
+		
+		rotate_format = self.data.add_format()
+		
+		# create tab sheet for this class
+		tab = self.data.add_worksheet(class_.toString())
+		fields = ['Name', 'Vorname']
+		for col, b in enumerate(bks):
+			fields.append(b.subject.tag if b.subject is not None else '')
+			tab.write(0, col+2, b.title) # todo: 90° rotated format
+		for col, caption in enumerate(fields):
+			tab.write(1, col, caption, title_format)
+		
+		# fill students in
+		for row, s in enumerate(students):
+			tab.write(row+2, 0, s.person.name)
+			tab.write(row+2, 1, shortName(s.person.firstname))
+			for col, b in enumerate(bks):
+				tab.write(row+2, col+2, loans.getLoanCount(s.person, b))
 		
 	def saveToFile(self):
 		assert(self.data is not None)

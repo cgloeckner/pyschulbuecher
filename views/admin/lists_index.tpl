@@ -18,6 +18,8 @@ Neues Schuljahr:
 <a href="/admin/lists/generate/requestloan" target="_blank">Bückerausgabe (nächstes Schuljahr)</a>
 <hr />
 
+<a href="/admin/lists/generate/db_dump" target="_blank">Datenbank nach Excel exportieren</a>
+
 <a href="file://{{export}}">Export-Verzeichnis</a> 
 
 %#if full:

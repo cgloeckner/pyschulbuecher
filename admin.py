@@ -9,7 +9,7 @@ from pony import orm
 
 from db.orm import db, db_session, Currency
 from db import orga, books, loans
-from db.utils import Settings, SubjectCouncilXls, LoanReportPdf, LoanContractPdf, BooklistPdf, RequestlistPdf, BookreturnPdf, BookloanPdf, BookpendingPdf, ClassListPdf
+from db.utils import Settings, SubjectCouncilXls, DatabaseDumpXls, LoanReportPdf, LoanContractPdf, BooklistPdf, RequestlistPdf, BookreturnPdf, BookloanPdf, BookpendingPdf, ClassListPdf
 from utils import errorhandler
 
 
@@ -560,6 +560,33 @@ def lists_index():
 	data.sort(key=lambda d: d["name"])
 	return dict(data=data, full=full)
 	"""
+
+@get('/admin/lists/generate/db_dump')
+def db_dump_generate():
+	with open('settings.ini') as h:
+		# generte Excel sheet with entire db loaning content
+		
+		print('Generating Loan Reports')
+		d = time.time()
+		yield 'Bitte warten...'
+		
+		xlsx = DatabaseDumpXls(h)
+		
+		# sort classes
+		classes = list(db.Class.select())
+		orga.sortClasses(classes)
+		
+		for c in classes:
+			yield '%s<br />' % c.toString()
+			bks = books.getBooksUsedIn(c.grade)
+			xlsx(c, bks)
+		
+		xlsx.saveToFile()
+		
+		print('Done')
+		d = time.time() - d
+	
+		yield '<hr /><br />Erledigt in %f Sekunden' % (d)
 
 @get('/admin/lists/generate/councils')
 def councils_generate():
