@@ -135,7 +135,7 @@ class SubjectCouncilXls(object):
 		tab.set_column(4, 4, 8, center_format)
 		tab.set_column(5, 5, 10, center_format)
 		tab.set_column(6, 6, 25)
-		
+			
 		for col, caption in enumerate(['Titel', 'Verlag', 'ISBN', 'Preis', 'Klasse', 'Art', 'Bemerkungen']):
 			tab.write(0, col, caption, title_format)
 		
@@ -198,9 +198,14 @@ class DatabaseDumpXls(object):
 		title_format.set_bold()
 		
 		rotate_format = self.data.add_format()
+		rotate_format.set_rotation(90)
 		
 		# create tab sheet for this class
 		tab = self.data.add_worksheet(class_.toString())
+		tab.set_column(0, 1, 12)
+		tab.set_column(2, 2+len(bks), 4)
+		tab.set_row(0, 150, rotate_format)
+		
 		fields = ['Name', 'Vorname']
 		for col, b in enumerate(bks):
 			fields.append(b.subject.tag if b.subject is not None else '')
@@ -213,7 +218,8 @@ class DatabaseDumpXls(object):
 			tab.write(row+2, 0, s.person.name)
 			tab.write(row+2, 1, shortName(s.person.firstname))
 			for col, b in enumerate(bks):
-				tab.write(row+2, col+2, loans.getLoanCount(s.person, b))
+				n = loans.getLoanCount(s.person, b)
+				tab.write(row+2, col+2, n if n > 0 else '')
 		
 	def saveToFile(self):
 		assert(self.data is not None)

@@ -578,7 +578,7 @@ def db_dump_generate():
 		
 		for c in classes:
 			yield '%s<br />' % c.toString()
-			bks = books.getBooksUsedIn(c.grade)
+			bks = books.getBooksUsedIn(c.grade, booklist=True)
 			xlsx(c, bks)
 		
 		xlsx.saveToFile()
