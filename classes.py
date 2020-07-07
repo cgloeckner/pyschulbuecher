@@ -30,6 +30,7 @@ def classes_grade_index(grade):
 def classes_students_index(grade, tag):
 	bks = books.getBooksUsedIn(grade)
 	bks = books.orderBooksList(bks)
+	bks.sort(key=lambda b: b.outGrade)
 	c = orga.db.Class.get(grade=grade, tag=tag)
 	if c is None:
 		abort(404)

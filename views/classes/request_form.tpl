@@ -168,7 +168,7 @@ versch.\\
 	%if b.workbook or b.classsets:
 		%continue
 	%end
-		<td class="booksum">{{total[b.id]}}</td> <!-- TODO kleinere schrift !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+		<td class="booksum">{{total[b.id]}}</td>
 	%if j % 3 == 0:
 		<td></td>
 	%end

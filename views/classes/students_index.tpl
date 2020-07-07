@@ -26,7 +26,7 @@
 		%continue
 	%end
 	%count[b.id] = 0
-		<th class="rotate">{{b.title}}</th>
+		<th class="rotate" name="{{b.id}}">{{b.title}}</th>
 	%if i % 3 == 0:
 		<td></td>
 	%end
@@ -43,7 +43,7 @@
 	%if b.workbook or b.classsets:
 		%continue
 	%end
-	<td class="rotate">\\
+	<td class="rotate" name="{{b.id}}" onmouseover="enterColumn({{b.id}});" onmouseOut="leaveColumn({{b.id}});">\\
 	%i += 1
 	%if b.subject is not None:
 {{b.subject.tag}} \\
@@ -82,7 +82,7 @@
 		%count[b.id] += value
 		%value = '' if value == 0 else value
 		%id = '%i_%i' % (s.id, b.id)
-		<td><input class="selection" type="text" name="{{id}}" value="{{value}}" maxlength="1" /></td>
+		<td><input class="selection" type="text" name="{{id}}" value="{{value}}" maxlength="1" onmouseover="enterColumn({{b.id}});" onmouseOut="leaveColumn({{b.id}});" /></td>
 		%if j % 3 == 0:
 		<td></td>
 		%end
