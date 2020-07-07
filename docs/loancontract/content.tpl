@@ -1,20 +1,21 @@
 %from db.orm import Currency
-%from utils import tex_escape
+%from utils import tex_escape, shortName
 %from db import loans
 %import datetime
 
-{\Large Schulbuchübersicht } \hfill {\large {{!tex_escape(student.person.name)}}, {{!tex_escape(student.person.firstname)}} ({{student.class_.toString()}}) }
+{\Large Schulbuchübersicht } \hfill {\large {{!tex_escape(student.person.name)}}, {{!tex_escape(shortName(student.person.firstname))}} ({{student.class_.toString()}}) }
 
-Bitte überprüfen Sie den Erhalt folgender Lehrbücher und bewerten Sie deren \linebreak Zustand: \hfill neu \textbf{++} \quad gut \textbf{+} \quad mittel \textbf{$\circ$} \quad schlecht \textbf{-}
+Bitte überprüfen Sie den Erhalt folgender Lehrbücher, vermerken Sie die individuelle Buchnummer (LMF-Nr.) und bewerten Sie deren \linebreak Zustand: \hfill neu \textbf{++} \quad gut \textbf{+} \quad mittel \textbf{$\circ$} \quad schlecht \textbf{-}
 
 \rowcolors{1}{white}{black!10}
-\begin{tabular}[c]{ | p{1cm} | c | p{6.5cm} | c | }
+\begin{tabular}[c]{ | p{0.75cm} | c | p{5.5cm} | c | c | }
 	\hline
 	
 	\textbf{Fach} &
-	\textbf{Klasse} &
+	\textbf{\small Klasse} &
 	\textbf{Lehrbuch} &
-	\textbf{Zustand}
+	\textbf{LMF-Nr.} &
+	\textbf{\small Zustand}
 	\\ \hline
 
 %i = 0
@@ -32,6 +33,7 @@ Bitte überprüfen Sie den Erhalt folgender Lehrbücher und bewerten Sie deren \
 	{{l.book.inGrade}}-{{l.book.outGrade}} &
 		%end
 	{{!tex_escape(l.book.title)}} &
+	&
 	\\ \hline
 	
 		%i += 1
@@ -47,7 +49,7 @@ Bitte überprüfen Sie den Erhalt folgender Lehrbücher und bewerten Sie deren \
 %end
 
 %if len(lns) == 0:
-	\multicolumn{4}{c}{ keine Lehrbücher }
+	\multicolumn{5}{c}{ keine Lehrbücher }
 %end
 
 \end{tabular}
@@ -66,13 +68,14 @@ Bitte überprüfen Sie den Erhalt folgender Lehrbücher und bewerten Sie deren \
 Bitte überprüfen Sie den Zustand folgender Lehrbücher:
 
 \rowcolors{1}{white}{black!10}
-\begin{tabular}[c]{ | p{1cm} | c| p{6.5cm} | c | }
+\begin{tabular}[c]{ | p{0.75cm} | c | p{5.5cm} | c | c | }
 	\hline
 	
 	\textbf{Fach} &
-	\textbf{Klasse} &
+	\textbf{\small Klasse} &
 	\textbf{Lehrbuch} &
-	\textbf{Zustand}
+	\textbf{LMF-Nr.} &
+	\textbf{\small Zustand}
 	\\ \hline
 
 	%i = 0
@@ -89,6 +92,8 @@ Bitte überprüfen Sie den Zustand folgender Lehrbücher:
 	{{l.book.inGrade}}-{{l.book.outGrade}} &
 			%end
 	{{!tex_escape(l.book.title)}} &
+	%#------------ note this will be used next year
+	&
 	\\ \hline
 	
 			%i += 1
@@ -102,7 +107,7 @@ Bitte überprüfen Sie den Zustand folgender Lehrbücher:
 	%end
 	
 	%if len(prev_classes) == 0:
-	\multicolumn{4}{c}{ keine Lehrbücher }
+	\multicolumn{5}{c}{ keine Lehrbücher }
 	%end
 
 \end{tabular}
