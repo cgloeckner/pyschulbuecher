@@ -26,11 +26,11 @@ Bitte beachten Sie:
 %num_bks = len([b for b in bks if not b.workbook and not b.classsets])
 
 \rowcolors{1}{white}{black!10}
-\begin{longtable}[l]{ | c | r | l l |
+\begin{longtable}[l]{ | p{0.1cm} | p{0.15cm} | p{1.75cm} p{1.75cm} |
 %i = 0
 %for b in bks:
 	%if not b.workbook and not b.classsets:
-		p{0.05cm} |
+		p{0.033cm} |
 		%i += 1
 		%if i % 3 == 0 and i != num_bks:
 			|
@@ -38,7 +38,7 @@ Bitte beachten Sie:
 	%end
 %end
 %for b in spec_bks:
-	p{0.05cm} |
+	p{0.033cm} |
 %end
 }
 

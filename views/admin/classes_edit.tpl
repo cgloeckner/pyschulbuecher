@@ -8,7 +8,7 @@
 		<tr>
 			<td>Klassenstufe</td>
 			<td><select name="grade">
-%for grade in range(5, 12+1):
+%for grade in range(5-1, 12+1):
 				<option value="{{grade}}"\\
 	%if c.grade == grade:
  selected\\

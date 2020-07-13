@@ -2,23 +2,28 @@
 
 <h1>Ausdrucke</h1>
 
-<a href="/admin/lists/generate/teacherloans" target="_blank">Leihen (Lehrer)</a>
-<a href="/admin/lists/generate/studentloans" target="_blank">Leihen (Schüler)</a>
-<hr />
-Aktuelles Schuljahr:
-<a href="/admin/lists/generate/bookreturn" target="_blank">Bücherrückgabe</a>
-<a href="/admin/lists/generate/bookpending" target="_blank">Ausstehende Bücher Kl. 12</a>
-<a href="/admin/lists/generate/classlist" target="_blank">Klassenliste</a>
-<hr />
-Neues Schuljahr:
-<a href="/admin/lists/generate/councils" target="_blank">Bedarf Fachschaften</a> &dash;
-<a href="/admin/preview/booklist" target="_blank">Bücherzettel</a> &dash;
-<a href="/admin/lists/generate/requestlist" target="_blank">Erfassungsliste</a> &dash;
-<a href="/admin/lists/generate/bookloan" target="_blank">Bückerausgabe (aktuelles Schuljahr)</a>
-<a href="/admin/lists/generate/requestloan" target="_blank">Bückerausgabe (nächstes Schuljahr)</a>
-<hr />
+<h2>Leihen und Zurückgeben</h2>
+<ul>
+	<li><a href="/admin/lists/generate/bookloan" target="_blank">Bückerausgabe (aktuelles Schuljahr)</a></li>
+	<li><a href="/admin/lists/generate/bookpending" target="_blank">Leihübersicht (Klasse 12, ausstehend)</a></li>
+	<li><a href="/admin/lists/generate/teacherloans" target="_blank">Leihübersicht (Lehrer)</a></li>
+	<li><a href="/admin/lists/generate/studentloans" target="_blank">Leihübersicht (Schüler)</a></li>
+	<li><a href="/admin/lists/generate/bookreturn" target="_blank">Bücherrückgabe (Listen und Übersichtszettel)</a></li>
+	<li><a href="/admin/lists/generate/requestloan" target="_blank">Bückerausgabe (nächstes Schuljahr)</a></li>
+</ul>
 
-<a href="/admin/lists/generate/db_dump" target="_blank">Datenbank nach Excel exportieren</a>
+<h2>Bedarf</h2>
+<ul>
+	<li><a href="/admin/lists/generate/councils" target="_blank">Bedarf Fachschaften</a></li>
+	<li><a href="/admin/preview/booklist" target="_blank">Bücherzettel</a></li>
+	<li><a href="/admin/lists/generate/requestlist" target="_blank">Erfassungsliste</a></li>
+</ul>
+
+<h2>Administratives</h2>
+<ul>
+	<li><a href="/admin/lists/generate/classlist" target="_blank">Klassenliste</a></li>
+	<li><a href="/admin/lists/generate/db_dump" target="_blank">Datenbank nach Excel exportieren</a></li>
+</ul>
 
 <a href="file://{{export}}">Export-Verzeichnis</a> 
 
