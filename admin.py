@@ -632,6 +632,9 @@ def studentsloan_generate():
 	yield 'Bitte warten...'
 	
 	for c in db.Class.select().order_by(lambda c: c.tag).order_by(lambda c: c.grade):
+		if len(c.student) == 0:
+			continue
+		
 		# start new pdf
 		with open('settings.ini') as h:
 			loancontract = LoanContractPdf(c.toString(), h)
@@ -735,13 +738,33 @@ def bookreturn_generate():
 def requestloan_generate():
 	with open('settings.ini') as h:
 		bookloan = BookloanPdf(h)
+	
+	yield 'Erzeuge Ausleihübersicht...'
 			
-	# generate return lists for all grades (for the current year)
-	for grade in range(5, 12+1):
+	# generate return lists for all grades (for the next year)
+	for grade in range(4, 11+1):
 		for c in orga.getClassesByGrade(grade):
 			bookloan(c, True)
 	bookloan.saveToFile()
-
+	
+	yield 'Erzeuge Ausleihlisten...'
+	
+	for c in db.Class.select().order_by(lambda c: c.tag).order_by(lambda c: c.grade):
+		if len(c.student) == 0:
+			continue
+		
+		# start new pdf
+		with open('settings.ini') as h:
+			loancontract = LoanContractPdf(c.toString(), h, advance=True)
+	
+		for s in c.student.order_by(lambda s: s.person.firstname).order_by(lambda s: s.person.name):
+			loancontract(s)
+		
+		# save pdf
+		loancontract.saveToFile()
+		
+		yield ' %s...' % c.toString()
+	
 	return 'Fertig'
 
 @get('/admin/lists/generate/bookloan')

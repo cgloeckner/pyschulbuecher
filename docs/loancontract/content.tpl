@@ -3,7 +3,7 @@
 %from db import loans
 %import datetime
 
-{\Large Schulbuchübersicht } \hfill {\large {{!tex_escape(student.person.name)}}, {{!tex_escape(shortName(student.person.firstname))}} ({{student.class_.toString()}}) }
+{\Large Schulbuchübersicht } \hfill {\large {{!tex_escape(student.person.name)}}, {{!tex_escape(shortName(student.person.firstname))}} ({{student.class_.toString(advance=advance)}}) }
 
 Bitte überprüfen Sie den Erhalt folgender Lehrbücher, vermerken Sie die individuelle Buchnummer (LMF-Nr.) und bewerten Sie deren \linebreak Zustand: \hfill neu \textbf{++} \quad gut \textbf{+} \quad mittel \textbf{$\circ$} \quad schlecht \textbf{-}
 
@@ -46,6 +46,34 @@ Bitte überprüfen Sie den Erhalt folgender Lehrbücher, vermerken Sie die indiv
 	%else:
 		%prev_classes.append(l.book.inGrade)
 	%end
+%end
+
+%for r in rqs:
+	%if r.book.inGrade == 0:
+		%# skip special book (Schulplaner etc.)
+		%continue
+	%end
+	%if r.book.subject is None:
+	versch. &
+		%else:
+	{{!tex_escape(r.book.subject.tag)}} &
+		%end
+		%if r.book.inGrade == r.book.outGrade:
+	{{r.book.inGrade}} &
+		%else:
+	{{r.book.inGrade}}-{{r.book.outGrade}} &
+		%end
+	{{!tex_escape(r.book.title)}} &
+	&
+	\\ \hline
+	
+		%i += 1
+	
+		%if i % 2 == 0:
+		\showrowcolors
+		%else:
+		\hiderowcolors
+		%end
 %end
 
 %if len(lns) == 0:

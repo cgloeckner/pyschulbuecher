@@ -2,18 +2,17 @@
 %from db import loans
 %from utils import shortName
 
-{\LARGE Ausgabe der Leihexemplare in Klasse {{class_.toString()}} }
+{\LARGE Ausgabe der Leihexemplare in Klasse {{class_.toString(advance=pre)}} }
 \hfill
 %year = int(s.data['general']['school_year'])
 {\large Schuljahr {{year}}/{{year+1}} }\\
 
+Bitte beachten Sie:
 %if class_.teacher is not None:
-	Klassenleiter(in):
-	\quad
-	{{class_.teacher.person.name}}, {{class_.teacher.person.firstname}}
+	\hfill 
+	Klassenleiter(in): {{class_.teacher.person.name}}, {{class_.teacher.person.firstname}}
 %end
 
-Bitte beachten Sie:
 \begin{enumerate}
 	\item Überprüfen Sie die Anzahl der Ihnen zur Verfügung gestellten Bücher. Bitten melden Sie \textbf{fehlende oder beschädigte Bücher} umgehend, sodass Sie Ersatz erhalten können.
 	\item Bitte kennzeichnen Sie in der Tabelle \textbf{nur Änderungen}, z.B. wenn Bücher doch gekauft wurden und nutzen Sie die erste Spalte zur Dokumentation Schüler, die ihre Bücher erhalten haben.
@@ -30,7 +29,7 @@ Bitte beachten Sie:
 %i = 0
 %for b in bks:
 	%if not b.workbook and not b.classsets:
-		p{0.033cm} |
+		p{0.045cm} |
 		%i += 1
 		%if i % 3 == 0 and i != num_bks:
 			|
@@ -38,7 +37,7 @@ Bitte beachten Sie:
 	%end
 %end
 %for b in spec_bks:
-	p{0.033cm} |
+	p{0.045cm} |
 %end
 }
 

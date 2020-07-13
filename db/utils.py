@@ -15,7 +15,10 @@ def shortName(firstname):
 	"""Abbreviate first name by reducing secondary first names to a single
 	letter."""
 	parts = firstname.split(' ')
-	out = parts[0]
+	more = parts[0].split('-')
+	out = more[0]
+	for i in range(1, len(more)):
+		out += '-%s.' % more[i][0]
 	for i in range(1, len(parts)):
 		out += ' %s.' % parts[i][0]
 	return out
@@ -271,7 +274,7 @@ class LoanReportPdf(object):
 # -----------------------------------------------------------------------------
 
 class LoanContractPdf(object):
-	def __init__(self, prefix, settings_handle, export='export'):
+	def __init__(self, prefix, settings_handle, export='export', advance=True):
 		# load LaTeX templates
 		with open('docs/loancontract/header.tpl') as f:
 			self.header = f.read()
@@ -293,14 +296,18 @@ class LoanContractPdf(object):
 		self.s = Settings()
 		self.s.load_from(settings_handle)
 		
-		self.tex  = template(self.header)
+		self.tex     = template(self.header)
+		self.advance = advance
 	
-	def __call__(self, student):
+	def __call__(self, student, include_requests=False):
 		"""Generate loan contract pdf file for the given student. This contains
 		all books that are currently given to him or her.
 		"""
 		lns = loans.orderLoanOverview(student.person.loan)
-		self.tex += template(self.content, s=self.s, student=student, lns=lns)
+		rqs = list()
+		if self.advance:
+			rqs = loans.orderRequestOverview(student.person.request)
+		self.tex += template(self.content, s=self.s, student=student, lns=lns, rqs=rqs, advance=self.advance)
 	
 	def saveToFile(self):
 		self.tex += template(self.footer)
@@ -547,8 +554,12 @@ class BookloanPdf(object):
 		"""Generate requestlist pdf file for the given class. If `pre` is
 		provided with true, the request list for next year is used.
 		"""
+		grade = class_.grade
+		if pre:
+			grade += 1
+		
 		# fetch and order books that were requested by this class
-		bks = books.getBooksUsedIn(class_.grade)
+		bks = books.getBooksUsedIn(grade)
 		bks = books.orderBooksList(bks)
 		
 		# fetch special books
@@ -563,7 +574,7 @@ class BookloanPdf(object):
 			query_func = loans.getLoanCount
 		
 		# render template
-		self.tex += template(self.content, s=self.s, class_=class_, bks=bks, students=students, spec_bks=spec_bks, query_func=query_func)
+		self.tex += template(self.content, s=self.s, class_=class_, bks=bks, students=students, spec_bks=spec_bks, query_func=query_func, pre=pre)
 	
 	def saveToFile(self):
 		self.tex += template(self.footer)
