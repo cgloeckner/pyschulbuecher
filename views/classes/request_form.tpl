@@ -4,7 +4,11 @@
 %include("header")
 <h1>Bücherzettel Klasse {{c.toString()}} (für Klasse {{grade+1}})</h1>
 
+%if advance:
+<form action="/classes/requests_next/{{grade}}/{{tag}}" id="requests" method="post">
+%else:
 <form action="/classes/requests/{{grade}}/{{tag}}" id="requests" method="post">
+%end
 
 %total = dict()
 

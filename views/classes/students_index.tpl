@@ -6,8 +6,9 @@
 <h1>Bücherübersicht Klasse {{c.toString()}}</h1>
 <a href="/admin/classes/edit/{{c.id}}">Bearbeiten</a>
 
+&dash; <a href="/classes/requests/{{grade}}/{{tag}}">Bücherzettel für Klasse {{grade}}</a>
 %if grade < 12:
-&dash; <a href="/classes/requests/{{grade}}/{{tag}}">Bücherzettel für Klasse {{grade+1}}</a>
+&dash; <a href="/classes/requests_next/{{grade}}/{{tag}}">Bücherzettel für Klasse {{grade+1}}</a>
 %end
 
 <form action="/classes/loans/{{grade}}/{{tag}}" id="requests" method="post">
