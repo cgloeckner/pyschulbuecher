@@ -13,23 +13,17 @@
 	{{class_.teacher.person.name}}, {{class_.teacher.person.firstname}}
 %end
 
-%if class_.grade < 12:
 Bitte sammeln Sie die untenstehenden Bücher von Ihren Schülern ein. Beachten Sie dabei:
 \begin{enumerate}
-	\item Für jeden Schüler existiert eine \textbf{Ausleihliste} (in diesem Hefter). Bitte \textbf{quittieren Sie} dabei dabei den Erhalt der einzelnen Bücher.
-	\item Markieren Sie alle \textbf{bei Ihnen abgegebenen Bücher} in der Tabelle durch \textbf{einfaches Streichen} $\cancel{1}$.
-	\item Die Rückgabe \textbf{vergessener Bücher} erfolgt in der Regel \textbf{beim Klassenleiter}.
-	\item Hat ein Schüler \textit{nachweislich} (vgl. Ausleihliste) ein angegebenes Buch nicht ausgeliehen, kennzeichnen Sie dies bitte durch \textbf{farbiges, doppeltes Streichen} $\xcancel{1}$.
+	\item \textbf{Streichen} Sie alle \textbf{bei Ihnen abgegebenen Bücher} in der Tabelle. Hat ein Schüler \textbf{alle Bücher abgegeben}, so genügt das \textbf{Streichen} der gesamten Ausleih\textbf{zeile}.
 	\item \textbf{Ersatzexemplare} müssen \textbf{unbedingt} auf \textbf{einem separaten Stapel} bei mir abgegeben werden.
-\end{enumerate}
+%if class_.grade < 12:
+		\item Die Rückgabe \textbf{vergessener Bücher} erfolgt in der Regel \textbf{beim Klassenleiter}. Markieren Sie diese mit einem Kreis \textbf{O}.
 %else:
-Bitte sammeln Sie die untenstehenden Bücher von Ihren Schülern ein. Die Vorgehensweise unterscheidet sich dabei von der regulären Bücherrückgabe. Beachten Sie dabei:
-\begin{enumerate}
 	\item Die Schüler \textbf{behalten} alle Bücher in \textbf{Prüfungsfächern} bis zum \textbf{Tag der Prüfung}; diese werden an diesem Tag gesondern eingesammelt.
-	\item Die zurückgegebenen Bücher müssen \textbf{nicht} auf den Leihlisten der Schüler quittiert werden.
-	\item Bitte \textbf{markieren} Sie alle \textbf{zurückgegebenen Bücher}, damit übersichtlich klar ist, welche Bücher noch offen sind.
-\end{enumerate}
+	\item Bitte \textbf{markieren} Sie alle \textbf{noch ausstehenden Bücher}.
 %end
+\end{enumerate}
 
 %num_bks = len([b for b in bks if not b.workbook and not b.classsets])
 
