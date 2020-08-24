@@ -4,7 +4,7 @@
 
 <h2>Leihen und Zurückgeben</h2>
 <ul>
-	<li><a href="/admin/lists/generate/bookloan" target="_blank">Bückerausgabe (aktuelles Schuljahr)</a></li>
+	<li><a href="/admin/lists/generate/bookloan" target="_blank">Bückerausgabe (aktuelles Schuljahr, gemäß Bücherzettel)</a></li>
 	<li><a href="/admin/lists/generate/studentloans" target="_blank">Leihübersicht (Schüler)</a></li>
 	<li><a href="/admin/lists/generate/teacherloans" target="_blank">Leihübersicht (Lehrer)</a></li>
 	<li><a href="/admin/lists/generate/bookpending" target="_blank">Leihübersicht (Klasse 12, ausstehend)</a></li>

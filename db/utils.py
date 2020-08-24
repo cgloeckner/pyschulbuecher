@@ -305,7 +305,7 @@ class LoanContractPdf(object):
 		"""
 		lns = loans.orderLoanOverview(student.person.loan)
 		rqs = list()
-		if self.advance:
+		if include_requests:
 			rqs = loans.orderRequestOverview(student.person.request)
 		self.tex += template(self.content, s=self.s, student=student, lns=lns, rqs=rqs, advance=self.advance)
 	
@@ -550,13 +550,11 @@ class BookloanPdf(object):
 		
 		self.tex  = template(self.header)
 	
-	def __call__(self, class_, pre=False):
-		"""Generate requestlist pdf file for the given class. If `pre` is
-		provided with true, the request list for next year is used.
+	def __call__(self, class_, request=False):
+		"""Generate requestlist pdf file for the given class. If `requests` is
+		provided with true, the request list for this year is used.
 		"""
 		grade = class_.grade
-		if pre:
-			grade += 1
 		
 		# fetch and order books that were requested by this class
 		bks = books.getBooksUsedIn(grade)
@@ -568,13 +566,13 @@ class BookloanPdf(object):
 		# query students
 		students = orga.getStudentsIn(class_.grade, class_.tag)
 		
-		if pre:
+		if request:
 			query_func = loans.getRequestCount
 		else:
 			query_func = loans.getLoanCount
 		
 		# render template
-		self.tex += template(self.content, s=self.s, class_=class_, bks=bks, students=students, spec_bks=spec_bks, query_func=query_func, pre=pre)
+		self.tex += template(self.content, s=self.s, class_=class_, bks=bks, students=students, spec_bks=spec_bks, query_func=query_func)
 	
 	def saveToFile(self):
 		self.tex += template(self.footer)

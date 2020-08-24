@@ -18,10 +18,16 @@ Bitte überprüfen Sie den Erhalt folgender Lehrbücher, vermerken Sie die indiv
 	\textbf{\small Zustand}
 	\\ \hline
 
+%bks = set()
+
 %i = 0
 %prev_classes = list()
 %for l in lns:
 	%if l.book.inGrade == student.class_.grade:
+		%if l.book in bks:
+			%continue
+		%end
+		%bks.add(l.book)
 		%if l.book.subject is None:
 	versch. &
 		%else:
@@ -53,6 +59,10 @@ Bitte überprüfen Sie den Erhalt folgender Lehrbücher, vermerken Sie die indiv
 		%# skip special book (Schulplaner etc.)
 		%continue
 	%end
+	%if r.book in bks:
+		%continue
+	%end
+	%bks.add(r.book)
 	%if r.book.subject is None:
 	versch. &
 		%else:
