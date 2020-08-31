@@ -1,5 +1,5 @@
 # schoollib
-Python-based school book library software
+Python-based school book library software.
 
 ## Requirements
 
