@@ -13,7 +13,7 @@
 	<tr class="titles">
 		<th></th>
 		<th></th>
-		<th><class="button" style="font-size: 500%;" onClick="toggleAll();" title="Auswahl für alle umkehren">↺</span></th>
+		<th><span class="button" style="font-size: 500%;" onClick="toggleAll();" title="Auswahl für alle umkehren">↺</span></th>
 %i = 1
 %for b in books:
 	%if b.workbook:

@@ -15,3 +15,9 @@ function toggleDemand() {
 	}
 }
 
+function toggleClass(id) {
+	var objs = $('ol#' + id + ' input:checkbox');
+	for (i in objs) {
+		objs[i].checked = !objs[i].checked;
+	}
+}

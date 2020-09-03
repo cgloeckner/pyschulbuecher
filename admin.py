@@ -626,28 +626,48 @@ def teacherloans_generate():
 	yield '<hr /><br />Erledigt in %f Sekunden' % (d)
 
 @get('/admin/lists/generate/studentloans')
-def studentsloan_generate():
+@view('admin/loanlist_select')
+def studentloans_selection():
+	classes = list(db.Class.select().order_by(lambda c: c.tag).order_by(lambda c: c.grade))
+	
+	return dict(classes=classes, sortStudents=orga.sortStudents)
+
+@post('/admin/lists/generate/studentloans')
+def studentsloans_generate():
+	next_year    = request.forms.get('next_year') == 'on'
+	use_requests = request.forms.get('use_requests') == 'on'
+
 	print('Generating Loan Contracts')
 	d = time.time()
-	yield 'Bitte warten...'
+	yield 'Bitte warten...<br /><ul>'
 	
+	# iterate all classes
 	for c in db.Class.select().order_by(lambda c: c.tag).order_by(lambda c: c.grade):
-		if len(c.student) == 0:
-			continue
+		yield '<li>{0}'.format(c.toString())
+		students = students = list(c.student)
+		orga.sortStudents(students)
 		
 		# start new pdf
 		with open('settings.ini') as h:
-			loancontract = LoanContractPdf(c.toString(), h)
-	
-		for s in c.student.order_by(lambda s: s.person.firstname).order_by(lambda s: s.person.name):
-			loancontract(s)
+			loancontract = LoanContractPdf(c.toString(), h, advance=next_year)
 		
-		# save pdf
-		loancontract.saveToFile()
+		n = 0
+		yield '<ul>'
+		for s in students:
+			# add student if selected
+			if request.forms.get(str(s.person.id)) == 'on':
+				yield '<li>{0}, {1}</li>'.format(s.person.name, s.person.firstname)
+				n += 1
+				loancontract(s, include_requests=use_requests)
 		
-		yield ' %s...' % c.toString()
+		yield '</ul>'
+		
+		if n > 0:
+			# save pdf
+			loancontract.saveToFile()
 	
-	print('. Done')
+		yield '</li>'
+	
 	d = time.time() - d
 	
 	yield '<hr /><br />Erledigt in %f Sekunden' % (d)

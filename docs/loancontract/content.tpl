@@ -92,16 +92,7 @@ Bitte überprüfen Sie den Erhalt folgender Lehrbücher, vermerken Sie die indiv
 
 \end{tabular}
 
-{ \large Weiterführung aus \\
-%if len(prev_classes) > 0:
- Klasse {{min(prev_classes)}}
-	%if min(prev_classes) < max(prev_classes):
- bis {{max(prev_classes)}}
-	%end
-%else:
- früheren Klassenstufen
-%end
-}
+{ \large Bereits ausgeliehene Bücher }
 
 Bitte überprüfen Sie den Zustand folgender Lehrbücher:
 

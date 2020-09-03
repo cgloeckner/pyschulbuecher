@@ -115,8 +115,8 @@
 	<li><a href="/classes/requests/{{grade}}/{{tag}}/this">Klasse {{grade}}</a></li>
 	<li><a href="/classes/requests/{{grade}}/{{tag}}/this-full">Klasse {{grade}} (Neuzugänge)</a></li>
 %if grade < 12:
-	<li><a href="/classes/requests/{{grade}}/{{tag}}/next">Bücherzettel für Klasse {{grade+1}}</a></li>
-	<li><a href="/classes/requests/{{grade}}/{{tag}}/next-full">Bücherzettel für Klasse {{grade+1}} (Neuzugänge)</a></li>
+	<li><a href="/classes/requests/{{grade}}/{{tag}}/next">Klasse {{grade+1}}</a></li>
+	<li><a href="/classes/requests/{{grade}}/{{tag}}/next-full">Klasse {{grade+1}} (Neuzugänge)</a></li>
 %end
 </ul>
 
