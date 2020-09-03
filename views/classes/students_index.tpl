@@ -4,12 +4,7 @@
 
 %include("header")
 <h1>Bücherübersicht Klasse {{c.toString()}}</h1>
-<a href="/admin/classes/edit/{{c.id}}">Bearbeiten</a>
-
-&dash; <a href="/classes/requests/{{grade}}/{{tag}}">Bücherzettel für Klasse {{grade}}</a>
-%if grade < 12:
-&dash; <a href="/classes/requests_next/{{grade}}/{{tag}}">Bücherzettel für Klasse {{grade+1}}</a>
-%end
+<a href="/admin/classes/edit/{{c.id}}">Bearbeiten</a><br />
 
 <form action="/classes/loans/{{grade}}/{{tag}}" id="requests" method="post">
 
@@ -113,5 +108,16 @@
 
 </form>
 
+<hr />
+
+<b>Bücherzettel:</b>
+<ul>
+	<li><a href="/classes/requests/{{grade}}/{{tag}}/this">Klasse {{grade}}</a></li>
+	<li><a href="/classes/requests/{{grade}}/{{tag}}/this-full">Klasse {{grade}} (Neuzugänge)</a></li>
+%if grade < 12:
+	<li><a href="/classes/requests/{{grade}}/{{tag}}/next">Bücherzettel für Klasse {{grade+1}}</a></li>
+	<li><a href="/classes/requests/{{grade}}/{{tag}}/next-full">Bücherzettel für Klasse {{grade+1}} (Neuzugänge)</a></li>
+%end
+</ul>
 
 %include("footer")
