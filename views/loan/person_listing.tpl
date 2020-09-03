@@ -15,8 +15,18 @@
 		</tr>
 %for l in loan:
 		<tr>
-			<td><input type="checkbox" name="{{l.book.id}}" id="{{l.book.id}}" /></td>
-			<td><label for="{{l.book.id}}">{{l.book.title}}</label></td>
+			<td><input type="checkbox" name="{{l.book.id}}" id="{{l.book.id}}" /></td>		
+	%css = ''
+	%if person.student is not None and person.student.class_ is not None:
+		%if l.book.outGrade < person.student.class_.grade:
+			%css = ' class="bookLate"'
+		%else:
+			%if l.book.outGrade > person.student.class_.grade:
+				%css = ' class="bookKeep"'
+			%end
+		%end
+	%end
+			<td{{!css}}><label for="{{l.book.id}}">{{l.book.title}}</label></td>
 	%if l.book.subject is None:
 			<td>versch.</td>
 	%else:
@@ -52,6 +62,16 @@
 	</tr>
 %for r in request:
 	<tr>
+	%css = ''
+	%if person.student is not None:
+		%if r.book.outGrade < person.student.class_.grade:
+			%css = ' class="bookLate"'
+		%else:
+			%if r.book.outGrade == person.student.class_.grade:
+				%css = ' class="bookPending"'
+			%end
+		%end
+	%end
 		<td>{{r.book.title}}</td>
 	%if r.book.subject is None:
 		<td>versch.</td>
