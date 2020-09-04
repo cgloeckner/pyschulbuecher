@@ -9,6 +9,7 @@
 
 <input type="checkbox" name="next_year" id="next_year" /><label for="next_year">für nächstes Schuljahr</label><br />
 <input type="checkbox" name="use_requests" id="use_requests" /><label for="use_requests">Bücherzettel einbinden</label><br />
+<input type="checkbox" name="split_pdf" id="use_requests" checked="checked" /><label for="use_requests">PDFs nach Klassen trennen</label><br />
 
 <input type="submit" value="Leihlisten erzeugen" /><input type="button" value="Abbrechen" onclick="history.back()" />
 

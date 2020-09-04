@@ -151,7 +151,7 @@ Hiermit bestätige ich im Besitz der oben genannten Bücher zu sein.
 
 \hfill \hrulefill \hfill \hrulefill
 
-\hfill Datum, Ort \hfill Unterschrift
+\hfill Datum, Ort \hfill Unterschrift Eltern
 
 
 \pagebreak

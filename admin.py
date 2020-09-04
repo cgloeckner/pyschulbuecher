@@ -636,6 +636,11 @@ def studentloans_selection():
 def studentsloans_generate():
 	next_year    = request.forms.get('next_year') == 'on'
 	use_requests = request.forms.get('use_requests') == 'on'
+	split_pdf    = request.forms.get('split_pdf') == 'on'
+	
+	if split_pdf:
+		with open('settings.ini') as h:
+			loancontract = LoanContractPdf('manual', h, advance=next_year)
 
 	print('Generating Loan Contracts')
 	d = time.time()
@@ -648,8 +653,9 @@ def studentsloans_generate():
 		orga.sortStudents(students)
 		
 		# start new pdf
-		with open('settings.ini') as h:
-			loancontract = LoanContractPdf(c.toString(), h, advance=next_year)
+		if not split_pdf:
+			with open('settings.ini') as h:
+				loancontract = LoanContractPdf(c.toString(), h, advance=next_year)
 		
 		n = 0
 		yield '<ul>'
@@ -662,11 +668,14 @@ def studentsloans_generate():
 		
 		yield '</ul>'
 		
-		if n > 0:
+		if n > 0 and not split_pdf:
 			# save pdf
 			loancontract.saveToFile()
 	
 		yield '</li>'
+	
+	if split_pdf:
+		loancontract.saveToFile()
 	
 	d = time.time() - d
 	
