@@ -15,11 +15,9 @@ Bitte beachten Sie:
 
 \begin{enumerate}
 	\item Überprüfen Sie die Anzahl der Ihnen zur Verfügung gestellten Bücher. Bitten melden Sie \textbf{fehlende oder beschädigte Bücher} umgehend, sodass Sie Ersatz erhalten können.
-	\item Bitte kennzeichnen Sie in der Tabelle \textbf{nur Änderungen}, z.B. wenn Bücher doch gekauft wurden und nutzen Sie die erste Spalte zur Dokumentation Schüler, die ihre Bücher erhalten haben.
-	\item Stellen Sie jedem Schüler seine \textbf{Ausleihliste} zur Verfügung, damit die Eltern den Erhalt quittieren.
-%if class_.grade in [5, 7, 9, 11]:
-	\item Fordern Sie die Ausleihlisten bitte binnen einer Woche zurück und geben Sie den Hefter möglichst vollständig beim Schulbuchverantwortlichen ab.
-%end
+	\item Bitte kennzeichnen Sie \textbf{in der Tabelle nur Änderungen}, z.B. wenn Bücher doch gekauft wurden. Nutzen Sie die \textbf{erste Spalte} zur \textbf{Dokumentation ausgegebener Bücher}.
+	\item Stellen Sie jedem Schüler seine \textbf{Leihliste} zur Verfügung, damit die Eltern den Erhalt quittieren. Fordern Sie die Leihlisten bitte binnen einer Woche zurück.
+	\item Überprüfen Sie die von den Schülern zurückgegebene \textbf{Leihlisten} auf Vollständigkeit und quittieren Sie den Erhalt in der zweiten Spalte. Geben Sie den Hefter \textbf{vollständig} beim Schulbuchverantwortlichen ab.
 \end{enumerate}
 
 %num_bks = len([b for b in bks if not b.workbook and not b.classsets])
@@ -43,8 +41,10 @@ Bitte beachten Sie:
 
 	\hiderowcolors
 	\hline
+		  \rotatebox{90}{\scriptsize B\"ucher erhalten}
+		& \rotatebox{90}{\scriptsize Leihliste abgegeben}
 		&
-		& &
+		&
 %for b in bks:
 	%if not b.workbook and not b.classsets:
 		& \rotatebox{90}{\scriptsize {{!tex_escape(b.title)}} }
@@ -54,7 +54,10 @@ Bitte beachten Sie:
 		& \rotatebox{90}{\scriptsize {{!tex_escape(b.title)}} }
 %end
 	\\
-    	{\checkmark} & {\scriptsize Nr} & {\scriptsize Name} & {\scriptsize Vorname}
+    	  {\checkmark}
+    	& {\checkmark}
+    	& {\scriptsize Name}
+    	& {\scriptsize Vorname}
 %for b in bks:
 	%if not b.workbook and not b.classsets:
 		& \rotatebox{90}{
@@ -100,7 +103,7 @@ Bitte beachten Sie:
 		\hiderowcolors
 	%end
 		$\square$ &
-		{\small {{i}} } &
+		$\square$ &
 	%i += 1
 		{\footnotesize {{!tex_escape(s.person.name)}} } &
 		{\footnotesize {{!tex_escape(shortName(s.person.firstname))}} }
