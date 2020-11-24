@@ -8,20 +8,19 @@
 {\large Schuljahr {{year}}/{{year+1}} }
 
 %if class_.teacher is not None:
-	Klassenleiter(in):
-	\quad
-	{{class_.teacher.person.name}}, {{class_.teacher.person.firstname}}
+	\hfill 
+	Klassenleiter(in): {{class_.teacher.person.name}}, {{class_.teacher.person.firstname}}
 %end
 
 Bitte sammeln Sie die untenstehenden Bücher von Ihren Schülern ein. Beachten Sie dabei:
 \begin{enumerate}
-	\item \textbf{Streichen} Sie alle \textbf{bei Ihnen abgegebenen Bücher} in der Tabelle. Hat ein Schüler \textbf{alle Bücher abgegeben}, so genügt das \textbf{Streichen} der gesamten Ausleih\textbf{zeile}.
+	\item \textbf{Streichen} Sie alle \textbf{bei Ihnen abgegebenen Bücher} in der Tabelle. Hat ein Schüler \textbf{alle Bücher abgegeben}, so genügt das \textbf{Streichen} der gesamten \textbf{Zeile}.
 	\item \textbf{Ersatzexemplare} müssen \textbf{unbedingt} auf \textbf{einem separaten Stapel} bei mir abgegeben werden.
+	\item Sortieren Sie \textbf{alle Bücher fächerweise}.
 %if class_.grade < 12:
-		\item Die Rückgabe \textbf{vergessener Bücher} erfolgt in der Regel \textbf{beim Klassenleiter}. Markieren Sie diese mit einem Kreis \textbf{O}.
+		\item Noch \textbf{ausstehende Bücher} werden \textbf{nicht} hervorgehoben. Die \textbf{Abgabe} dieser Bücher erfolgt in der Regel \textbf{beim Klassenleiter}. Anschließend sind die Bücher abzustreichen.
 %else:
-	\item Die Schüler \textbf{behalten} alle Bücher in \textbf{Prüfungsfächern} bis zum \textbf{Tag der Prüfung}; diese werden an diesem Tag gesondern eingesammelt.
-	\item Bitte \textbf{markieren} Sie alle \textbf{noch ausstehenden Bücher}.
+	\item Die Schüler \textbf{behalten} alle Bücher in \textbf{Prüfungsfächern} bis zum \textbf{Tag der Prüfung}; diese werden an diesem Tag gesondern eingesammelt. \textbf{Vergessene Bücher} werden ebenfalls bei \textbf{einer} Prüfung direkt bei mir abgegeben.
 %end
 \end{enumerate}
 
@@ -98,8 +97,7 @@ Bitte sammeln Sie die untenstehenden Bücher von Ihren Schülern ein. Beachten S
 %end
 \end{longtable}
 
-Bitte quittieren Sie die Durchführung der Bücherrückgabe. Zur Annahme der Bücher und des Hefters stehe ich Ihnen am Bücherraum zur Verfügung. Bitte sorieren Sie die Bücher fächerweise vor. \\
-\\
+Quittieren Sie die Durchführung der Bücherrückgabe.
 
 \begin{flushright}
 

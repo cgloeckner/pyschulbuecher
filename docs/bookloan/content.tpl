@@ -143,7 +143,7 @@ Bitte beachten Sie:
 	\hline
 \end{longtable}
 
-Bitte quittieren Sie die Durchführung der Bücherausgabe. \\
+Quittieren Sie die Durchführung der Bücherausgabe. \\
 \\
 
 \begin{flushright}
