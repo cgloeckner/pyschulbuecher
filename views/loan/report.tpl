@@ -23,7 +23,7 @@
 			{{b.subject.tag}}
 	%end
 		</td>
-		<td>{{b.title}}</td>
+		<td><a href="/loan/book/{{b.id}}" target="_blank">{{b.title}}</a></td>
 		<td>
 	%if b.inGrade < b.outGrade:
 			{{b.inGrade}}-{{b.outGrade}}
