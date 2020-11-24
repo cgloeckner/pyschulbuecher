@@ -637,8 +637,9 @@ def studentsloans_generate():
 	next_year    = request.forms.get('next_year') == 'on'
 	use_requests = request.forms.get('use_requests') == 'on'
 	split_pdf    = request.forms.get('split_pdf') == 'on'
+	loan_report  = request.forms.get('loan_report') == 'on'
 	
-	if split_pdf:
+	if not split_pdf:
 		with open('settings.ini') as h:
 			loancontract = LoanContractPdf('manual', h, advance=next_year)
 
@@ -653,7 +654,7 @@ def studentsloans_generate():
 		orga.sortStudents(students)
 		
 		# start new pdf
-		if not split_pdf:
+		if split_pdf:
 			with open('settings.ini') as h:
 				loancontract = LoanContractPdf(c.toString(), h, advance=next_year)
 		
@@ -664,17 +665,17 @@ def studentsloans_generate():
 			if request.forms.get(str(s.person.id)) == 'on':
 				yield '<li>{0}, {1}</li>'.format(s.person.name, s.person.firstname)
 				n += 1
-				loancontract(s, include_requests=use_requests)
+				loancontract(s, include_requests=use_requests, loan_report=loan_report)
 		
 		yield '</ul>'
 		
-		if n > 0 and not split_pdf:
+		if n > 0 and split_pdf:
 			# save pdf
 			loancontract.saveToFile()
 	
 		yield '</li>'
 	
-	if split_pdf:
+	if not split_pdf:
 		loancontract.saveToFile()
 	
 	d = time.time() - d

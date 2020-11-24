@@ -299,15 +299,16 @@ class LoanContractPdf(object):
 		self.tex     = template(self.header)
 		self.advance = advance
 	
-	def __call__(self, student, include_requests=False):
+	def __call__(self, student, include_requests=False, loan_report=False):
 		"""Generate loan contract pdf file for the given student. This contains
-		all books that are currently given to him or her.
+		all books that are currently given to him or her. With 'loan_report'
+		all books are listed as "you loan these books"
 		"""
 		lns = loans.orderLoanOverview(student.person.loan)
 		rqs = list()
 		if include_requests:
 			rqs = loans.orderRequestOverview(student.person.request)
-		self.tex += template(self.content, s=self.s, student=student, lns=lns, rqs=rqs, advance=self.advance)
+		self.tex += template(self.content, s=self.s, student=student, lns=lns, rqs=rqs, advance=self.advance, loan_report=loan_report)
 	
 	def saveToFile(self):
 		self.tex += template(self.footer)
