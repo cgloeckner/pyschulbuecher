@@ -59,12 +59,13 @@ class SubjectCouncilXls(object):
 		# load settings
 		self.s = Settings()
 		self.s.load_from(settings_handle)
-		
 		self.data = None
 
+	def getPath(self, subject):
+		return os.path.join(self.export, '%s.xlsx' % subject.tag)
+
 	def __call__(self, subject):
-		path = os.path.join(self.export, '%s.xlsx' % subject.tag)
-		self.data = xlsxwriter.Workbook(path)
+		self.data = xlsxwriter.Workbook(self.getPath(subject))
 		
 		"""
 		# create sheets
@@ -188,6 +189,9 @@ class DatabaseDumpXls(object):
 		path = os.path.join(self.export, '%s.xlsx' % self.s.data['general']['school_year'])		
 		self.data = xlsxwriter.Workbook(path)
 
+	def getPath(self):
+		return os.path.join(self.export, '%s.xlsx' % self.s.data['general']['school_year'])
+
 	def __call__(self, class_, bks):
 		# local import to avoid cycles
 		from db import loans
@@ -251,6 +255,9 @@ class LoanReportPdf(object):
 		
 		self.tex  = template(self.header)
 	
+	def getPath(self):
+		return os.path.join(self.export, 'Leihübersicht_%s.pdf' % self.prefix)
+	
 	def __call__(self, person):
 		"""Generate loan report pdf file for the given person. This will contain
 		all books that are currently given to this person
@@ -267,7 +274,7 @@ class LoanReportPdf(object):
 			h.write(self.tex)
 		
 		# export PDF
-		fname = os.path.join(self.export, 'Leihübersicht_%s.pdf' % self.prefix)
+		fname = self.getPath()
 		pdf = build_pdf(self.tex)
 		pdf.save_to(fname)
 		
@@ -299,6 +306,9 @@ class LoanContractPdf(object):
 		self.tex     = template(self.header)
 		self.advance = advance
 	
+	def getPath(self):
+		return os.path.join(self.export, 'Leihverträge_%s.pdf' % self.prefix)
+	
 	def __call__(self, student, include_requests=False, loan_report=False):
 		"""Generate loan contract pdf file for the given student. This contains
 		all books that are currently given to him or her. With 'loan_report'
@@ -319,7 +329,7 @@ class LoanContractPdf(object):
 			h.write(self.tex)
 		
 		# export PDF
-		fname = os.path.join(self.export, 'Leihverträge_%s.pdf' % self.prefix)
+		fname = self.getPath()
 		pdf = build_pdf(self.tex)
 		pdf.save_to(fname)
 		
@@ -437,6 +447,9 @@ class RequestlistPdf(object):
 		
 		self.tex  = template(self.header)
 	
+	def getPath(self):
+		return os.path.join(self.export, 'Bücherzettel_Erfassungsliste.pdf')
+	
 	def __call__(self, class_):
 		"""Generate requestlist pdf file for the given class.
 		"""
@@ -462,7 +475,7 @@ class RequestlistPdf(object):
 			h.write(self.tex)
 		
 		# export PDF
-		fname = os.path.join(self.export, 'Bücherzettel_Erfassungsliste.pdf')
+		fname = self.getPath()
 		pdf = build_pdf(self.tex)
 		pdf.save_to(fname)
 
@@ -490,6 +503,9 @@ class BookreturnPdf(object):
 		self.s.load_from(settings_handle)
 		
 		self.tex  = template(self.header)
+	
+	def getPath(self):
+		return os.path.join(self.export, 'Rückgaben.pdf')
 	
 	def addOverview(self, grade):
 		"""Generate overviews for class teachers about returning books.
@@ -523,7 +539,7 @@ class BookreturnPdf(object):
 			h.write(self.tex)
 		
 		# export PDF
-		fname = os.path.join(self.export, 'Rückgaben.pdf')
+		fname = self.getPath()
 		pdf = build_pdf(self.tex)
 		pdf.save_to(fname)
 
@@ -550,6 +566,9 @@ class BookloanPdf(object):
 		self.s.load_from(settings_handle)
 		
 		self.tex  = template(self.header)
+	
+	def getPath(self):
+		return os.path.join(self.export, 'Ausgaben.pdf')
 	
 	def __call__(self, class_, request=False):
 		"""Generate requestlist pdf file for the given class. If `requests` is
@@ -584,7 +603,7 @@ class BookloanPdf(object):
 			h.write(self.tex)
 		
 		# export PDF
-		fname = os.path.join(self.export, 'Ausgaben.pdf')
+		fname = self.getPath()
 		pdf = build_pdf(self.tex)
 		pdf.save_to(fname)
 
@@ -673,6 +692,9 @@ class ClassListPdf(object):
 		
 		self.tex  = template(self.header)
 	
+	def getPath(self):
+		return os.path.join(self.export, 'Klassenliste.pdf')
+	
 	def __call__(self, classes):
 		"""Add classes to the listing
 		"""
@@ -687,7 +709,7 @@ class ClassListPdf(object):
 			h.write(self.tex)
 		
 		# export PDF
-		fname = os.path.join(self.export, 'Klassenliste.pdf')
+		fname = self.getPath()
 		pdf = build_pdf(self.tex)
 		pdf.save_to(fname)
 

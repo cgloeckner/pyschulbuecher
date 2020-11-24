@@ -540,26 +540,6 @@ def lists_index():
 	export = os.path.join(os.getcwd(), 'export')
 	
 	return dict(export=export)
-	"""
-	# fetch data
-	data = list()
-	full = False
-	for fname in os.listdir('export'):
-		if not fname.endswith('.pdf'):
-			# ignore everything else (including tex/ subdir)
-			continue
-		else:
-			stat  = os.stat(os.path.join('export', fname))
-			data.append({
-				"name"  : fname,
-				"title" : fname.split('.pdf')[0],
-				"size"  : stat.st_size,
-				"date"  : datetime.utcfromtimestamp(int(stat.st_mtime)).strftime('%Y-%m-%d %H:%M:%S')
-			})
-	# sort by name
-	data.sort(key=lambda d: d["name"])
-	return dict(data=data, full=full)
-	"""
 
 @get('/admin/lists/generate/db_dump')
 def db_dump_generate():
@@ -586,7 +566,7 @@ def db_dump_generate():
 		print('Done')
 		d = time.time() - d
 	
-		yield '<hr /><br />Erledigt in %f Sekunden' % (d)
+		yield '<hr /><br />Erledigt in %f Sekunden<hr /><pre>%s</pre>' % (d, xlsx.getPath())
 
 @get('/admin/lists/generate/councils')
 def councils_generate():
@@ -598,10 +578,10 @@ def councils_generate():
 		yield 'Bitte warten...'
 		
 		for s in db.Subject.select():
-			yield '%s<br />' % s.name
 			councils = SubjectCouncilXls(h)
 			councils(s)
 			councils.saveToFile()
+			yield '<pre>%s</pre>' % councils.getPath(s)
 		
 		print('Done')
 		d = time.time() - d
@@ -615,10 +595,13 @@ def teacherloans_generate():
 	
 	print('Generating Loan Reports')
 	d = time.time()
-	yield 'Bitte warten...'
+	
 	for t in db.Teacher.select().order_by(lambda t: t.person.firstname).order_by(lambda t: t.person.name):
+		yield '%s ' % t.tag.upper()
 		loanreport(t.person)
+	
 	loanreport.saveToFile()
+	yield '<pre>%s</pre>\n' % loanreport.getPath()
 	
 	print('Done')
 	d = time.time() - d
@@ -672,15 +655,17 @@ def studentsloans_generate():
 		if n > 0 and split_pdf:
 			# save pdf
 			loancontract.saveToFile()
+			yield '<pre>%s</pre>\n' % loancontract.getPath()
 	
 		yield '</li>'
 	
 	if not split_pdf:
 		loancontract.saveToFile()
+		yield '<pre>%s</pre>\n' % loancontract.getPath()
 	
 	d = time.time() - d
 	
-	yield '<hr /><br />Erledigt in %f Sekunden' % (d)
+	yield '<hr /><br />Erledigt in %f Sekunden\n' % (d)
 
 @get('/admin/preview/booklist')
 @view('admin/booklist_preview')
@@ -720,7 +705,7 @@ def booklist_generate():
 	yield 'Bitte warten...'
 	#for g in orga.getClassGrades():
 	for g in range(5, 12+1):
-		yield '<br>Klasse %d' % g
+		yield '<br>Klasse %d\n' % g
 		booklist(g, exclude)
 		if g > 5:
 			yield ' und Neuzugänge'
@@ -741,11 +726,12 @@ def requestlist_generate():
 	
 	# exclude 12th grade (last grade)
 	for grade in range(5, 11+1):
+		yield 'Klasse %d<br />\n' % grade
 		for c in orga.getClassesByGrade(grade):
 			requestlist(c)
 	requestlist.saveToFile()
 
-	return 'Fertig'
+	yield '<pre>%s</pre>\n' % (requestlist.getPath())
 
 @get('/admin/lists/generate/bookreturn')
 def bookreturn_generate():
@@ -758,26 +744,29 @@ def bookreturn_generate():
 	
 	# generate return lists for all grades
 	for grade in range(5, 12+1):
+		yield 'Klasse %d<br />\n' % grade
 		for c in orga.getClassesByGrade(grade):
 			bookreturn(c)
 	bookreturn.saveToFile()
 
-	return 'Fertig'
+	yield '<pre>%s</pre>' % bookreturn.getPath()
 
 @get('/admin/lists/generate/requestloan')
 def requestloan_generate():
 	with open('settings.ini') as h:
 		bookloan = BookloanPdf(h)
 	
-	yield 'Erzeuge Ausleihübersicht...'
+	yield 'Erzeuge Ausleihübersicht...<br />\n'
 			
 	# generate return lists for all grades (for the next year)
 	for grade in range(5, 12+1):
+		yield 'Klasse %d<br />\n' % grade
 		for c in orga.getClassesByGrade(grade):
 			bookloan(c, True)
 	bookloan.saveToFile()
+	yield '<pre>%s</pre>\n' % bookloan.getPath()
 	
-	yield 'Erzeuge Ausleihlisten...'
+	yield 'Erzeuge Ausleihlisten...<br />\n'
 	
 	for c in db.Class.select().order_by(lambda c: c.tag).order_by(lambda c: c.grade):
 		if len(c.student) == 0:
@@ -792,25 +781,26 @@ def requestloan_generate():
 		
 		# save pdf
 		loancontract.saveToFile()
-		
-		yield ' %s...' % c.toString()
+		yield '<pre>%s</pre>\n' % loancontract.getPath()
 	
-	return 'Fertig'
+	yield '<hr />Fertig'
 
 @get('/admin/lists/generate/bookloan')
 def bookloan_generate():
 	with open('settings.ini') as h:
 		bookloan = BookloanPdf(h)
 			
-	yield 'Erzeuge Ausleihübersicht...'
+	yield 'Erzeuge Ausleihübersicht...<br />\n'
 			
 	# generate return lists for all grades (for the current year)
 	for grade in range(5, 12+1):
+		yield 'Klasse %d<br />\n' % grade
 		for c in orga.getClassesByGrade(grade):
 			bookloan(c, True)
 	bookloan.saveToFile()
+	yield '<pre>%s</pre>\n' % bookloan.getPath()
 
-	yield 'Erzeuge Ausleihlisten...'
+	yield 'Erzeuge Ausleihlisten...<br />\n'
 	
 	for c in db.Class.select().order_by(lambda c: c.tag).order_by(lambda c: c.grade):
 		if len(c.student) == 0:
@@ -825,10 +815,9 @@ def bookloan_generate():
 		
 		# save pdf
 		loancontract.saveToFile()
-		
-		yield ' %s...' % c.toString()
+		yield '<pre>%s</pre>\n' % loancontract.getPath()
 	
-	return 'Fertig'
+	yield '<hr />Fertig'
 
 @get('/admin/lists/generate/bookpending')
 def bookpending_generate():
@@ -862,19 +851,21 @@ def bookpending_generate():
 	
 	fname2 = pending_books.saveToFile(suffix='nachBüchern')
 
-	return '{0} ausstehende Bücher gefunden: <a href="/admin/lists/download/{1}.pdf">nach Schülern</a> oder <a href="/admin/lists/download/{2}.pdf">nach Büchern</a>'.format(n, fname1, fname2)
+	yield '{0} ausstehende Bücher gefunden: <a href="/admin/lists/download/{1}.pdf">nach Schülern</a> oder <a href="/admin/lists/download/{2}.pdf">nach Büchern</a>'.format(n, fname1, fname2)
 
 @get('/admin/lists/generate/classlist')
 def classlist_generate():
 	with open('settings.ini') as h:
 		classlist = ClassListPdf(h)
 	
+	yield 'Lade Klassen...\n'
+	
 	classes = list(orga.getClasses())
 	orga.sortClasses(classes)
 	classlist(classes)
 	classlist.saveToFile()
 
-	return 'Fertig'
+	yield '<pre>%s</pre>\n' % classlist.getPath()
 
 # -----------------------------------------------------------------------------
 
