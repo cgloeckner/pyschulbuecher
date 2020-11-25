@@ -108,6 +108,8 @@ class Book(db.Entity):
 		
 		return caption + ' (%s)' % (', '.join(comments))
 
+	def getQueryUrl(self):
+		return 'https://www.google.com/search?q=%s %s %s' % (self.title, self.isbn, self.publisher.name)
 
 class Currency(object):
 	@staticmethod

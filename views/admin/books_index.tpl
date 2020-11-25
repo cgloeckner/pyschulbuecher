@@ -159,8 +159,8 @@
 		%end
 	%end
 		<td><a class="edit" href="/admin/books/edit/{{b.id}}">&#9998;</a></td>
-		<td>{{b.title}}</td>
-		<td>{{b.isbn}}</td>
+		<td><a href="/loan/book/{{b.id}}" target="_blank">{{b.title}}</a></td>
+		<td><a href="{{b.getQueryUrl()}}" target="_blank">{{b.isbn}}</a></td>
 	%if b.price is not None:
 		<td>{{Currency.toString(b.price)}}</td>
 	%else:
