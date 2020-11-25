@@ -2,21 +2,29 @@
 
 <h1>Ausdrucke</h1>
 
-<h2>Leihen und Zurückgeben</h2>
-<ul>
-	<li><a href="/admin/lists/generate/bookloan" target="_blank">Bückerausgabe (aktuelles Schuljahr, gemäß Bücherzettel)</a></li>
-	<li><a href="/admin/lists/generate/studentloans" target="_blank">Leihübersicht (Auswahl Schüler)</a></li>
-	<li><a href="/admin/lists/generate/teacherloans" target="_blank">Leihübersicht (Auswahl Lehrer)</a></li>
-	<li><a href="/admin/lists/generate/bookpending" target="_blank">Leihübersicht (Klasse 12, ausstehend)</a></li>
-	<li><a href="/admin/lists/generate/bookreturn" target="_blank">Bücherrückgabe (Listen und Übersichtszettel)</a></li>
-	<li><a href="/admin/lists/generate/requestloan" target="_blank">Büchervorschau (nächstes Schuljahr, gemäß Bücherzettel)</a></li>
-</ul>
-
 <h2>Bedarf</h2>
 <ul>
 	<li><a href="/admin/lists/generate/councils" target="_blank">Bedarf Fachschaften</a></li>
-	<li><a href="/admin/preview/booklist" target="_blank">Bücherzettel</a></li>
 	<li><a href="/admin/lists/generate/requestlist" target="_blank">Erfassungsliste</a></li>
+</ul>
+
+<h2>Bücherausgabe</h2>
+<ul>	<li><a href="/admin/lists/generate/requestloan" target="_blank">Büchervorschau (nächstes Schuljahr, gemäß Bücherzettel)</a></li>
+	<li><a href="/admin/preview/booklist" target="_blank">Bücherzettel</a></li>
+	<li><a href="/admin/lists/generate/bookloan" target="_blank">Bückerausgabe (aktuelles Schuljahr, gemäß Bücherzettel)</a></li>
+</ul>
+
+<h2>Leihberichte</h2>
+<ul>
+	<li><a href="/admin/lists/generate/studentloans" target="_blank">Leihübersicht (Auswahl Schüler)</a></li>
+	<li><a href="/admin/lists/generate/teacherloans" target="_blank">Leihübersicht (alle Lehrer)</a></li>
+	<li><a href="/admin/lists/generate/classsets" target="_blank">Klassensätze aller Lehrer</a></li>
+</ul>
+
+<h2>Bücherrückgabe</h2>
+<ul>
+	<li><a href="/admin/lists/generate/bookpending" target="_blank">Leihübersicht (Klasse 12, ausstehend)</a></li>
+	<li><a href="/admin/lists/generate/bookreturn" target="_blank">Bücherrückgabe (Listen und Übersichtszettel)</a></li>
 </ul>
 
 <h2>Administratives</h2>

@@ -9,7 +9,7 @@ from pony import orm
 
 from db.orm import db, db_session, Currency
 from db import orga, books, loans
-from db.utils import Settings, SubjectCouncilXls, DatabaseDumpXls, LoanReportPdf, LoanContractPdf, BooklistPdf, RequestlistPdf, BookreturnPdf, BookloanPdf, BookpendingPdf, ClassListPdf
+from db.utils import Settings, SubjectCouncilXls, DatabaseDumpXls, LoanReportPdf, LoanContractPdf, BooklistPdf, RequestlistPdf, BookreturnPdf, BookloanPdf, BookpendingPdf, ClassListPdf, ClasssetsPdf
 from utils import errorhandler
 
 
@@ -592,6 +592,26 @@ def councils_generate():
 def teacherloans_generate():
 	with open('settings.ini') as h:
 		loanreport = LoanReportPdf('Lehrer', h)
+	
+	print('Generating Loan Reports')
+	d = time.time()
+	
+	for t in db.Teacher.select().order_by(lambda t: t.person.firstname).order_by(lambda t: t.person.name):
+		yield '%s ' % t.tag.upper()
+		loanreport(t.person)
+	
+	loanreport.saveToFile()
+	yield '<pre>%s</pre>\n' % loanreport.getPath()
+	
+	print('Done')
+	d = time.time() - d
+	
+	yield '<hr /><br />Erledigt in %f Sekunden' % (d)
+
+@get('/admin/lists/generate/classsets')
+def teacher_classsets_generate():
+	with open('settings.ini') as h:
+		loanreport = ClasssetsPdf('Lehrer', h, threshold=3)
 	
 	print('Generating Loan Reports')
 	d = time.time()
