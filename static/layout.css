@@ -16,6 +16,8 @@ a.edit {
 div.content {
 	background-color: white;
 	width: 1024px;
+	margin-top: 77px;
+	margin-bottom: 2px;
 	margin-left: auto;
 	margin-right: auto;
 	padding: 25px;
