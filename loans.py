@@ -25,7 +25,7 @@ def loan_report():
 	for b in all_bks:
 		report[b] = loans.getLoanCount(person=None, book=b)
 	
-	return dict(report=report)
+	return dict(report=report, print_version=False)
 
 @get('/loan/person/<id:int>')
 @view('loan/person_listing')

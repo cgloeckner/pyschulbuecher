@@ -1,6 +1,7 @@
 %from db import orga, books
 
 %include("header")
+
 <h1>Leihbericht</h1>
 
 <table>
@@ -60,3 +61,4 @@
 </table>
 
 %include("footer")
+

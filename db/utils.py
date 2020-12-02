@@ -295,6 +295,56 @@ class ClasssetsPdf(object):
 		
 # -----------------------------------------------------------------------------
 
+class InventoryReport(object):
+	def __init__(self, settings_handle, export='export'):
+		# load LaTeX templates
+		with open('docs/inventoryreport/header.tpl') as f:
+			self.header = f.read()
+		with open('docs/inventoryreport/footer.tpl') as f:
+			self.footer = f.read()
+		with open('docs/inventoryreport/content.tpl') as f:
+			self.content = f.read()
+		# prepare output directory
+		self.export = export
+		self.texdir = os.path.join(export, 'tex')
+		if not os.path.isdir(self.texdir):
+			os.mkdir(self.texdir)
+		# load settings
+		self.s = Settings()
+		self.s.load_from(settings_handle)
+		
+		self.tex  = template(self.header)
+
+	def getPath(self):
+		return os.path.join(self.export, 'Inventarbericht.pdf')
+	
+	def __call__(self):
+		"""Collect all books (existing, loaned, remaining)
+		"""
+		all_bks = books.getRealBooks()
+		all_bks = books.orderBooksIndex(all_bks)
+	
+		loan_count = dict()
+		for b in all_bks:
+			loan_count[b] = loans.getLoanCount(person=None, book=b)
+
+		self.tex += template(self.content, s=self.s, all_bks=all_bks, loan_count=loan_count)
+		
+	def saveToFile(self):
+		self.tex += template(self.footer)
+		
+		# export tex (debug purpose)
+		dbg_fname = os.path.join(self.texdir, 'Inventarbericht.tex')
+		with open(dbg_fname, 'w') as h:
+			h.write(self.tex)
+		
+		# export PDF
+		fname = self.getPath()
+		pdf = build_pdf(self.tex)
+		pdf.save_to(fname)
+	
+# -----------------------------------------------------------------------------
+
 class LoanReportPdf(object):
 	def __init__(self, prefix, settings_handle, export='export'):
 		# load LaTeX templates

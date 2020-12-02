@@ -9,7 +9,7 @@ from pony import orm
 
 from db.orm import db, db_session, Currency
 from db import orga, books, loans
-from db.utils import Settings, SubjectCouncilXls, DatabaseDumpXls, LoanReportPdf, LoanContractPdf, BooklistPdf, RequestlistPdf, BookreturnPdf, BookloanPdf, BookpendingPdf, ClassListPdf, ClasssetsPdf
+from db.utils import Settings, SubjectCouncilXls, DatabaseDumpXls, LoanReportPdf, LoanContractPdf, BooklistPdf, RequestlistPdf, BookreturnPdf, BookloanPdf, BookpendingPdf, ClassListPdf, ClasssetsPdf, InventoryReport
 from utils import errorhandler
 
 
@@ -567,6 +567,14 @@ def db_dump_generate():
 		d = time.time() - d
 	
 		yield '<hr /><br />Erledigt in %f Sekunden<hr /><pre>%s</pre>' % (d, xlsx.getPath())
+
+@get('/admin/lists/generate/inventory')
+def book_inventory():
+	with open('settings.ini') as h:
+		inv = InventoryReport(h)
+		inv()
+		inv.saveToFile()
+	yield '<pre>%s</pre>' % inv.getPath()
 
 @get('/admin/lists/generate/councils')
 def councils_generate():

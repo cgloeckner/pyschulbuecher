@@ -5,12 +5,13 @@
 <h2>Bedarf</h2>
 <ul>
 	<li><a href="/admin/lists/generate/councils" target="_blank">Bedarf Fachschaften</a></li>
-	<li><a href="/admin/lists/generate/requestlist" target="_blank">Erfassungsliste</a></li>
+	<li><a href="/admin/lists/generate/inventory" target="_blank">Inventarbericht</a></li>
+	<li><a href="/admin/preview/booklist" target="_blank">Bücherzettel</a></li>
+	<li><a href="/admin/lists/generate/requestlist" target="_blank">Erfassungsliste für Bücherzettel</a></li>
 </ul>
 
 <h2>Bücherausgabe</h2>
 <ul>	<li><a href="/admin/lists/generate/requestloan" target="_blank">Büchervorschau (nächstes Schuljahr, gemäß Bücherzettel)</a></li>
-	<li><a href="/admin/preview/booklist" target="_blank">Bücherzettel</a></li>
 	<li><a href="/admin/lists/generate/bookloan" target="_blank">Bückerausgabe (aktuelles Schuljahr, gemäß Bücherzettel)</a></li>
 </ul>
 
