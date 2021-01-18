@@ -6,8 +6,6 @@
 {\Large Schulbuchübersicht } \hfill {\large {{!tex_escape(student.person.name)}}, {{!tex_escape(shortName(student.person.firstname))}} ({{student.class_.toString(advance=advance)}}) }
 
 %if loan_report:
-
-
 	Bitte überprüfen Sie folgende Lehrbücher, vermerken Sie die individuelle Buchnummer (LMF-Nr.) und bewerten Sie deren \linebreak Zustand: \hfill neu \textbf{++} \quad gut \textbf{+} \quad mittel \textbf{$\circ$} \quad schlecht \textbf{-}
 
 	\rowcolors{1}{white}{black!10}
@@ -50,7 +48,7 @@
 		%end
 	%end
 	
-	%if len(lns) == 0:
+	%if i == 0:
 		\multicolumn{5}{c}{ keine Lehrbücher }
 	%end
 
@@ -139,7 +137,7 @@
 			%end
 	%end
 
-	%if len(lns) == 0:
+	%if i == 0:
 		\multicolumn{5}{c}{ keine Lehrbücher }
 	%end
 
@@ -188,7 +186,7 @@
 			%end
 		%end
 		
-		%if len(prev_classes) == 0:
+		%if i == 0:
 		\multicolumn{5}{c}{ keine Lehrbücher }
 		%end
 
