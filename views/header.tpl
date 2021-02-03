@@ -37,6 +37,7 @@
 		</button>
 		<div class="dropdown-content">
 %for grade in orga.getClassGrades():
+    %print(grade)
 	%if grade == 4:
 			<a href="/classes/{{grade}}">zukünftige 5</a>
 	%else:
