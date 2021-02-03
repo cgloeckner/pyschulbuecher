@@ -3,9 +3,9 @@
 
 {\large
 %if workbook:
-	Arbeitshefte
+    Arbeitshefte
 %else:
-	Lehrbücher
+    Lehrbücher
 %end
 }
 
@@ -21,71 +21,75 @@
 %end
 \\ \hline
 %for b in bs:
-	%key = '{0}_{1}'.format(grade, b.id)
-	%if b.workbook == workbook:
-		%if key in exclude:
-			%print('Skip {0} for grade {1}'.format(b.title, grade))
-			%continue
-		%end
-		%if b.subject is not None:
-			%ga = b.novices
-			%ea = b.advanced
-			%cmt = len(b.comment) > 0
-			%if ga or ea or cmt:
-	\makecell{
-			%end
-		{\small {{!tex_escape(b.subject.tag)}} }
-			%if grade > 10:
-				%if ea and ga:
-					%pass
-				%else:
-					%if ea:
-		{\footnotesize eA }
-					%end
-					%if ga:
-		{\footnotesize gA }
-					%end
-				%end
-			%end
-			%if cmt:
-		{\footnotesize {{!tex_escape(b.comment)}} }
-			%end
-			%if cmt or ga or ea:
-	}
-			%end
-		%else:
-	{\small versch. }
-		%end
-	& 
-	{\small {{!tex_escape(b.title)}} }
-	&
-	{\small {{!tex_escape(b.publisher.name)}}}
-	&
-		%if b.isbn is not None and b.price is not None:
-	{\small {{!tex_escape(b.isbn)}} }
-		&
-	{\small {{!tex_escape(Currency.toString(b.price, addSymbol=False))}} \euro }
-		%else:
-	\multicolumn{2}{c|}{\small {\textit {{nicht mehr verf\"ugbar}} } }
-		%end
-		%if not b.workbook:
-	&
-			%if b.classsets:
-	\multicolumn{3}{c|} { \small { Klassens\"atze } }
-			%else:
-				%if b.isbn is None or b.price is None:
-	\cellcolor{black!75}
-	&
-	\cellcolor{black!75}
-	&
-				%else:
-	& &
-				%end
-			%end
-		%end
-	\\
-	\hline
-	%end
+    %if new_students:
+        %key = '{0}_neu_{1}'.format(grade, b.id)
+    %else:
+        %key = '{0}_{1}'.format(grade, b.id)
+    %end
+    %if b.workbook == workbook:
+        %if key in exclude:
+            %print('Skip {0} for grade {1}'.format(b.title, grade))
+            %continue
+        %end
+        %if b.subject is not None:
+            %ga = b.novices
+            %ea = b.advanced
+            %cmt = len(b.comment) > 0
+            %if ga or ea or cmt:
+    \makecell{
+            %end
+        {\small {{!tex_escape(b.subject.tag)}} }
+            %if grade > 10:
+                %if ea and ga:
+                    %pass
+                %else:
+                    %if ea:
+        {\footnotesize eA }
+                    %end
+                    %if ga:
+        {\footnotesize gA }
+                    %end
+                %end
+            %end
+            %if cmt:
+        \\ {\footnotesize {{!tex_escape(b.comment)}} }
+            %end
+            %if cmt or ga or ea:
+    }
+            %end
+        %else:
+    {\small versch. }
+        %end
+    & 
+    {\small {{!tex_escape(b.title)}} }
+    &
+    {\small {{!tex_escape(b.publisher.name)}}}
+    &
+        %if b.isbn is not None and b.price is not None:
+    {\small {{!tex_escape(b.isbn)}} }
+        &
+    {\small {{!tex_escape(Currency.toString(b.price, addSymbol=False))}} \euro }
+        %else:
+    \multicolumn{2}{c|}{\small {\textit {{nicht mehr verf\"ugbar}} } }
+        %end
+        %if not b.workbook:
+    &
+            %if b.classsets:
+    \multicolumn{3}{c|} { \small { Klassens\"atze } }
+            %else:
+                %if b.isbn is None or b.price is None:
+    \cellcolor{black!75}
+    &
+    \cellcolor{black!75}
+    &
+                %else:
+    & &
+                %end
+            %end
+        %end
+    \\
+    \hline
+    %end
 %end
 \end{longtable}
 
