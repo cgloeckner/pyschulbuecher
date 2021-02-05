@@ -1,31 +1,26 @@
-# schoollib
-Python-based school book library software.
+# pyschulbuecher
+Python-basierte Software zur Schulbuchverwaltung in Schulen.
 
-## Requirements
+## Bemerkungen
 
-Note that the current version is only tested on Linux-based systems. Especially the test suite (at least at the moment) won't function on Windows-based Systems.
+Aktuell handelt es sich hierbei um eine unveröffentlichte Software, die für dein Einsatz auf Linux-Systemen konzipiert ist. Eine zukünftige Unterstützung anderer Systeme ist bislang nicht geplant.
 
-### Running the System
+## Voraussetzungen
 
-Required Python Modules (e.g. through `pip`)
-* pony
-* bottle
-* PyPDF2
-* latex
-* xlsxwriter
-(might need `pip install six --upgrade`)
+erforderliche: Python-Module (z.B. via `pip`)
+* `pony` (Datenbank)
+* `bottle` (Webserver)
+* `PyPDF2` (PDF-Erstellung)
+* `latex` (PDF-Erstellung)
+* `xlsxwriter` (XLSX-Erstellung)
+(evtl. `pip install six --upgrade`)
 
-Also a LaTeX-installation is required including
-* Requires eurosym package (ubuntu: texlive-fonts-recommended)
-* Requires makecell package (ubuntu: texlive-latex-extra)
-* Requires german babel package (buntu: texlive-lang-german)
+Folgende LaTeX-Pakete werden außerdem vorausgesetzt:
+* eurosym package (ubuntu: texlive-fonts-recommended)
+* makecell package (ubuntu: texlive-latex-extra)
+* german babel package (buntu: texlive-lang-german)
 
-### Running the Test Suite
-
-Required Python Modules (e.g. through `pip`)
-* webtest
-
-### Notes
+### Notizen
 
 Convert XLSX to single PDF
 ```soffice --headless --convert-to pdf *.xlsx
