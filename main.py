@@ -18,11 +18,11 @@ __author__ = "Christian Glöckner"
 
 s = utils.Settings()
 try:
-	with open('settings.ini') as h:
-		s.load_from(h)
+    with open('settings.ini') as h:
+        s.load_from(h)
 except FileNotFoundError:
-	# keep default values
-	pass
+    # keep default values
+    pass
 
 debug = True
 
@@ -35,12 +35,12 @@ app.install(db_session)
 
 @get('/static/<fname>')
 def static_files(fname):
-	return static_file(fname, root='./static')
+    return static_file(fname, root='./static')
 
 @get('/')
 @view('home')
 def landingpage():
-	return dict()
+    return dict()
 
 
 import admin, classes, loans
