@@ -98,7 +98,7 @@ def classes_loans_post(grade, tag):
 		for b in bks:
 			key   = "%d_%d" % (s.id, b.id)
 			count = request.forms.get(key)
-			if count is None or count is "":
+			if count is None or count == "":
 				count = 0
 			else:
 				count = int(count)

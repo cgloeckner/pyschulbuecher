@@ -153,7 +153,7 @@ def books_edit_post(id):
     b = db.Book[id]
     b.title   = request.forms.title
     b.isbn    = request.forms.isbn
-    b.price   = Currency.fromString(request.forms.price) if request.forms.price is not '' else 0
+    b.price   = Currency.fromString(request.forms.price) if request.forms.price != '' else 0
     b.publisher = db.Publisher[int(request.forms.publisher_id)]
     b.stock     = int(request.forms.stock)
     b.inGrade   = int(request.forms.inGrade)
