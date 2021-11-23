@@ -102,8 +102,8 @@
 <h2>Excel-Export</h2>
 
 <i>Titel &lt;tab&gt; ISBN &lt;tab&gt; Preis &lt;tab&gt; Verlag &lt;tab&gt; ab Klasse &lt;tab&gt; bis Klasse &lt;tab&gt; Fach &lt;tab&gt; für gA &lt;tab&gt; für EA &lt;tab&gt; AH? &lt;tab&gt; Klassensatz? &lt;tab&gt; Kommentar</i>
-<form action="/admin/books/add" id="books" method="post">
-	<textarea rows="5" cols="50" name="data" form="books"></textarea><br />
+<form action="/admin/books/add" method="post">
+	<textarea rows="5" cols="50" name="data"></textarea><br />
 	<input type="submit" value="Hinzufügen" />
 </form>
 
