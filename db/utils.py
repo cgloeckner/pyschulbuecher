@@ -785,10 +785,12 @@ class BookpendingPdf(object):
         with open('docs/bookpending/page_content.tpl') as f:
             self.page_content = f.read()
         # prepare output directory
-        self.export = export
         self.texdir = os.path.join(export, 'tex')
         if not os.path.isdir(self.texdir):
             os.mkdir(self.texdir)
+        self.export = os.path.join(export, 'pending')
+        if not os.path.isdir(self.export):
+            os.mkdir(self.export)
         # load settings
         self.s = Settings()
         self.s.load_from(settings_handle)
