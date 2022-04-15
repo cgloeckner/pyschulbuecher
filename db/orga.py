@@ -17,8 +17,8 @@ course_grade = 11
 def getGradeRange():
     return range(entry_grade, graduation_grade+1)
 
-def getPersistingGradeRange():
-    return range(entry_grade, graduation_grade)
+def getPersistingGradeRange(delta=0):
+    return range(entry_grade+delta, graduation_grade+delta)
 
 def getSecondary1Range():
     return range(entry_grade, course_grade)

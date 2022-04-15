@@ -29,12 +29,7 @@
 
 {\footnotesize
 	\begin{tabular}{ c }
-		Friedrich-Schiller-Gymnasium \\
-		Eisenberg \\
-		Schillerstraße 1 \\
-		07607 Eisenberg \\
-		Tel.(036691) 42525 \\
-		Fax.(036691) 57032
+        {{s.data['general']['address']}}
 	\end{tabular}
 }
 
@@ -73,7 +68,7 @@ bitte f\"ullen Sie nach Ihren M\"oglichkeiten und W\"unschen den B\"ucherzettel 
 
 Mit freundlichen Gr\"ußen
 
-gez. Riebel\newline
+gez. {{s.data['general']['headteacher']}} \newline
 Schulleiter
 
 \vspace{1cm}

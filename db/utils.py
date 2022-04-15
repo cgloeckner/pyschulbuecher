@@ -29,7 +29,9 @@ class Settings(object):
     def __init__(self):
         self.data = configparser.ConfigParser()
         self.data['general'] = {
-            'school_year': '2019'
+            'school_year': '2019',
+            'address': 'Example School \\ Neustadt \\ Tel: 123-456-78900',
+            'headteacher': 'Mr. Boss'
         }
         self.data['deadline'] = {
             'booklist_return'  : '17.03.2017',
