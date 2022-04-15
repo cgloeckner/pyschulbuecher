@@ -744,10 +744,9 @@ def booklist_generate():
             yield ' und Neuzugänge'
             booklist(g, exclude, new_students=True)
     
-    # merging booklists
-    booklist.merge()
+    booklist.infosheet()
     
-    print('Done')
+    print('Fertig')
     d = time.time() - d
     
     yield '<hr /><br />Erledigt in %f Sekunden' % (d)

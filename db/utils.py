@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os, configparser, datetime
-import PyPDF2, xlsxwriter
+import xlsxwriter
 
 from bottle import template
 from latex import build_pdf
@@ -518,8 +518,6 @@ class BooklistPdf(object):
         # load settings
         self.s = Settings()
         self.s.load_from(settings_handle)
-        # merged pdf
-        self.merger = PyPDF2.PdfFileMerger()
     
     def __call__(self, grade: int, exclude: set, new_students: bool=False):
         """Generate booklist pdf file for the given grade. A separate booklist
@@ -536,17 +534,20 @@ class BooklistPdf(object):
         if new_students:
             bks    = books.getBooksUsedIn(grade, booklist=True)
             suffix = '_Neuzugänge'
+            deadline = 'Abgabe bei Anmeldung'
         else:
             bks    = books.getBooksStartedIn(grade, booklist=True)
             suffix = ''
+            deadline = 'Abgabe bis spätestens {0}'.format(self.s.data['deadline']['booklist_return'])
         bks = books.orderBooksList(bks)
+        if grade == 5:
+            deadline = 'Abgabe bei Anmeldung'
         
         # determine number of books
         num_books  = sum(1 for b in bks if not b.workbook)
         
         # render templates
-        tex  = template(self.header, s=self.s, grade=grade, new_students=new_students)
-        tex += template(self.info, grade=grade, new_students=new_students, s=self.s)
+        tex  = template(self.header, s=self.s, grade=grade, new_students=new_students, deadline=deadline)
         # render pure books
         if num_books > 0:
             tex += template(self.select, grade=grade, bs=bks, workbook=False, exclude=exclude, new_students=new_students)
@@ -558,10 +559,10 @@ class BooklistPdf(object):
         else:
             tex += template(self.empty, workbook=True, new_students=new_students)
         tex += template(self.special, grade=grade, s=self.s, spec_bks=spec_bks)
-        tex += template(self.footer)
+        tex += template(self.footer, s=self.s)
         
         # export tex (debug purpose)
-        dbg_fname = os.path.join(self.texdir, '%d%s.tex' % (grade, suffix))
+        dbg_fname = os.path.join(self.texdir, '%d_%s.tex' % (grade, suffix))
         with open(dbg_fname, 'w') as h:
             h.write(tex)
         
@@ -569,16 +570,20 @@ class BooklistPdf(object):
         fname = os.path.join(self.export, 'Bücherzettel%d%s.pdf' % (grade, suffix))
         pdf = build_pdf(tex)
         pdf.save_to(fname)
-        
-        # add to merge-PDF
-        self.merger.append(fname)
 
-    def merge(self):
-        # save merge-PDF
-        fname = os.path.join(self.export, 'Bücherzettel_Komplett.pdf')
+    def infosheet(self):
+        # render templates
+        tex = template(self.info, s=self.s)
         
-        with open(fname, 'wb') as h:
-            self.merger.write(h)
+        # export tex (debug purpose)
+        dbg_fname = os.path.join(self.texdir, 'info.tex')
+        with open(dbg_fname, 'w') as h:
+            h.write(tex)
+        
+        # export PDF
+        fname = os.path.join(self.export, 'Bücherzettel_Information.pdf')
+        pdf = build_pdf(tex)
+        pdf.save_to(fname)
 
 # -----------------------------------------------------------------------------
 

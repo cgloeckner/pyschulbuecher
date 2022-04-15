@@ -1,6 +1,8 @@
 %from db.orm import Currency
 %from utils import tex_escape
 
+\def\arraystretch{1.25}
+
 {\large
 %if workbook:
     Arbeitshefte
@@ -83,7 +85,7 @@
     \cellcolor{black!75}
     &
                 %else:
-    & &
+    \checkinput & \checkinput & \checkinput
                 %end
             %end
         %end
@@ -92,4 +94,3 @@
     %end
 %end
 \end{longtable}
-
