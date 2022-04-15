@@ -157,14 +157,14 @@ class DemandManager(object):
         # note: str(grade) because json will dump to str it anyway
         # parse student numbers for elective subjects (until 10th grade)
         tmp = dict()
-        for grade in range(5, 10+1):
+        for grade in orga.getSecondary1Range():
             tmp[str(grade)] = dict()
             for sub in books.getSubjects(elective=True):
                 key = "%d_%s" % (grade, sub.tag)
                 val = forms(key)
                 tmp[str(grade)][sub.tag] = int(val) if val != "" else 0
         # parse student numbers for each subject (after 11th grade)
-        for grade in [11, 12]:
+        for grade in orga.getSecondary2Range():
             tmp[str(grade)] = dict()
             for sub in books.getSubjects():
                 tmp[str(grade)][sub.tag] = dict()
@@ -524,12 +524,12 @@ class Tests(unittest.TestCase):
             '12_De_novices': 13,
             '12_De_advanced': 12,
         }
-        for grade in range(5, 10+1):
+        for grade in orga.getSecondary1Range():
             for sub in books.getSubjects(elective=True):
                 key = '%s_%s' % (grade, sub.tag)
                 if key not in keys:
                     keys[key] = 0
-        for grade in [11, 12]:
+        for grade in orga.getSecondary2Range():
             for sub in books.getSubjects():
                 for level in ['novices', 'advanced']:
                     key = '%s_%s_%s' % (grade, sub.tag, level)

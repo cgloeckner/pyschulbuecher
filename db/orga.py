@@ -10,6 +10,22 @@ from db.orm import db
 
 __author__ = "Christian Glöckner"
 
+entry_grade = 5
+graduation_grade = 12
+course_grade = 11
+
+def getGradeRange():
+    return range(entry_grade, graduation_grade+1)
+
+def getPersistingGradeRange():
+    return range(entry_grade, graduation_grade)
+
+def getSecondary1Range():
+    return range(entry_grade, course_grade)
+    
+def getSecondary2Range():
+    return range(course_grade, graduation_grade+1)
+
 def getClassGrades(regular=False):
     """Return a list of grades for which classes exist.
     If regular class grades are queried, entry and alumni grade are excluded.
@@ -18,7 +34,7 @@ def getClassGrades(regular=False):
     if regular:
         classes = select(c.grade
             for c in db.Class
-                if c.grade in range(5, 12+1)
+                if c.grade in getGradeRange()
         ).order_by(lambda g: g)
     else:
         classes = select(c.grade

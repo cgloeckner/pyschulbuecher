@@ -700,7 +700,7 @@ def studentsloans_generate():
 def booklist_preview():
     all_books = dict()
 
-    for grade in range(5, 12+1):
+    for grade in orga.getSecondary2Range():
         # fetch specific books
         spec_bks = books.getBooksUsedIn(0, True)
         
@@ -722,7 +722,7 @@ def booklist_generate():
     
     print('Detecting excluded books')
     exclude = set()
-    for g in range(5, 12+1):
+    for g in orga.getSecondary2Range():
         for b in books.getBooksUsedIn(g):
             # regular booklist
             key = '{0}_{1}'.format(g, b.id)
@@ -737,7 +737,7 @@ def booklist_generate():
     d = time.time()
     yield 'Bitte warten...'
     #for g in orga.getClassGrades():
-    for g in range(5, 12+1):
+    for g in orga.getSecondary2Range():
         yield '<br>Klasse %d\n' % g
         booklist(g, exclude)
         if g > 5:
@@ -757,7 +757,7 @@ def requestlist_generate():
         requestlist = RequestlistPdf(h)
     
     # exclude 12th grade (last grade)
-    for grade in range(5, 11+1):
+    for grade in orga.getPersistingGradeRange():
         yield 'Klasse %d<br />\n' % grade
         for c in orga.getClassesByGrade(grade):
             requestlist(c)
@@ -773,7 +773,7 @@ def plannerlist_generate(mode):
         r = range(4, 11+1)
         advance = True
     else:
-        r = range(5, 12+1)
+        r = orga.getSecondary2Range()
         advance = False
     for grade in r:
         for c in orga.getClassesByGrade(grade):
@@ -789,11 +789,11 @@ def bookreturn_generate():
         bookreturn = BookreturnPdf(h)
     
     # generate overview lists for all grades
-    for grade in range(5, 12+1):
+    for grade in orga.getSecondary2Range():
         bookreturn.addOverview(grade)
     
     # generate return lists for all grades
-    for grade in range(5, 12+1):
+    for grade in orga.getSecondary2Range():
         yield 'Klasse %d<br />\n' % grade
         for c in orga.getClassesByGrade(grade):
             bookreturn(c)
@@ -809,7 +809,7 @@ def requestloan_generate():
     yield 'Erzeuge Ausleihübersicht...<br />\n'
             
     # generate return lists for all grades (for the next year)
-    for grade in range(5, 12+1):
+    for grade in orga.getSecondary2Range():
         yield 'Klasse %d<br />\n' % grade
         for c in orga.getClassesByGrade(grade):
             bookloan(c, True)
@@ -843,7 +843,7 @@ def bookloan_generate():
     yield 'Erzeuge Ausleihübersicht...<br />\n'
             
     # generate return lists for all grades (for the current year)
-    for grade in range(5, 12+1):
+    for grade in orga.getSecondary2Range():
         yield 'Klasse %d<br />\n' % grade
         for c in orga.getClassesByGrade(grade):
             bookloan(c, True)
@@ -872,7 +872,7 @@ def bookloan_generate():
 @get('/admin/lists/generate/returnlist/<mode>')
 def bookpending_generate(mode):
     yield '<b>Nach Büchern:</b><ul>'
-    for grade in range(5, 12+1):
+    for grade in orga.getSecondary2Range():
         with open('settings.ini') as h:
             pending = BookpendingPdf(h)
         n = pending.queryBooks(grade, tooLate=mode=='tooLate')
@@ -886,7 +886,7 @@ def bookpending_generate(mode):
 @get('/admin/lists/generate/bookpending')
 def bookpending_generate():
     yield '<b>Ausstehende Bücher:</b><br /><ul>'
-    for g in range(5, 12+1):
+    for g in orga.getSecondary2Range():
         yield '<li>Klasse {0}: '.format(g)
         with open('settings.ini') as h:
             by_books = BookpendingPdf(h)   
@@ -1729,7 +1729,7 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
         
         args = dict()
         args ["lowering"] = '10'
-        for grade in range(5, 10+1):
+        for grade in orga.getSecondary1Range():
             for sub in books.getSubjects(elective=True):
                 key = "%s_%s" % (grade, sub.tag)
                 args[key] = 63
