@@ -9,7 +9,7 @@ from pony import orm
 
 from db.orm import db, db_session, Currency
 from db import orga, books, loans
-from db.utils import Settings, SubjectCouncilXls, DatabaseDumpXls, LoanReportPdf, LoanContractPdf, BooklistPdf, RequestlistPdf, BookreturnPdf, BookloanPdf, BookpendingPdf, ClassListPdf, ClasssetsPdf, InventoryReport
+from db.utils import Settings, SubjectCouncilXls, PlannerXls, DatabaseDumpXls, LoanReportPdf, LoanContractPdf, BooklistPdf, RequestlistPdf, BookreturnPdf, BookloanPdf, BookpendingPdf, ClassListPdf, ClasssetsPdf, InventoryReport
 from utils import errorhandler
 
 
@@ -765,6 +765,24 @@ def requestlist_generate():
     requestlist.saveToFile()
 
     yield '<pre>%s</pre>\n' % (requestlist.getPath())
+
+@get('/admin/lists/generate/planner/<mode>')
+def plannerlist_generate(mode):
+    planners = PlannerXls()
+    classes = list()
+    if mode == 'next':
+        r = range(4, 11+1)
+        advance = True
+    else:
+        r = range(5, 12+1)
+        advance = False
+    for grade in r:
+        for c in orga.getClassesByGrade(grade):
+            classes.append(c)
+    planners(classes, advance=advance)
+    planners.saveToFile()
+
+    return '<a href="/admin/lists/download/{0}" target="_blank">Übersicht Schulplaner</a>'.format(planners.fname)
 
 @get('/admin/lists/generate/bookreturn')
 def bookreturn_generate():

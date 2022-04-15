@@ -7,7 +7,9 @@
 	<li><a href="/admin/lists/generate/councils" target="_blank">Bedarf Fachschaften</a></li>
 	<li><a href="/admin/lists/generate/inventory" target="_blank">Inventarbericht</a></li>
 	<li><a href="/admin/preview/booklist" target="_blank">Bücherzettel</a></li>
-	<li><a href="/admin/lists/generate/requestlist" target="_blank">Erfassungsliste für Bücherzettel</a></li>
+	<li><a href="/admin/lists/generate/requestlist" target="_blank">Erfassungsliste für Bücherzettel</a></li>  
+    <li><a href="/admin/lists/generate/planner/next" target="_blank">Übersicht Schulplaner (nächstes Schuljahr)</a></li>
+    <li><a href="/admin/lists/generate/planner/current" target="_blank">Übersicht Schulplaner (aktuelles Schuljahr)</a></li>
 </ul>
 
 <h2>Bücherausgabe</h2>
