@@ -79,7 +79,7 @@
 		</div>
 	</div>
 	
-	<span class="info">Schulbuchverwaltung ({{year}}/{{year+1}}) - v0.2-alpha</span>
+	<span class="info">Schulbuchverwaltung ({{year}}/{{year+1}}) - v0.2.1</span>
 </div>
 <div class="content">
 
