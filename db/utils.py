@@ -728,10 +728,12 @@ class BookpendingPdf(object):
             self.header = f.read()
         with open('docs/bookpending/footer.tpl') as f:
             self.footer = f.read()
-        with open('docs/bookpending/content.tpl') as f:
-            self.content = f.read()
-        with open('docs/bookpending/perbook.tpl') as f:
-            self.perbook = f.read()
+        with open('docs/bookpending/page_header.tpl') as f:
+            self.page_header = f.read()
+        with open('docs/bookpending/page_footer.tpl') as f:
+            self.page_footer = f.read()
+        with open('docs/bookpending/page_content.tpl') as f:
+            self.page_content = f.read()
         # prepare output directory
         self.export = export
         self.texdir = os.path.join(export, 'tex')
@@ -745,21 +747,35 @@ class BookpendingPdf(object):
 
         self.n = 0
     
-    def addPerson(self, person):
-        """Generate pending books pdf page for the given person
+    def queryBooks(self, grade: int, tooLate=False):
+        """Query and add all pending books for the given grade.
         """
-        count = len(person.loan)
-        if count > 0:
-            self.n += 1
-            self.tex += template(self.content, s=self.s, person=person, n=self.n)
+        if tooLate:
+            test = lambda l: l.tooLate()
+        else:
+            test = lambda l: l.isPending()
         
-        return count
-    
-    def addPersons(self, book):
-        """Generate pending books pdf page for the given book
-        """
-        lns = loans.queryLoansByBook(book)
-        self.tex += template(self.perbook, s=self.s, book=book, loans=lns)
+        n = 0
+        # iterate students in classes in grade
+        for b in books.getBooksFinishedIn(grade):
+            k = 0
+            # ignore class sets
+            if b.classsets:
+                continue   
+            # add all pending loan records
+            page = template(self.page_header, book=b)
+            for l in loans.queryLoansByBook(b):
+                # add if pending
+                if test(l):
+                    page += template(self.page_content, l=l, i=k)
+                    k += 1
+            page += template(self.page_footer)
+            # add page to document if at least one student was found
+            if k > 0:
+                self.tex += page
+            n += k
+
+        return n
 
     def saveToFile(self, suffix, with_date=False):
         self.tex += template(self.footer)
@@ -854,14 +870,14 @@ class Tests(unittest.TestCase):
     @db_session
     def test_create_custom_booklist(self):
         # create custom database content (real world example)
-        books.addSubjects("Mathematik    Ma\nDeutsch    De\nEnglisch    En\nPhysik    Ph")
+        books.addSubjects("Mathematik\tMa\nDeutsch\tDe\nEnglisch\tEn\nPhysik\tPh")
         books.addPublishers("Klett\nCornelsen")
-        books.addBooks("""Ein Mathe-Buch    978-3-7661-5000-4    32,80 €    Cornelsen    5    12    Ma    True    True    False    False    True
-Mathe AH    978-3-7661-5007-3    8,80 €    Cornelsen    5    12    Ma    True    True    True    False    True
-Deutsch-Buch mit sehr langam Titel und damit einigen Zeilenumbrüchen .. ach und Umlaute in größeren Mengen öÖäÄüÜß sowie Sonderzeichen !"§$%&/()=?.:,;-_@    978-3-12-104104-6    35,95 €    Klett    11    12    De    True    True    False    False    True
-Old English Book            Klett    5    12    En    True    True    False    True    True
-Grundlagen der Physik            Cornelsen    5    12    Ph    True    True    False    False    True
-Tafelwerk    978-3-06-001611-2    13,50 €    Cornelsen    7    12        False    False    False    False    True""")
+        books.addBooks("""Ein Mathe-Buch\t978-3-7661-5000-4\t32,80 €\tCornelsen\t5\t12\tMa\tTrue\tTrue\tFalse\tFalse\tTrue
+Mathe AH\t978-3-7661-5007-3\t8,80 €\tCornelsen\t5\t12\tMa\tTrue\tTrue\tTrue\tFalse\tTrue
+Deutsch-Buch mit sehr langam Titel und damit einigen Zeilenumbrüchen .. ach und Umlaute in größeren Mengen öÖäÄüÜß sowie Sonderzeichen !"§$%&/()=?.:,;-_@\t978-3-12-104104-6\t35,95 €\tKlett\t11\t12\tDe\tTrue\tTrue\tFalse\tFalse\tTrue
+Old English Book\t\t\tKlett\t5\t12\tEn\tTrue\tTrue\tFalse\tTrue\tTrue
+Grundlagen der Physik\t\t\tCornelsen\t5\t12\tPh\tTrue\tTrue\tFalse\tFalse\tTrue
+Tafelwerk\t978-3-06-001611-2\t13,50 €\tCornelsen\t7\t12\tFalse\tFalse\tFalse\tFalse\tTrue""")
 
         exclude = set()
         exclude.add('11_1') # "Ein Mathe-Buch"
@@ -877,13 +893,13 @@ Tafelwerk    978-3-06-001611-2    13,50 €    Cornelsen    7    12        False
         Tests.prepare()
         
         # create custom database content (real world example)
-        books.addSubjects("Deutsch    De\nPhysik    Ph")
-        books.addBooks("""Ein Mathe-Buch    978-3-7661-5000-4    32,80 €    Cornelsen    5    12    Ma    True    True    False    False    True
-Mathe AH    978-3-7661-5007-3    8,80 €    Cornelsen    5    12    Ma    True    True    True    False    True
-Deutsch-Buch mit sehr langam Titel und damit einigen Zeilenumbrüchen .. ach und Umlaute in größeren Mengen öÖäÄüÜß sowie Sonderzeichen !"§$%&/()=?.:,;-_@    978-3-12-104104-6    35,95 €    Klett    11    12    De    True    True    False    False    True
-Old English Book            Klett    5    12    En    True    True    False    True    False
-Grundlagen der Physik            Cornelsen    5    12    Ph    True    True    False    False    True
-Tafelwerk    978-3-06-001611-2    13,50 €    Cornelsen    7    12        False    False    False    False    True""")
+        books.addSubjects("Deutsch\tDe\nPhysik\tPh")
+        books.addBooks("""Ein Mathe-Buch\t978-3-7661-5000-4\t32,80 €\tCornelsen\t5\t12\tMa\tTrue\tTrue\tFalse\tFalse\tTrue
+Mathe AH\t978-3-7661-5007-3\t8,80 €\tCornelsen\t5\t12\tMa\tTrue\tTrue\tTrue\tFalse\tTrue
+Deutsch-Buch mit sehr langam Titel und damit einigen Zeilenumbrüchen .. ach und Umlaute in größeren Mengen öÖäÄüÜß sowie Sonderzeichen !"§$%&/()=?.:,;-_@\t978-3-12-104104-6\t35,95 €\tKlett\t11\t12\tDe\tTrue\tTrue\tFalse\tFalse\tTrue
+Old English Book\t\t\tKlett\t5\t12\tEn\tTrue\tTrue\tFalse\tTrue\tTrue
+Grundlagen der Physik\t\t\tCornelsen\t5\t12\tPh\tTrue\tTrue\tFalse\tFalse\tTrue
+Tafelwerk\t978-3-06-001611-2\t13,50 €\tCornelsen\t7\t12\tFalse\tFalse\tFalse\tFalse\tTrue""")
 
         # create requestlists
         with open('settings.ini') as h:

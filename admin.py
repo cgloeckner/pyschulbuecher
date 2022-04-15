@@ -852,39 +852,41 @@ def bookloan_generate():
     
     yield '<hr />Fertig'
 
+@get('/admin/lists/generate/returnlist/<mode>')
+def bookpending_generate(mode):
+    yield '<b>Nach Büchern:</b><ul>'
+    for grade in range(5, 12+1):
+        with open('settings.ini') as h:
+            pending = BookpendingPdf(h)
+        n = pending.queryBooks(grade, tooLate=mode=='tooLate')
+        if n > 0:
+            fname = pending.saveToFile(suffix='Klasse{0}_nachBüchern'.format(grade))
+            yield '<li><a href="/admin/lists/download/{0}.pdf" target="_blank">Klassenstufe {1}</a></li>'.format(fname, grade)
+        else:
+            yield '<li>keine in Klasse {0}</li>'.format(grade)
+    yield '</ul><hr />Fertig'
+
 @get('/admin/lists/generate/bookpending')
 def bookpending_generate():
-    with open('settings.ini') as h:
-        bookreturn = BookloanPdf(h)
+    yield '<b>Ausstehende Bücher:</b><br /><ul>'
+    for g in range(5, 12+1):
+        yield '<li>Klasse {0}: '.format(g)
+        with open('settings.ini') as h:
+            by_books = BookpendingPdf(h)   
+        by_books.addBooks(g)
+        fname = by_books.saveToFile(suffix='Klasse{0}-nachBüchern'.format(g))
+        
+        yield '<a href="/admin/lists/download/{0}.pdf" target="_blank">nach Büchern</a>, '.format(fname, g)
+        
+        with open('settings.ini') as h:
+            by_students = BookpendingPdf(h)
+        by_students.addStudents(g)
+        fname = by_students.saveToFile(suffix='Klasse{0}-nachSchülern'.format(g))
+        
+        yield '<a href="/admin/lists/download/{0}.pdf" target="_blank">nach Schülern</a>'.format(fname, g)
+        yield '</li>'
     
-    # --- books per student
-    # query pending books
-    with open('settings.ini') as h:
-        pending_students = BookpendingPdf(h)
-    n = 0
-    #for g in range(5, 12+1):
-    for c in orga.getClassesByGrade(12):
-        for s in c.student:
-            n += pending_students.addPerson(s.person)
-    
-    if n == 0:
-        pending_students.tex += 'keine Bücher ausstehend'
-    
-    fname1 = pending_students.saveToFile(suffix='nachSchülern')
-
-    # --- students per book
-    # query pending books
-    with open('settings.ini') as h:
-        pending_books = BookpendingPdf(h)
-
-    for b in books.getBooksUsedIn(12):
-        # ignore classsets
-        if not b.classsets:
-            pending_books.addPersons(b)
-    
-    fname2 = pending_books.saveToFile(suffix='nachBüchern')
-
-    yield '{0} ausstehende Bücher gefunden: <a href="/admin/lists/download/{1}.pdf">nach Schülern</a> oder <a href="/admin/lists/download/{2}.pdf">nach Büchern</a>'.format(n, fname1, fname2)
+    yield '</ul><hr />Fertig'
 
 @get('/admin/lists/generate/classlist')
 def classlist_generate():

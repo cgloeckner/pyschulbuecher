@@ -142,7 +142,6 @@ def applyRequest(student: db.Student):
     for b in bks:
         updateRequest(student, b, False)
 
-    
 # -----------------------------------------------------------------------------
 
 class DemandManager(object):

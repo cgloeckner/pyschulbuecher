@@ -179,15 +179,15 @@ class Tests(unittest.TestCase):
         Tests.prepare()
         
         # show requests overview
-        ret = self.app.get('/classes/requests/8/a')
+        ret = self.app.get('/classes/requests/8/a/full')
         self.assertEqual(ret.status_int, 200)
         
         # show requests overview (7th grade not present)
-        ret = self.app.get('/classes/requests/8/b', expect_errors=True)
+        ret = self.app.get('/classes/requests/8/b/full', expect_errors=True)
         self.assertEqual(ret.status_int, 404) # 404=not found
         
         # show requests overview
-        ret = self.app.get('/classes/requests/12/lip')
+        ret = self.app.get('/classes/requests/12/lip/full')
         self.assertEqual(ret.status_int, 200)
     
     @db_session
@@ -204,7 +204,7 @@ class Tests(unittest.TestCase):
             outGrade=8, subject=eng)
         
         # show requests overview
-        ret = self.app.get('/classes/requests/8/a')
+        ret = self.app.get('/classes/requests/8/a/full')
         self.assertEqual(ret.status_int, 200)
         
         # post requests
@@ -214,11 +214,11 @@ class Tests(unittest.TestCase):
                 key = '%d_%d' % (s.id, b.id)
                 args[key] = 'on'
         
-        ret = self.app.post('/classes/requests/8/a', args)
+        ret = self.app.post('/classes/requests/8/a/full', args)
         self.assertEqual(ret.status_int, 302) # 302=redirect
     
         # show requests overview (again)
-        ret = self.app.get('/classes/requests/8/a')
+        ret = self.app.get('/classes/requests/8/a/full')
         self.assertEqual(ret.status_int, 200)
         
     @db_session

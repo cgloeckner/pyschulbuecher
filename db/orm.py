@@ -136,6 +136,16 @@ class Loan(db.Entity):
     given     = Required(date)
     count     = Required(int, default=1)
 
+    def isPending(self):
+        if self.person.student is None:
+            return False
+        return self.person.student.class_.grade == self.book.outGrade
+        
+    def tooLate(self):
+        if self.person.student is None:
+            return False
+        return self.person.student.class_.grade > self.book.outGrade
+
 class Request(db.Entity):
     id        = PrimaryKey(int, auto=True)
     person    = Required(Person)
@@ -454,3 +464,38 @@ class Tests(unittest.TestCase):
         i = Currency.fromString('8,95€')
         self.assertEqual(i, 895)
 
+    @db_session
+    def test_Loan_isPending(self):
+        b = db.Book(title='Bar', publisher=db.Publisher(name='Foo'),
+            subject=db.Subject(name='Foo', tag='Fo'), inGrade=5, outGrade=6
+        )
+        s = db.Student(person=db.Person(name='Foo', firstname='Bar'), class_=db.Class(grade=7, tag='b'))
+        l = db.Loan(person=s.person, book=b, given=date.today())
+        self.assertFalse(l.isPending())
+        
+        s = db.Student(person=db.Person(name='Foo', firstname='Bar'), class_=db.Class(grade=6, tag='b'))
+        l = db.Loan(person=s.person, book=b, given=date.today())
+        self.assertTrue(l.isPending())
+        
+        s = db.Student(person=db.Person(name='Foo', firstname='Bar'), class_=db.Class(grade=5, tag='b'))
+        l = db.Loan(person=s.person, book=b, given=date.today())
+        self.assertFalse(l.isPending())
+        
+        l = db.Loan(person=db.Person(name='Foo', firstname='Bar'), book=b, given=date.today())
+        self.assertFalse(l.isPending())
+
+    @db_session
+    def test_Loan_tooLate(self):
+        b = db.Book(title='Bar', publisher=db.Publisher(name='Foo'),
+            subject=db.Subject(name='Foo', tag='Fo'), inGrade=5, outGrade=6
+        )
+        s = db.Student(person=db.Person(name='Foo', firstname='Bar'), class_=db.Class(grade=7, tag='b'))
+        l = db.Loan(person=s.person, book=b, given=date.today())
+        self.assertTrue(l.tooLate())
+        
+        s = db.Student(person=db.Person(name='Foo', firstname='Bar'), class_=db.Class(grade=6, tag='b'))
+        l = db.Loan(person=s.person, book=b, given=date.today())
+        self.assertFalse(l.tooLate())
+        
+        l = db.Loan(person=db.Person(name='Foo', firstname='Bar'), book=b, given=date.today())
+        self.assertFalse(l.tooLate())

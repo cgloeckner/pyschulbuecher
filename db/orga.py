@@ -329,8 +329,8 @@ class Tests(unittest.TestCase):
     def test_addStudents_for_existing_classes(self):
         Tests.prepare()
         
-        raw = """08A    Schneider    Petra
-12LIP    Mustermann    Thomas
+        raw = """08A\tSchneider\tPetra
+12LIP\tMustermann\tThomas
 """
         addStudents(raw)
         
@@ -347,9 +347,9 @@ class Tests(unittest.TestCase):
     def test_addStudents_for_invalid_class(self):
         Tests.prepare()
         
-        raw = """08A    Schneider    Petra
-10C    Sonstwer    Beispiel
-12LIP    Mustermann    Thomas
+        raw = """08A\tSchneider\tPetra
+10C\tSonstwer\tBeispiel
+12LIP\tMustermann\tThomas
 """
         with self.assertRaises(orm.core.ConstraintError):
             addStudents(raw)
@@ -365,10 +365,10 @@ class Tests(unittest.TestCase):
     def test_addTeachers_for_existing_classes(self):
         Tests.prepare()
         
-        raw = """LIP    Lippmann    Iris
-bsp    Beispiel    Peter
+        raw = """LIP\tLippmann\tIris
+bsp\tBeispiel\tPeter
 
-Mus    Mustermann    Max
+Mus\tMustermann\tMax
 """
         addTeachers(raw)
         
@@ -388,7 +388,7 @@ Mus    Mustermann    Max
     def test_addTeachers_with_invalid_tag(self):
         Tests.prepare()
         
-        raw = "glö    A    B"
+        raw = "glö\tA\tB"
         with self.assertRaises(orm.core.CacheIndexError):
             addTeachers(raw)
     
