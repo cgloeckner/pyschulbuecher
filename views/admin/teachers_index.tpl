@@ -65,7 +65,8 @@
 
 <h2>Excel-Export</h2>
 
-<i>Tag &lt;tab&gt; Name &lt;tab&gt; Vorname</i>
+<i>Tag &lt;tab&gt; Name &lt;tab&gt; Vorname</i> 
+<input type="button" onClick="addTab();" value="TAB" />
 <form action="/admin/teachers/add" id="teachers" method="post">
 	<textarea rows="5" cols="50" name="data" form="teachers"></textarea><br />
 	<input type="submit" value="Hinzufügen" />

@@ -33,7 +33,8 @@
 
 <h2>Excel-Export</h2>
 
-<i>Kürzel &lt;tab&gt; Name</i>
+<i>Kürzel &lt;tab&gt; Name</i>   
+<input type="button" onClick="addTab();" value="TAB" />
 <form action="/admin/subjects/add" id="subjects" method="post">
 	<textarea rows="5" cols="50" name="data" form="subjects"></textarea><br />
 	<input type="submit" value="Hinzufügen" />

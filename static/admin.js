@@ -21,3 +21,9 @@ function toggleClass(id) {
 		objs[i].checked = !objs[i].checked;
 	}
 }
+
+function addTab(target) {
+    var target = $('textarea[name="data"]');
+    target.val(target.val() + '\t');
+    target.focus();
+}

@@ -65,6 +65,7 @@
 <h2>Excel-Export:</h2>
 <i>Klasse &lt;tab&gt; Name &lt;tab&gt; Vorname</i>
 wobei Klasse "08B" oder "11ABC"
+<input type="button" onClick="addTab();" value="TAB" />
 <form action="/admin/students/add" id="students" method="post">
 	<textarea rows="5" cols="50" name="data" form="students"></textarea><br />
 	<input type="submit" value="Hinzufügen" />
