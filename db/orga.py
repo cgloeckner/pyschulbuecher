@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import locale
-locale.setlocale(locale.LC_ALL, '')
+locale.setlocale(locale.LC_ALL, 'de_DE.UTF-8')
 
 from pony import orm
 
