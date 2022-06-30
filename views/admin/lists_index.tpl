@@ -27,6 +27,7 @@
 <h2>Bücherrückgabe</h2>
 <ul>
 	<li><a href="/admin/lists/generate/returnlist/normal" target="_blank">Ausstehende Bücher (alle Klassen)</li>
+	<li><a href="/admin/lists/generate/loanlist/12" target="_blank">Ausstehende Bücher (nach Schülern Klasse 12)</li>
 	<li><a href="/admin/lists/generate/returnlist/tooLate" target="_blank">stark verspätete Bücher (alle Klassen)</li>
 	<li><a href="/admin/lists/generate/bookreturn" target="_blank">Bücherrückgabe (Listen und Übersichtszettel)</a></li>
 </ul>
