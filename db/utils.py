@@ -620,7 +620,7 @@ class RequestlistPdf(object):
         spec_bks = books.getBooksUsedIn(0, True)
         
         # fetch and order books that are used next year by this class
-        bks = books.getBooksStartedIn(class_.grade + 1)
+        bks = books.getBooksStartedIn(class_.grade + 1, booklist=True)
         bks = books.orderBooksList(bks)
         
         # query students
@@ -963,4 +963,3 @@ Tafelwerk\t978-3-06-001611-2\t13,50 €\tCornelsen\t7\t12\tFalse\tFalse\tFalse\t
         requestlist.saveToFile()
         
         print('PLEASE MANUALLY VIEW /tmp/export/Erfassungsliste.pdf')
-
