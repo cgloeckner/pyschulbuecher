@@ -39,4 +39,5 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test Unittests
       run: |
+        localectl set-locale LANG="de_DE.UTF-8"
         pytest
