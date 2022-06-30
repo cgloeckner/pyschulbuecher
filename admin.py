@@ -882,6 +882,20 @@ def bookpending_generate(mode):
             yield '<li>keine in Klasse {0}</li>'.format(grade)
     yield '</ul><hr />Fertig'
 
+@get('/admin/lists/generate/loanlist/<grade>')
+def bookpending_generate(grade):
+    yield '<b>Bücher in Klasse {0}</b><br />'.format(grade)
+    for c in orga.getClassesByGrade(grade):
+    	for s in c.student:
+    		yield '{0}, {1}<br /><ul>'.format(s.person.name, s.person.firstname)
+    		for l in s.person.loan:
+    			yield '<li>'
+    			if l.book.subject is not None:
+    				yield '<b>{0}</b>: '.format(l.book.subject.tag)
+    			yield '{0}</li>'.format(l.book.title)
+    		yield '</ul><br /><hr /><br />'
+    yield '</ul><hr />Fertig'
+
 @get('/admin/lists/generate/bookpending')
 def bookpending_generate():
     yield '<b>Ausstehende Bücher:</b><br /><ul>'
@@ -1746,4 +1760,3 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
         ret = self.app.get('/admin/demand')
         self.assertEqual(ret.status_code, 200)
     
-
