@@ -6,7 +6,6 @@ import unittest
 from db.orm import db
 from pony import orm
 import locale
-locale.setlocale(locale.LC_ALL, 'de_DE.UTF-8')
 
 
 __author__ = "Christian Glöckner"

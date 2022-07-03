@@ -129,11 +129,12 @@ class Book(db.Entity):
 class Currency(object):
     @staticmethod
     def toString(cents: int, addSymbol=True):
-        raw = locale.currency(cents / 100.0, grouping=True).replace(' ', '')
-        if not addSymbol:
-            return raw.split('€')[0]
-        else:
-            return raw
+        sym = '€' if addSymbol else ''
+        eu  = cents // 100
+        ct  = cents % 100          
+        if ct < 10:
+            ct = '0{0}'.format(ct)
+        return '{0},{1}{2}'.format(eu, ct, sym)
 
     @staticmethod
     def fromString(raw: str):
