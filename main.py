@@ -1,14 +1,16 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+import loans
+import classes
+import admin
+from db import orga, utils
+from db import orga
+from db.orm import db, db_session
+from pony import orm
+from bottle import *
 import locale
 locale.setlocale(locale.LC_ALL, 'de_DE.UTF-8')
-
-from bottle import *
-from pony import orm
-from db.orm import db, db_session
-from db import orga
-from db import orga, utils
 
 
 __author__ = "Christian Glöckner"
@@ -26,24 +28,27 @@ except FileNotFoundError:
 
 debug = True
 
-db.bind('sqlite', 'data%s.db' % s.data['general']['school_year'], create_db=True)
+db.bind(
+    'sqlite',
+    'data%s.db' %
+    s.data['general']['school_year'],
+    create_db=True)
 db.generate_mapping(create_tables=True)
 
 app = default_app()
 app.catchall = not debug
 app.install(db_session)
 
+
 @get('/static/<fname>')
 def static_files(fname):
     return static_file(fname, root='./static')
+
 
 @get('/')
 @view('home')
 def landingpage():
     return dict()
-
-
-import admin, classes, loans
 
 
 run(host='localhost', reloader=True, debug=debug, port=8000)

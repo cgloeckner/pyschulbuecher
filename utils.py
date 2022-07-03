@@ -31,7 +31,13 @@ def tex_escape(text):
         '<': r'\textless{}',
         '>': r'\textgreater{}',
     }
-    regex = re.compile('|'.join(re.escape(str(key)) for key in sorted(conv.keys(), key = lambda item: - len(item))))
+    regex = re.compile(
+        '|'.join(
+            re.escape(
+                str(key)) for key in sorted(
+                conv.keys(),
+                key=lambda item: -
+                len(item))))
     return regex.sub(lambda match: conv[match.group()], text)
 
 
@@ -45,10 +51,9 @@ def errorhandler(func):
     return wrapper
 
 
-
 def bool2str(b: bool):
     return 'Ja' if b else 'Nein'
 
+
 def bool2checked(b: bool):
     return 'checked' if b else ''
-
