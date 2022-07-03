@@ -41,4 +41,5 @@ jobs:
       run: |
         export LC_LANG="de_DE.UTF-8"
         export LC_CTYPE="de_DE.UTF-8"
+        dpkg-reconfigure locales
         pytest
