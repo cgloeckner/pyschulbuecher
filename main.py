@@ -10,7 +10,7 @@ from db.orm import db, db_session
 from pony import orm
 from bottle import *
 import locale
-locale.setlocale(locale.LC_ALL, 'de_DE.UTF-8')
+locale.setlocale(locale.LC_ALL, 'de_DE')
 
 
 __author__ = "Christian Glöckner"
