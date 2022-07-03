@@ -130,8 +130,8 @@ class Currency(object):
     @staticmethod
     def toString(cents: int, addSymbol=True):
         sym = '€' if addSymbol else ''
-        eu  = cents // 100
-        ct  = cents % 100          
+        eu = cents // 100
+        ct = cents % 100
         if ct < 10:
             ct = '0{0}'.format(ct)
         return '{0},{1}{2}'.format(eu, ct, sym)
