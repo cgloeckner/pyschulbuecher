@@ -106,6 +106,9 @@ class Book(db.Entity):
     # restrict if request assigned
     request = Set("Request", cascade_delete=False)
 
+    def isAvailable(self):
+        return self.isbn is not None and self.isbn != '' and self.price != None and self.price != 0
+
     def toString(self):
         caption = self.title
         comments = list()
