@@ -67,27 +67,29 @@
     &
     {\small {{!tex_escape(b.publisher.name)}}}
     &
-        %if b.isbn is not None and b.price is not None:
+        %if b.isAvailable():
     {\small {{!tex_escape(b.isbn)}} }
         &
     {\small {{!tex_escape(Currency.toString(b.price, addSymbol=False))}} \euro }
-        %else:
-    \multicolumn{2}{c|}{\small {\textit {{nicht mehr verf\"ugbar}} } }
-        %end
-        %if not b.workbook:
+            %if not b.workbook:
     &
-            %if b.classsets:
+                %if b.classsets:
     \multicolumn{3}{c|} { \small { Klassens\"atze } }
-            %else:
-                %if b.isbn is None or b.price is None:
-    \cellcolor{black!75}
-    &
-    \cellcolor{black!75}
-    &
                 %else:
+                    %if not b.isAvailable():
+    \cellcolor{black!75}
+    &
+    \cellcolor{black!75}
+    &
+    \checkinput
+                    %else:
     \checkinput & \checkinput & \checkinput
+                    %end
                 %end
             %end
+        %else:
+    \multicolumn{4}{c|}{\small {\textit {{nicht mehr erh\"altlich}} } }
+    & \checkinput
         %end
     \\
     \hline
