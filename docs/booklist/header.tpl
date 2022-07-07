@@ -50,7 +50,7 @@
 }
 
 \newcommand{\checkinput} {
-    \raisebox{-0.125cm}{\CheckBox[width=0.5cm, bordercolor=black!25!white, name=Test, checkboxsymbol=\ding{53}]{\null}}
+    \raisebox{-0.125cm}{\CheckBox[width=0.35cm, height=0.35cm, bordercolor=black!25!white, checkboxsymbol=\ding{53}]{\null}}
 }
 
 \newcommand{\infoInput}[2][4in]{%
