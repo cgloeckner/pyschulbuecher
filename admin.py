@@ -898,8 +898,8 @@ def requestloan_generate():
 
     # generate return lists for all grades (for the next year)
     for grade in orga.getGradeRange():
-        yield 'Klasse %d<br />\n' % grade
-        for c in orga.getClassesByGrade(grade):
+        yield 'Klasse %d<br />\n' % (grade-1)
+        for c in orga.getClassesByGrade(grade-1):
             bookloan(c, True)
     bookloan.saveToFile()
     yield '<pre>%s</pre>\n' % bookloan.getPath()
@@ -919,7 +919,7 @@ def requestloan_generate():
         for s in c.student.order_by(
                 lambda s: s.person.firstname).order_by(
                 lambda s: s.person.name):
-            loancontract(s)
+            loancontract(s, include_requests=True)
 
         # save pdf
         loancontract.saveToFile()
