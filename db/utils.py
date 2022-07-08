@@ -812,6 +812,8 @@ class BookloanPdf(object):
         provided with true, the request list for this year is used.
         """
         grade = class_.grade
+        if request:
+            grade += 1
 
         # fetch and order books that were requested by this class
         bks = books.getBooksUsedIn(grade)
