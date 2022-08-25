@@ -898,7 +898,7 @@ def requestloan_generate():
 
     # generate return lists for all grades (for the next year)
     for grade in orga.getGradeRange():
-        yield 'Klasse %d<br />\n' % (grade-1)
+        yield 'Klasse %d<br />\n' % (grade)
         for c in orga.getClassesByGrade(grade-1):
             bookloan(c, True)
     bookloan.saveToFile()
