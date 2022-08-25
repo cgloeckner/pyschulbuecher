@@ -70,6 +70,12 @@
 		\\ \hline
 
 	%bks = set()
+	
+	%g = student.class_.grade
+	%if advance:
+		% g += 1
+	%end
+
 
 	%i = 0
 	%prev_classes = list()
