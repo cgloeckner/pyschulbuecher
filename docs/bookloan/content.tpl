@@ -2,9 +2,12 @@
 %from db import loans
 %from utils import shortName
 
-{\LARGE Ausgabe der Leihexemplare in Klasse {{class_.toString()}} }
+{\LARGE Ausgabe der Leihexemplare in Klasse {{class_.toString(advance=advance)}} }
 \hfill
 %year = int(s.data['general']['school_year'])
+%if advance:
+    %year += 1
+%end
 {\large Schuljahr {{year}}/{{year+1}} }\\
 
 Bitte beachten Sie:
