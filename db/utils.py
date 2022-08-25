@@ -837,7 +837,8 @@ class BookloanPdf(object):
                              bks=bks,
                              students=students,
                              spec_bks=spec_bks,
-                             query_func=query_func)
+                             query_func=query_func,
+                             advance=request)
 
     def saveToFile(self):
         self.tex += template(self.footer)
