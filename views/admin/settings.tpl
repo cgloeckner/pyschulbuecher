@@ -11,16 +11,24 @@
 		<td><input type="text" name="school_year" value="{{s.data['general']['school_year']}}" /></td>
 	</tr>
 	<tr>
+	    <td>Schulanschrift</td>
+	    <td><textarea rows="10" cols="50" name="address" form="settings">{{s.data['general']['address']}}</textarea></td>
+	</tr>
+	<tr>
+	    <td>Schulleiter</td>
+	    <td><input type="text" name="headteacher" value="{{s.data['general']['headteacher']}}" /></td>
+	</tr>
+	<tr>
 		<td>Spätester Abgabetermin Bücherzettel</td>
-		<td><input type="text" name="deadline_booklist_return" value="{{s.data['deadline']['booklist_return']}}" /></td>
+		<td><input type="text" name="booklist_return" value="{{s.data['deadline']['booklist_return']}}" /></td>
 	</tr>
 	<tr>
 		<td>Letzter Änderungstermin Bücherzettel</td>
-		<td><input type="text" name="deadline_booklist_changes" value="{{s.data['deadline']['booklist_changes']}}" /></td>
+		<td><input type="text" name="booklist_changes" value="{{s.data['deadline']['booklist_changes']}}" /></td>
 	</tr>
 	<tr>
 		<td>Rückgabetermin Bücher, inkl. Stunde<br />(Klasse 12, Nichtprüfungsfächer)</td>
-		<td><input type="text" name="deadline_bookreturn_noexam" value="{{s.data['deadline']['bookreturn_noexam']}}" /></td>
+		<td><input type="text" name="bookreturn_noexam" value="{{s.data['deadline']['bookreturn_noexam']}}" /></td>
 	</tr>
 	<tr>
 		<td></td>
