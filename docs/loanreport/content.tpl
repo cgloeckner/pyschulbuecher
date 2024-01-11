@@ -2,9 +2,7 @@
 %from db import loans
 %import datetime
 
-{\large Leihexemplare und Klassensätze \hfill {{!tex_escape(p.name)}}, {{!tex_escape(p.firstname)}} }
-
-Bitte überprüfen Sie, dass Sie im Besitz folgender Leihexemplare und Klassensätze sind:
+{\large Übersicht Leihexemplare \hfill {{!tex_escape(p.name)}}, {{!tex_escape(p.firstname)}} }
 
 \rowcolors{1}{white}{black!10}
 \begin{tabular}[c]{ | p{5cm} | c | c | r | }
@@ -51,8 +49,7 @@ Bitte überprüfen Sie, dass Sie im Besitz folgender Leihexemplare und Klassens�
 \vfill
 
 %n = datetime.datetime.now()
-\hrulefill \hfill {\large {{n.strftime('%d.%m.%Y')}} }
-\newline
-Unterschrift
+{\large \hfill {{n.strftime('%d.%m.%Y')}} }\\
 
 \pagebreak
+

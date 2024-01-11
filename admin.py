@@ -535,44 +535,34 @@ def settings_form_post():
     except FileNotFoundError:
         # keep default values
         current_year = None
-        
-    # create settings from form data
+
     s = Settings()
-    s.data['general'] = {
-        'school_year': request.forms.school_year,
-        'address': request.forms.address,
-        'headteacher': request.forms.headteacher
-    }
-    s.data['deadline'] = {
-        'booklist_changes': request.forms.booklist_changes,
-        'booklist_return': request.forms.booklist_return,
-        'bookreturn_noexam': request.forms.bookreturn_noexam
-    }
-    
-    # save settings to disk
+    s.data['general']['school_year'] = request.forms.school_year
+    s.data['deadline']['booklist_changes'] = request.forms.deadline_booklist_changes
+    s.data['deadline']['booklist_return'] = request.forms.deadline_booklist_return
+    s.data['deadline']['bookreturn_noexam'] = request.forms.deadline_bookreturn_noexam
+
     with open('settings.ini', 'w') as h:
         s.save_to(h)
 
     db.commit()
-    
+
     next_year = s.data['general']['school_year']
 
-    if current_year is None or (current_year == next_year):
-        redirect('/admin/settings')
-        
-    else:
+    if current_year is not None and (current_year != next_year):
         # copy database for new year
         print('Copying database...')
-        yield 'Copying database...<br />'
         shutil.copyfile('data%s.db' % current_year, 'data%s.db' % next_year)
         print('Finished')
-        yield 'Finished<br />'
 
         # notify admin about restart
-        print('=' * 80 + '\nPlease Restart Application and browse http://localhost:8080/admin/advance\n' + '=' * 80)
-        yield '<hr />Please Restart Application and browse http://localhost:8080/admin/advance'
+        print('=' * 80)
+        print(
+            '\nPlease Restart Application and browse http://localhost:8080/admin/advance\n')
+        print('=' * 80)
         sys.exit(0)
 
+    redirect('/admin/settings')
 
 # -----------------------------------------------------------------------------
 

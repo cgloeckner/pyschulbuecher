@@ -747,7 +747,7 @@ class BookreturnPdf(object):
         """Generate overviews for class teachers about returning books.
         """
         # fetch and order books that are used next year by this class
-        bks = books.getBooksFinishedIn(grade, skip_non_existing=True)
+        bks = books.getBooksFinishedIn(grade)
         bks = books.orderBooksList(bks)
 
         # render template

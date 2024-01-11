@@ -20,7 +20,7 @@ def getGradeRange():
 
 
 def getPersistingGradeRange(delta=0):
-    return range(entry_grade + delta - 1, graduation_grade + delta)
+    return range(entry_grade + delta, graduation_grade + delta)
 
 
 def getSecondary1Range():

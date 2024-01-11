@@ -70,17 +70,16 @@
 		\\ \hline
 
 	%bks = set()
-	
-	%g = student.class_.grade
-	%if advance:
-		% g += 1
-	%end
 
+    %g = student.class_.grade
+    %if advance:
+        % g += 1
+    %end
 
 	%i = 0
 	%prev_classes = list()
 	%for l in lns:
-		%if l.book.inGrade == student.class_.grade:
+		%if l.book.inGrade == g:
 			%if l.book in bks:
 				%continue
 			%end
@@ -166,7 +165,7 @@
 
 		%i = 0
 		%for l in lns:
-			%if l.book.inGrade < student.class_.grade:
+			%if l.book.inGrade < g:
 				%if l.book.subject is None:
 		versch. &
 				%else:

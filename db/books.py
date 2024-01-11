@@ -114,27 +114,23 @@ def getBooksStartedIn(grade: int, booklist: bool = False):
                       )
 
 
-def getBooksFinishedIn(grade: int, booklist: bool = False, skip_non_existing = False):
+def getBooksFinishedIn(grade: int, booklist: bool = False):
     """Return a list of books which are used in the given grade for the last
     time. This includes books which are used across multiple grades (up to this
     grade), as well as books that are only used by this grade.
     The optional booklist parameter specifies if only books which are for loan
-    are queried. skip_non_existing skips a book if there is none in stock (e.g.
-    if the book will be added next year).
+    are queried.
     """
-    min_stock = 1 if skip_non_existing else 0
     if booklist:
         return select(b
                       for b in db.Book
                       if b.outGrade == grade
                       and b.for_loan
-                      and b.stock > min_stock
                       )
     else:
         return select(b
                       for b in db.Book
                       if b.outGrade == grade
-                      and b.stock > min_stock
                       )
 
 
