@@ -54,7 +54,8 @@ table td.highlight {
 }
 
 th.rotate, td.rotate {
-	writing-mode: sideways-lr;
+    transform: rotate(180deg);
+	writing-mode: vertical-lr;
 	width: 20px;
 	font-size: small;
 }
