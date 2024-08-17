@@ -6,16 +6,16 @@
 {\Large Schulbuchübersicht } \hfill {\large {{!tex_escape(student.person.name)}}, {{!tex_escape(shortName(student.person.firstname))}} ({{student.class_.toString(advance=advance)}}) }
 
 %if loan_report:
-	Bitte überprüfen Sie folgende Lehrbücher, vermerken Sie die individuelle Buchnummer (LMF-Nr.) und bewerten Sie deren \linebreak Zustand: \hfill neu \textbf{++} \quad gut \textbf{+} \quad mittel \textbf{$\circ$} \quad schlecht \textbf{-}
+	Ihnen wurden folgende Lehrbücher als Leihexemplare überlassen. Vermerken Sie die Inventarnummer und bewerten Sie den \linebreak Zustand des Buchs: \hfill neu \textbf{++} \quad gut \textbf{+} \quad mittel \textbf{$\circ$} \quad schlecht \textbf{-}
 
 	\rowcolors{1}{white}{black!10}
 	\begin{tabular}[c]{ | p{0.75cm} | c | p{5.5cm} | c | c | }
 		\hline
 		
-		\textbf{Fach} &
+		\textbf{\small Fach} &
 		\textbf{\small Klasse} &
-		\textbf{Lehrbuch} &
-		\textbf{LMF-Nr.} &
+		\textbf{\small Lehrbuch} &
+		\textbf{\small Inv.-Nr.} &
 		\textbf{\small Zustand}
 		\\ \hline
 
@@ -54,18 +54,24 @@
 
 	\end{tabular}
 
+	\vspace{1.5cm}
+
+	\rule{4.5cm}{0.4pt} \hfill \rule{4.5cm}{0.4pt}
+
+	Datum, Ort \hfill Unterschrift Klassenleiter:in
+
 % else:
 
-	Bitte überprüfen Sie den Erhalt folgender Lehrbücher, vermerken Sie die individuelle Buchnummer (LMF-Nr.) und bewerten Sie deren \linebreak Zustand: \hfill neu \textbf{++} \quad gut \textbf{+} \quad mittel \textbf{$\circ$} \quad schlecht \textbf{-}
+	Ihnen wurden folgende Lehrbücher als Leihexemplare überlassen. Vermerken Sie die Inventarnummer und bewerten Sie den \linebreak Zustand des Buchs: \hfill neu \textbf{++} \quad gut \textbf{+} \quad mittel \textbf{$\circ$} \quad schlecht \textbf{-}
 
 	\rowcolors{1}{white}{black!10}
 	\begin{tabular}[c]{ | p{0.75cm} | c | p{5.5cm} | c | c | }
 		\hline
 		
-		\textbf{Fach} &
+		\textbf{\small Fach} &
 		\textbf{\small Klasse} &
-		\textbf{Lehrbuch} &
-		\textbf{LMF-Nr.} &
+		\textbf{\small Lehrbuch} &
+		\textbf{\small Inv.-Nr.} &
 		\textbf{\small Zustand}
 		\\ \hline
 
@@ -148,6 +154,14 @@
 
 	\end{tabular}
 
+	\vspace{1.5cm}
+
+	\rule{4.5cm}{0.4pt} \hfill \rule{4.5cm}{0.4pt}
+
+	Datum, Ort \hfill Unterschrift Klassenleiter:in
+
+	\vfill
+
 	{ \large Bereits ausgeliehene Bücher }
 
 	Bitte überprüfen Sie den Zustand folgender Lehrbücher:
@@ -156,10 +170,10 @@
 	\begin{tabular}[c]{ | p{0.75cm} | c | p{5.5cm} | c | c | }
 		\hline
 		
-		\textbf{Fach} &
+		\textbf{\small Fach} &
 		\textbf{\small Klasse} &
-		\textbf{Lehrbuch} &
-		\textbf{LMF-Nr.} &
+		\textbf{\small Lehrbuch} &
+		\textbf{\small Inv.-Nr.} &
 		\textbf{\small Zustand}
 		\\ \hline
 
@@ -206,9 +220,9 @@ Hiermit bestätige ich im Besitz der oben genannten Bücher zu sein.
 
 \vspace{1.5cm}
 
-\hfill \hrulefill \hfill \hrulefill
+\rule{4.5cm}{0.4pt} \hfill \rule{4.5cm}{0.4pt}
 
-\hfill Datum, Ort \hfill Unterschrift Eltern
+Datum, Ort \hfill Unterschrift Eltern
 
 
 \pagebreak
