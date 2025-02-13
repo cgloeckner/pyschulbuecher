@@ -89,7 +89,11 @@
             %end
         %else:
     \multicolumn{4}{c|}{\small {\textit {{nicht mehr erh\"altlich}} } }
+            %if b.inGrade > 10:
     & \checkinput
+            %else:
+    & \checkedinput
+            %end
         %end
     \\
     \hline
