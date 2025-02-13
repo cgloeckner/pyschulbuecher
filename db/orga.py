@@ -96,13 +96,18 @@ def getStudentsCount(grade: int):
     return total
 
 
+def phonebook_key(name):
+    """Normalize names for German phonebook sorting (DIN 5007-1)."""
+    umlaut_map = str.maketrans("äöüß", "aous")  # Treat umlauts as base vowels
+    return name.translate(umlaut_map).upper()
+
+
 def sortStudents(students: list):
     """Sort students by name (primary) and firstname (secondary). This
-    considers Umlate while sorting, e.h. handling O and Ö similar instead of
-    sorting Ö after Z
+    considers Umlate while sorting, e.h. handling O and Ö equally instead of
+    sorting Ö after Z, do not sort "van Something" behind "Z"
     """
-    students.sort(key=lambda s: locale.strxfrm(s.person.firstname))
-    students.sort(key=lambda s: locale.strxfrm(s.person.name))
+    students.sort(key=lambda s: (phonebook_key(s.person.name), s.person.firstname))
 
 
 def getStudentsIn(grade: int, tag: str):
