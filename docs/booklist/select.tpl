@@ -7,7 +7,7 @@
 %if workbook:
     Arbeitshefte
 %else:
-    Lehrbücher
+    Lehrbücher \hfill  \footnotesize (\textbf{\large V}orhanden, privater \textbf{\large K}auf oder \textbf{\large F}reiexemplar)
 %end
 }
 
