@@ -40,9 +40,9 @@ class Settings(object):
             'headteacher': 'Mr. Boss'
         }
         self.data['deadline'] = {
-            'booklist_return': '17.03.2017',
-            'booklist_changes': '19.06.2017',
-            'bookreturn_noexam': '17.03.2017'
+            'booklist_return': '17.03.',
+            'booklist_changes': '19.06.',
+            'bookreturn_graduate': '17.03.'
         }
 
     def load_from(self, fhandle):
@@ -586,8 +586,9 @@ class BooklistPdf(object):
         else:
             bks = books.getBooksStartedIn(grade, booklist=True)
             suffix = ''
-            deadline = 'Abgabe bis spätestens {0}'.format(
-                self.s.data['deadline']['booklist_return'])
+            date = self.s.data['deadline']['booklist_return']
+            year = int(self.s.data['general']['school_year'])
+            deadline = f'Abgabe bis spätestens {date}{year+1}'
         bks = books.orderBooksList(bks)
         if grade == 5:
             deadline = 'Abgabe bei Anmeldung'

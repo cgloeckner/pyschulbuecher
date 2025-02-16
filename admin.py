@@ -540,7 +540,7 @@ def settings_form_post():
     s.data['general']['school_year'] = request.forms.school_year
     s.data['deadline']['booklist_changes'] = request.forms.deadline_booklist_changes
     s.data['deadline']['booklist_return'] = request.forms.deadline_booklist_return
-    s.data['deadline']['bookreturn_noexam'] = request.forms.deadline_bookreturn_noexam
+    s.data['deadline']['bookreturn_graduate'] = request.forms.bookreturn_graduate
 
     with open('settings.ini', 'w') as h:
         s.save_to(h)
@@ -1794,9 +1794,9 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 
         args = {
             'school_year': s.data['general']['school_year'],
-            'deadline_changes': '19.06.2017',
-            'deadline_booklist': '23.03.2017',
-            'bookreturn_noexam': '23.03.2017'
+            'deadline_changes': '19.06.',
+            'deadline_booklist': '23.03.',
+            'bookreturn_graduate': '23.03.'
         }
         ret = self.app.post('/admin/settings', args)
 

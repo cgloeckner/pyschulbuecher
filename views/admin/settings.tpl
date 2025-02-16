@@ -28,7 +28,7 @@
 	</tr>
 	<tr>
 		<td>Rückgabetermin Bücher (Klasse 12)</td>
-		<td><input type="text" name="bookreturn_noexam" value="{{s.data['deadline']['bookreturn_noexam']}}" /></td>
+		<td><input type="text" name="bookreturn_graduate" value="{{s.data['deadline']['bookreturn_graduate']}}" /></td>
 	</tr>
 	<tr>
 		<td></td>

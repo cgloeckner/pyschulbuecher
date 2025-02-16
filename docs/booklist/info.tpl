@@ -56,9 +56,9 @@ bitte f\"ullen Sie nach Ihren M\"oglichkeiten und W\"unschen den B\"ucherzettel 
 		\item[F] Freiexemplar (Dieses Buch m\"ochten Sie von der Schule, nach den geltenden Bestimmungen des Landes Thüringen, ausleihen.)
 	\end{description}
 	\item Bitte \textbf{streichen} Sie die Zeilen der Kurse oder F\"acher, die \textbf{nicht belegt werden} (z.B. Wahlkurse, Ethik / Religion, Fremdsprache).
-	\item Der Erwerb der Kaufexemplare und Arbeitshefte erfolgt in den f\"ur den Schulbuchverkauf zust\"andigen Verkaufsstellen (nicht im Gymnasium) durch die Eltern. Bitte den B\"ucherzettel erst nach dem {{s.data['deadline']['booklist_changes']}} dort abgeben, falls \"Anderungen eintreten sollten.
+	\item Der Erwerb der Kaufexemplare und Arbeitshefte erfolgt in den f\"ur den Schulbuchverkauf zust\"andigen Verkaufsstellen (nicht im Gymnasium) durch die Eltern. Bitte den B\"ucherzettel erst nach dem {{s.data['deadline']['booklist_changes']}}{{year+1}} dort abgeben, falls \"Anderungen eintreten sollten.
 	\item Wir bitte Sie den \textbf{ausgef\"ullten B\"ucherzettel} zwecks sp\"aterer Kontrolle und Buchkauf unbedingt mehrfach zu \textbf{kopieren}.
-	\item Der Bücherzettel ist nach Erhalt auszufüllen und unverzüglich, jedoch \textbf{bis sp\"atestens {{s.data['deadline']['booklist_return']}} beim Klassenleiter abzugeben}.
+	\item Der Bücherzettel ist nach Erhalt auszufüllen und unverzüglich, jedoch \textbf{bis sp\"atestens {{s.data['deadline']['booklist_return']}}{{year+1}} beim Klassenleiter abzugeben}.
 
 	\item Es besteht die M\"oglichkeit einen \textbf{Schulplaner} (HA, Termine, Noten\"ubersicht uvm.) von der Schule k\"auflich zu erwerben. Kreuzen Sie dies bitte an, wenn Sie einen solchen Schulplaner erwerben m\"ochten.
 
