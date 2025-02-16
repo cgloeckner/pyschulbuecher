@@ -11,12 +11,11 @@
 %end
 }
 
-%if workbook:
-\begin{longtable}{ | c | p{6cm} | p{2.8cm} | c | r | }
-%else:
-\begin{longtable}{ | c | p{4.5cm} | p{2cm} | c | r | p{0.66cm} | p{0.66cm} | p{0.66cm} | }
+\begin{longtable}{ | >{\centering}p{1cm} | p{5cm} | p{2.25cm} | c | r |
+%if not workbook:
+p{0.4cm} | p{0.4cm} | p{0.4cm} |
 %end
-\hline
+} \hline
 \textbf{Fach} & \textbf{Titel} & \textbf{Verlag} & \textbf{ISBN} & \textbf{Preis}
 %if not workbook:
  & \textbf{\enspace V} & \textbf{\enspace K} & \textbf{\enspace F}
@@ -37,10 +36,8 @@
             %ga = b.novices
             %ea = b.advanced
             %cmt = len(b.comment) > 0
-            %if ga or ea or cmt:
-    \makecell{
-            %end
-        {\small {{!tex_escape(b.subject.tag)}} }
+
+        {\small {{!tex_escape(b.subject.tag)}}
             %if grade > 10:
                 %if ea and ga:
                     %pass
@@ -54,21 +51,19 @@
                 %end
             %end
             %if cmt:
-        \\ {\footnotesize {{!tex_escape(b.comment)}} }
+         {\footnotesize {{!tex_escape(b.comment)}} }
             %end
-            %if cmt or ga or ea:
-    }
-            %end
+        }
         %else:
     {\small versch. }
         %end
     & 
     {\small {{!tex_escape(b.title)}} }
     &
-    {\small {{!tex_escape(b.publisher.name)}}}
+    {\footnotesize {{!tex_escape(b.publisher.name)}}}
     &
         %if b.isAvailable():
-    {\small {{!tex_escape(b.isbn)}} }
+    {\footnotesize {{!tex_escape(b.isbn)}} }
         &
     {\small {{!tex_escape(Currency.toString(b.price, addSymbol=False))}} \euro }
             %if not b.workbook:

@@ -128,6 +128,12 @@ class Book(db.Entity):
         return 'https://www.google.com/search?q=%s %s %s' % (
             self.title, self.isbn, self.publisher.name)
 
+    def getGradeRange(self) -> str:
+        if self.inGrade == self.outGrade:
+            return str(self.inGrade)
+        
+        return f'{self.inGrade}-{self.outGrade}'
+
 
 class Currency(object):
     @staticmethod

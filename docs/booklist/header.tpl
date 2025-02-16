@@ -1,7 +1,7 @@
 %import datetime
 
 \documentclass[10pt,twoside,a4paper]{article}
-\usepackage[a4paper, left=2.5cm, right=2cm, top=1.25cm, bottom=2cm]{geometry}
+\usepackage[a4paper, left=2cm, right=2cm, top=1.25cm, bottom=1.5cm]{geometry}
 \usepackage{eurosym}
 \usepackage[utf8]{inputenc}
 \usepackage{makecell}
@@ -50,11 +50,11 @@
 }
 
 \newcommand{\checkinput} {
-    \raisebox{-0.125cm}{\CheckBox[width=0.35cm, height=0.35cm, bordercolor=black!25!white, checkboxsymbol=\ding{53}]{\null}}
+    \raisebox{-0.125cm}{\CheckBox[width=0.3cm, height=0.3cm, bordercolor=black!25!white, checkboxsymbol=\ding{53}]{\null}}
 }
 
 \newcommand{\checkedinput} {
-    \raisebox{-0.125cm}{\CheckBox[width=0.35cm, height=0.35cm, bordercolor=black!25!white, checkboxsymbol=\ding{53}, checked]{\null}}
+    \raisebox{-0.125cm}{\CheckBox[width=0.3cm, height=0.3cm, bordercolor=black!25!white, checkboxsymbol=\ding{53}, checked]{\null}}
 }
 
 \newcommand{\infoInput}[2][4in]{%
