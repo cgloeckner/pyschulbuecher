@@ -22,6 +22,10 @@ p{0.4cm} | p{0.4cm} | p{0.4cm} |
 %end
 \\ \hline
 %for b in bs:
+    %if b.workbook and not b.isAvailable():
+        %print(f"ERROR: Workbook '{b.title}' #{b.id} is not available")
+        %continue
+    %end
     %if new_students:
         %key = '{0}_neu_{1}'.format(grade, b.id)
     %else:
