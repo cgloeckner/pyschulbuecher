@@ -792,9 +792,10 @@ def booklist_preview():
         bks_new = books.getBooksUsedIn(grade, booklist=True)
         bks_old = books.getBooksStartedIn(grade, booklist=True)
 
-        all_books['{0}'.format(grade)] = books.orderBooksList(bks_old)
+        key = f'{grade:02d}'
+        all_books[key] = books.orderBooksList(bks_old)
         if grade > 5:
-            all_books['{0}_neu'.format(grade)] = books.orderBooksList(bks_new)
+            all_books[f'{key}_neu'] = books.orderBooksList(bks_new)
 
     return dict(all_books=all_books)
 
@@ -807,13 +808,14 @@ def booklist_generate():
     print('Detecting excluded books')
     exclude = set()
     for g in orga.getGradeRange():
+        grade_key = f'{g:02d}'
         for b in books.getBooksUsedIn(g):
             # regular booklist
-            key = '{0}_{1}'.format(g, b.id)
+            key = f'{grade_key}_{b.id}'
             if request.forms.get(key) != 'on':
                 exclude.add(key)
             # new student's booklist
-            key = '{0}_neu_{1}'.format(g, b.id)
+            key = f'{grade_key}_neu_{b.id}'
             if request.forms.get(key) != 'on':
                 exclude.add(key)
 

@@ -12,7 +12,8 @@
 %grades = list(all_books.keys())
 %grades.sort()
 %for grade in grades:
-	%books = all_books[grade]
+	%key = f'{grade:02d}'
+	%books = all_books[key]
 <h2>Klassenstufe {{grade}}</h2>
 <table>
 	<tr>
