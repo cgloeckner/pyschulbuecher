@@ -51,6 +51,7 @@ def orderBooksList(bks):
             lambda b: b.publisher.name).order_by(
             db.Book.title))
     bks.sort(key=lambda b: b.subject.tag if b.subject is not None else '')
+    bks.sort(key=lambda b: b.subject.elective if b.subject is not None else False)
     return bks
 
 
