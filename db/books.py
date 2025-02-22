@@ -39,7 +39,7 @@ def getSubjects(elective=None):
 
 def orderBooksIndex(bks):
     # 1st: subject, 2nd: inGrade, 3rd: title
-    bks = list(bks.order_by(db.Book.title).order_by(db.Book.inGrade))
+    bks = list(bks.order_by(db.Book.title).order_by(db.Book.inGrade).order_by(db.Book.classsets))
     bks.sort(key=lambda b: b.subject.tag if b.subject is not None else '')
     return bks
 
