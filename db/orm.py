@@ -109,6 +109,9 @@ class Book(db.Entity):
     def isAvailable(self):
         return self.isbn is not None and self.isbn != '' and self.price != None and self.price != 0
 
+    def isLongTerm(self):
+        return self.outGrade - self.inGrade > 1
+
     def toString(self):
         caption = self.title
         comments = list()

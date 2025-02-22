@@ -55,6 +55,7 @@ p{0.4cm} | p{0.4cm} | p{0.4cm} |
                 %end
             %end
             %if cmt:
+        \newline
          {\footnotesize {{!tex_escape(b.comment)}} }
             %end
         }
@@ -62,7 +63,12 @@ p{0.4cm} | p{0.4cm} | p{0.4cm} |
     {\small versch. }
         %end
     & 
-    {\small {{!tex_escape(b.title)}} }
+    {\small {{!tex_escape(b.title)}}
+    %if b.isLongTerm():
+        \newline
+        \scriptsize (bis Klasse {{b.outGrade}})
+    %end
+    }
     &
     {\footnotesize {{!tex_escape(b.publisher.name)}}}
     &

@@ -76,20 +76,13 @@ class SubjectCouncilXls(object):
     def __call__(self, subject):
         self.data = xlsxwriter.Workbook(self.getPath(subject))
 
-        """
-        # create sheets
-        sheets = [
-            {'name': 'Lehrbücher', 'items': books.getRealBooksBySubject(subject, False)},
-            {'name': 'Arbeitshefte', 'items': books.getWorkbooksBySubject(subject)},
-            {'name': 'Klassensätze', 'items': books.getClasssetsBySubject(subject)},
-        ]
-        """
-
-        items = {
+        """items = {
             'Leihbuch': books.getRealBooksBySubject(subject, False),
             'AH': books.getWorkbooksBySubject(subject),
             'Klassensatz': books.getClasssetsBySubject(subject)
-        }
+        }"""
+        
+        all_books = books.orderBooksIndex(books.getAllBooks())
 
         title_format = self.data.add_format()
         title_format.set_bold()
@@ -98,43 +91,6 @@ class SubjectCouncilXls(object):
 
         center_format = self.data.add_format()
         center_format.set_align('center')
-
-        """
-        for s in sheets:
-            tab = self.data.add_worksheet(s['name'])
-
-            tab.set_column(0, 0, 40)
-            tab.set_column(1, 1, 25)
-            tab.set_column(2, 2, 20)
-            tab.set_column(3, 3, 8, euro_format)
-            tab.set_column(4, 4, 15, grade_format)
-            tab.set_column(5, 5, 30)
-
-            for col, caption in enumerate(['Titel', 'Verlag', 'ISBN', 'Preis', 'Klassenstufe', 'Bemerkungen']):
-                tab.write(0, col, caption, title_format)
-
-            for row, b in enumerate(s['items']):
-                tab.write(row+1, 0, b.title)
-                if b.publisher is not None:
-                    tab.write(row+1, 1, b.publisher.name)
-                if b.isbn is not None:
-                    tab.write(row+1, 2, b.isbn)
-                if b.price is not None:
-                    tab.write(row+1, 3, b.price / 100.0)
-                if b.inGrade == b.outGrade:
-                    tab.write(row+1, 4, b.inGrade)
-                else:
-                    tab.write(row+1, 4, '%d-%d' % (b.inGrade, b.outGrade))
-
-                comments = list()
-                if b.comment != '':
-                    comments.append(b.comment)
-                if b.novices:
-                    comments.append('gA')
-                if b.advanced:
-                    comments.append('eA')
-                tab.write(row+1, 5, ' '.join(comments))
-        """
 
         tab = self.data.add_worksheet(subject.tag)
         tab.set_landscape()
@@ -154,31 +110,39 @@ class SubjectCouncilXls(object):
             tab.write(0, col, caption, title_format)
 
         row = 0
-        for kind in ['Leihbuch', 'AH', 'Klassensatz']:
-            for b in items[kind]:
-                tab.write(row + 1, 0, b.title)
-                if b.publisher is not None:
-                    tab.write(row + 1, 1, b.publisher.name)
-                if b.isbn is not None:
-                    tab.write(row + 1, 2, b.isbn)
-                if b.price is not None:
-                    tab.write(row + 1, 3, b.price / 100.0)
-                if b.inGrade == b.outGrade:
-                    tab.write(row + 1, 4, b.inGrade)
-                else:
-                    tab.write(row + 1, 4, '%d-%d' % (b.inGrade, b.outGrade))
-                tab.write(row + 1, 5, kind)
+        for b in all_books:
+            if b.subject != subject:
+                continue
+            
+            if b.workbook:
+                kind = 'Arbeitsheft'
+            elif b.classsets:
+                kind = 'Klassensatz'
+            else:
+                kind = 'Leihbuch'
+            tab.write(row + 1, 0, b.title)
+            if b.publisher is not None:
+                tab.write(row + 1, 1, b.publisher.name)
+            if b.isbn is not None:
+                tab.write(row + 1, 2, b.isbn)
+            if b.price is not None:
+                tab.write(row + 1, 3, b.price / 100.0)
+            if b.inGrade == b.outGrade:
+                tab.write(row + 1, 4, b.inGrade)
+            else:
+                tab.write(row + 1, 4, '%d-%d' % (b.inGrade, b.outGrade))
+            tab.write(row + 1, 5, kind)
 
-                comments = list()
-                if b.comment != '':
-                    comments.append(b.comment)
-                if b.novices:
-                    comments.append('gA')
-                if b.advanced:
-                    comments.append('eA')
-                tab.write(row + 1, 6, ' '.join(comments))
+            comments = list()
+            if b.comment != '':
+                comments.append(b.comment)
+            if b.novices:
+                comments.append('gA')
+            if b.advanced:
+                comments.append('eA')
+            tab.write(row + 1, 6, ' '.join(comments))
 
-                row += 1
+            row += 1
 
     def saveToFile(self):
         assert(self.data is not None)
