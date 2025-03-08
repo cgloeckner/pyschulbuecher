@@ -2,6 +2,16 @@
 
 <h1>Ausdrucke</h1>
 
+%remote_latex = settings.data['hosting']['remote_latex']
+<p>
+	<b>LaTeX-Compiler:</b> 
+%if remote_latex == '':
+	<i>lokal</i>
+%else:
+	<a href="{{remote_latex}}" target="_blank">{{remote_latex}}</a>
+%end
+</p>
+
 <h2>Bedarf</h2>
 <ul>
 	<li><a href="/admin/lists/generate/councils" target="_blank">Bedarf Fachschaften</a></li>

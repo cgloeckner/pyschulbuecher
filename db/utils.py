@@ -3,10 +3,9 @@
 
 from db.orm import db
 from pony.orm import *
-from io import StringIO
+import io
 import unittest
 import os
-import configparser
 import datetime
 import xlsxwriter
 import yaml
@@ -17,10 +16,47 @@ from db import books, orga, loans
 from db.orm import Currency
 
 
-def compile_pdf(tex_code: str, path: str) -> None:
+def use_local_latex_compiler(tex_code: str, path: str) -> None:
     from latex import build_pdf
     pdf = build_pdf(tex_code)
     pdf.save_to(path)
+
+
+def use_remote_latex_compiler(remote_latex: str, tex_code: str, path: str) -> None:
+    import requests
+    import tarfile
+
+    # write tex code to main.tex inside a tar file
+    tar_buffer = io.BytesIO()
+    with tarfile.open(fileobj=tar_buffer, mode='w') as tar:
+        texfile = io.BytesIO(tex_code.encode('utf-8'))
+        tarinfo = tarfile.TarInfo(name='main.tex')
+        tarinfo.size = len(tex_code.encode('utf-8'))
+        tar.addfile(tarinfo, fileobj=texfile)
+    tar_buffer.seek(0)
+    
+    # post tar file to latex compiler
+    url = f'{remote_latex}/data?target=main.tex'
+    files = { 'file': ('archive.tar', tar_buffer, 'application/x-tar') }
+    ret = requests.post(url, files=files)
+
+    # handle response
+    if ret.status_code != 200:
+        print(f"Failed to download file. HTTP Status Code: {ret.status_code}")
+        print("Error response body:")
+        print(ret.text)
+        return
+
+    with open(path, 'wb') as file:
+        file.write(ret.content)
+    
+
+def compile_pdf(remote_latex: str, tex_code: str, path: str) -> None:
+    if remote_latex == '':
+        use_local_latex_compiler(tex_code, path)
+    else:
+        use_remote_latex_compiler(remote_latex, tex_code, path)
+
 
 
 def shortName(firstname):
@@ -53,7 +89,7 @@ class Settings(object):
 
 
 class SubjectCouncilXls(object):
-    def __init__(self, settings_handle, export='export'):
+    def __init__(self, settings, export='export'):
         # prepare output directory
         if not os.path.isdir(export):  # base dir
             os.mkdir(export)
@@ -61,8 +97,7 @@ class SubjectCouncilXls(object):
         if not os.path.isdir(self.export):  # councils dir
             os.mkdir(self.export)
         # load settings
-        self.s = Settings()
-        self.s.load_from(settings_handle)
+        self.s = settings
         self.data = None
 
     def getPath(self, subject):
@@ -194,14 +229,13 @@ class PlannerXls(object):
 
 
 class DatabaseDumpXls(object):
-    def __init__(self, settings_handle, export='export'):
+    def __init__(self, settings, export='export'):
         # prepare output directory
         if not os.path.isdir(export):  # base dir
             os.mkdir(export)
         self.export = export
         # load settings
-        self.s = Settings()
-        self.s.load_from(settings_handle)
+        self.s = settings
         # setup xlsx file
         path = os.path.join(
             self.export, '%s.xlsx' %
@@ -257,7 +291,7 @@ class DatabaseDumpXls(object):
 
 
 class ClasssetsPdf(object):
-    def __init__(self, prefix, settings_handle, threshold, export='export'):
+    def __init__(self, prefix, settings, threshold, export='export'):
         """ All books, that are either class sets or if more than `threshold`
         pieces are loaned by a person, are written to the PDF. """
         # load LaTeX templates
@@ -274,8 +308,7 @@ class ClasssetsPdf(object):
         if not os.path.isdir(self.texdir):
             os.mkdir(self.texdir)
         # load settings
-        self.s = Settings()
-        self.s.load_from(settings_handle)
+        self.s = settings
 
         self.tex = template(self.header)
         self.threshold = threshold
@@ -320,13 +353,13 @@ class ClasssetsPdf(object):
 
         # export PDF
         fname = self.getPath()
-        compile_pdf(self.tex, fname)
+        compile_pdf(self.s.data['hosting']['remote_latex'], self.tex, fname)
 
 # -----------------------------------------------------------------------------
 
 
 class InventoryReport(object):
-    def __init__(self, settings_handle, export='export'):
+    def __init__(self, settings, export='export'):
         # load LaTeX templates
         with open('docs/inventoryreport/header.tpl') as f:
             self.header = f.read()
@@ -340,8 +373,7 @@ class InventoryReport(object):
         if not os.path.isdir(self.texdir):
             os.mkdir(self.texdir)
         # load settings
-        self.s = Settings()
-        self.s.load_from(settings_handle)
+        self.s = settings
 
         self.tex = template(self.header)
 
@@ -371,13 +403,13 @@ class InventoryReport(object):
 
         # export PDF
         fname = self.getPath()
-        compile_pdf(self.tex, fname)
+        compile_pdf(self.s.data['hosting']['remote_latex'], self.tex, fname)
 
 # -----------------------------------------------------------------------------
 
 
 class LoanReportPdf(object):
-    def __init__(self, prefix, settings_handle, export='export'):
+    def __init__(self, prefix, settings, export='export'):
         # load LaTeX templates
         with open('docs/loanreport/header.tpl') as f:
             self.header = f.read()
@@ -392,8 +424,7 @@ class LoanReportPdf(object):
         if not os.path.isdir(self.texdir):
             os.mkdir(self.texdir)
         # load settings
-        self.s = Settings()
-        self.s.load_from(settings_handle)
+        self.s = settings
 
         self.tex = template(self.header)
 
@@ -420,7 +451,7 @@ class LoanReportPdf(object):
 
         # export PDF
         fname = self.getPath()
-        compile_pdf(self.tex, fname)
+        compile_pdf(self.s.data['hosting']['remote_latex'], self.tex, fname)
 
 # -----------------------------------------------------------------------------
 
@@ -429,7 +460,7 @@ class LoanContractPdf(object):
     def __init__(
             self,
             prefix,
-            settings_handle,
+            settings,
             export='export',
             advance=False):
         # load LaTeX templates
@@ -450,8 +481,7 @@ class LoanContractPdf(object):
         if not os.path.isdir(self.texdir):
             os.mkdir(self.texdir)
         # load settings
-        self.s = Settings()
-        self.s.load_from(settings_handle)
+        self.s = settings
 
         self.tex = template(self.header)
         self.advance = advance
@@ -489,13 +519,13 @@ class LoanContractPdf(object):
 
         # export PDF
         fname = self.getPath()
-        compile_pdf(self.tex, fname)
+        compile_pdf(self.s.data['hosting']['remote_latex'], self.tex, fname)
 
 # -----------------------------------------------------------------------------
 
 
 class BooklistPdf(object):
-    def __init__(self, settings_handle, export='export'):
+    def __init__(self, settings, export='export'):
         # load LaTeX templates
         with open('docs/booklist/header.tpl') as f:
             self.header = f.read()
@@ -519,8 +549,7 @@ class BooklistPdf(object):
         if not os.path.isdir(self.texdir):
             os.mkdir(self.texdir)
         # load settings
-        self.s = Settings()
-        self.s.load_from(settings_handle)
+        self.s = settings
 
     def __call__(self, grade: int, exclude: set, new_students: bool = False):
         """Generate booklist pdf file for the given grade. A separate booklist
@@ -592,7 +621,7 @@ class BooklistPdf(object):
         fname = os.path.join(
             self.export, 'Bücherzettel%d%s.pdf' %
             (grade, suffix))
-        compile_pdf(self.tex, fname)
+        compile_pdf(self.s.data['hosting']['remote_latex'], self.tex, fname)
 
     def infosheet(self):
         # render templates
@@ -605,14 +634,14 @@ class BooklistPdf(object):
 
         # export PDF
         fname = os.path.join(self.export, 'Bücherzettel_Information.pdf')
-        compile_pdf(self.tex, fname)
+        compile_pdf(self.s.data['hosting']['remote_latex'], self.tex, fname)
 
 # -----------------------------------------------------------------------------
 
 
 class RequestlistPdf(object):
 
-    def __init__(self, settings_handle, export='export'):
+    def __init__(self, settings, export='export'):
         # load LaTeX templates
         with open('docs/requestlist/header.tpl') as f:
             self.header = f.read()
@@ -626,8 +655,7 @@ class RequestlistPdf(object):
         if not os.path.isdir(self.texdir):
             os.mkdir(self.texdir)
         # load settings
-        self.s = Settings()
-        self.s.load_from(settings_handle)
+        self.s = settings
 
         self.tex = template(self.header)
 
@@ -665,14 +693,14 @@ class RequestlistPdf(object):
 
         # export PDF
         fname = self.getPath()
-        compile_pdf(self.tex, fname)
+        compile_pdf(self.s.data['hosting']['remote_latex'], self.tex, fname)
 
 # -----------------------------------------------------------------------------
 
 
 class BookreturnPdf(object):
 
-    def __init__(self, settings_handle, export='export'):
+    def __init__(self, settings, export='export'):
         # load LaTeX templates
         with open('docs/bookreturn/header.tpl') as f:
             self.header = f.read()
@@ -688,8 +716,7 @@ class BookreturnPdf(object):
         if not os.path.isdir(self.texdir):
             os.mkdir(self.texdir)
         # load settings
-        self.s = Settings()
-        self.s.load_from(settings_handle)
+        self.s = settings
 
         self.tex = template(self.header)
 
@@ -730,14 +757,14 @@ class BookreturnPdf(object):
 
         # export PDF
         fname = self.getPath()
-        compile_pdf(self.tex, fname)
+        compile_pdf(self.s.data['hosting']['remote_latex'], self.tex, fname)
 
 
 # -----------------------------------------------------------------------------
 
 class BookloanPdf(object):
 
-    def __init__(self, settings_handle, export='export'):
+    def __init__(self, settings, export='export'):
         # load LaTeX templates
         with open('docs/bookloan/header.tpl') as f:
             self.header = f.read()
@@ -751,8 +778,7 @@ class BookloanPdf(object):
         if not os.path.isdir(self.texdir):
             os.mkdir(self.texdir)
         # load settings
-        self.s = Settings()
-        self.s.load_from(settings_handle)
+        self.s = settings
 
         self.tex = template(self.header)
 
@@ -802,14 +828,14 @@ class BookloanPdf(object):
 
         # export PDF
         fname = self.getPath()
-        compile_pdf(self.tex, fname)
+        compile_pdf(self.s.data['hosting']['remote_latex'], self.tex, fname)
 
 # -----------------------------------------------------------------------------
 
 
 class BookpendingPdf(object):
 
-    def __init__(self, settings_handle, export='export'):
+    def __init__(self, settings, export='export'):
         # load LaTeX templates
         with open('docs/bookpending/header.tpl') as f:
             self.header = f.read()
@@ -829,8 +855,7 @@ class BookpendingPdf(object):
         if not os.path.isdir(self.export):
             os.mkdir(self.export)
         # load settings
-        self.s = Settings()
-        self.s.load_from(settings_handle)
+        self.s = settings
 
         self.tex = template(self.header)
 
@@ -881,7 +906,7 @@ class BookpendingPdf(object):
 
         # export PDF
         fname = os.path.join(self.export, '%s.pdf' % pdfname)
-        compile_pdf(self.tex, fname)
+        compile_pdf(self.s.data['hosting']['remote_latex'], self.tex, fname)
 
         return pdfname
 
@@ -889,7 +914,7 @@ class BookpendingPdf(object):
 
 
 class ClassListPdf(object):
-    def __init__(self, settings_handle, export='export'):
+    def __init__(self, settings, export='export'):
         # load LaTeX templates
         with open('docs/classlist/header.tpl') as f:
             self.header = f.read()
@@ -903,8 +928,7 @@ class ClassListPdf(object):
         if not os.path.isdir(self.texdir):
             os.mkdir(self.texdir)
         # load settings
-        self.s = Settings()
-        self.s.load_from(settings_handle)
+        self.s = settings
 
         self.tex = template(self.header)
 
@@ -926,7 +950,7 @@ class ClassListPdf(object):
 
         # export PDF
         fname = self.getPath()
-        compile_pdf(self.tex, fname)
+        compile_pdf(self.s.data['hosting']['remote_latex'], self.tex, fname) 
 
 # -----------------------------------------------------------------------------
 

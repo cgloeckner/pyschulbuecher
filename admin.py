@@ -205,12 +205,6 @@ def books_delete(id):
 @view('admin/demand_form')
 def demand_form():
     s = Settings()
-    try:
-        with open('settings.ini') as h:
-            s.load_from(h)
-    except FileNotFoundError:
-        # keep default values
-        pass
 
     # load student numbers from file
     demand = loans.DemandManager()
@@ -224,13 +218,7 @@ def demand_form():
 @view('admin/demand_report')
 def demand_report():
     s = Settings()
-    try:
-        with open('settings.ini') as h:
-            s.load_from(h)
-    except FileNotFoundError:
-        # keep default values
-        pass
-
+    
     # percentage of lowering the stock to gain buffer (e.g. for damaged books)
     lowering = int(request.forms.lowering)
 
@@ -515,12 +503,6 @@ def teachers_delete_post(id):
 @view('admin/settings')
 def settings_form():
     s = Settings()
-    try:
-        with open('settings.ini') as h:
-            s.load_from(h)
-    except FileNotFoundError:
-        # keep default values
-        pass
 
     return dict(s=s)
 
@@ -528,13 +510,7 @@ def settings_form():
 @post('/admin/settings')
 def settings_form_post():
     s = Settings()
-    try:
-        with open('settings.ini') as h:
-            s.load_from(h)
-        current_year = s.data['general']['school_year']
-    except FileNotFoundError:
-        # keep default values
-        current_year = None
+    current_year = s.data['general']['school_year']
 
     s = Settings()
     s.data['general']['school_year'] = request.forms.school_year
@@ -599,72 +575,73 @@ def lists_index():
 
     export = os.path.join(os.getcwd(), 'export')
 
-    return dict(export=export)
+    s = Settings()
+    return dict(export=export, settings=s)
 
 
 @get('/admin/lists/generate/db_dump')
 def db_dump_generate():
-    with open('settings.ini') as h:
-        # generte Excel sheet with entire db loaning content
+    s = Settings()
+    # generte Excel sheet with entire db loaning content
 
-        print('Generating Loan Reports')
-        d = time.time()
-        yield 'Bitte warten...'
+    print('Generating Loan Reports')
+    d = time.time()
+    yield 'Bitte warten...'
 
-        xlsx = DatabaseDumpXls(h)
+    xlsx = DatabaseDumpXls(s)
 
-        # sort classes
-        classes = list(db.Class.select())
-        orga.sortClasses(classes)
+    # sort classes
+    classes = list(db.Class.select())
+    orga.sortClasses(classes)
 
-        for c in classes:
-            yield '%s<br />' % c.toString()
-            bks = books.getBooksUsedIn(c.grade, booklist=True)
-            xlsx(c, bks)
+    for c in classes:
+        yield '%s<br />' % c.toString()
+        bks = books.getBooksUsedIn(c.grade, booklist=True)
+        xlsx(c, bks)
 
-        xlsx.saveToFile()
+    xlsx.saveToFile()
 
-        print('Done')
-        d = time.time() - d
+    print('Done')
+    d = time.time() - d
 
-        yield '<hr /><br />Erledigt in %f Sekunden<hr /><pre>%s</pre>' % (d, xlsx.getPath())
+    yield '<hr /><br />Erledigt in %f Sekunden<hr /><pre>%s</pre>' % (d, xlsx.getPath())
 
 
 @get('/admin/lists/generate/inventory')
 def book_inventory():
-    with open('settings.ini') as h:
-        inv = InventoryReport(h)
-        inv()
-        inv.saveToFile()
+    s = Settings()
+    inv = InventoryReport(s)
+    inv()
+    inv.saveToFile()
     yield '<pre>%s</pre>' % inv.getPath()
 
 
 @get('/admin/lists/generate/councils')
 def councils_generate():
-    with open('settings.ini') as h:
-        # generate Excel sheet for demand of councils (file per subject
-        # council)
+    s = Settings()
+    # generate Excel sheet for demand of councils (file per subject
+    # council)
 
-        print('Generating Loan Reports')
-        d = time.time()
-        yield 'Bitte warten...'
+    print('Generating Loan Reports')
+    d = time.time()
+    yield 'Bitte warten...'
 
-        for s in db.Subject.select():
-            councils = SubjectCouncilXls(h)
-            councils(s)
-            councils.saveToFile()
-            yield '<pre>%s</pre>' % councils.getPath(s)
+    for s in db.Subject.select():
+        councils = SubjectCouncilXls(s)
+        councils(s)
+        councils.saveToFile()
+        yield '<pre>%s</pre>' % councils.getPath(s)
 
-        print('Done')
-        d = time.time() - d
+    print('Done')
+    d = time.time() - d
 
-        yield '<hr /><br />Erledigt in %f Sekunden' % (d)
+    yield '<hr /><br />Erledigt in %f Sekunden' % (d)
 
 
 @get('/admin/lists/generate/teacherloans')
 def teacherloans_generate():
-    with open('settings.ini') as h:
-        loanreport = LoanReportPdf('Lehrer', h)
+    s = Settings()
+    loanreport = LoanReportPdf('Lehrer', s)
 
     print('Generating Loan Reports')
     d = time.time()
@@ -686,8 +663,8 @@ def teacherloans_generate():
 
 @get('/admin/lists/generate/classsets')
 def teacher_classsets_generate():
-    with open('settings.ini') as h:
-        loanreport = ClasssetsPdf('Lehrer', h, threshold=3)
+    s = Settings()
+    loanreport = ClasssetsPdf('Lehrer', settings=students_add_post, threshold=3)
 
     print('Generating Loan Reports')
     d = time.time()
@@ -726,8 +703,8 @@ def studentsloans_generate():
     loan_report = request.forms.get('loan_report') == 'on'
 
     if not split_pdf:
-        with open('settings.ini') as h:
-            loancontract = LoanContractPdf('manual', h, advance=next_year)
+        s = Settings()
+        loancontract = LoanContractPdf('manual', s, advance=next_year)
 
     print('Generating Loan Contracts')
     d = time.time()
@@ -743,9 +720,9 @@ def studentsloans_generate():
 
         # start new pdf
         if split_pdf:
-            with open('settings.ini') as h:
-                loancontract = LoanContractPdf(
-                    c.toString(), h, advance=next_year)
+            s = Settings()
+            loancontract = LoanContractPdf(
+                c.toString(), s, advance=next_year)
 
         n = 0
         yield '<ul>'
@@ -800,8 +777,8 @@ def booklist_preview():
 
 @post('/admin/lists/generate/booklist')
 def booklist_generate():
-    with open('settings.ini') as h:
-        booklist = BooklistPdf(h)
+    s = Settings()
+    booklist = BooklistPdf(s)
 
     print('Detecting excluded books')
     exclude = set()
@@ -837,8 +814,8 @@ def booklist_generate():
 
 @get('/admin/lists/generate/requestlist')
 def requestlist_generate():
-    with open('settings.ini') as h:
-        requestlist = RequestlistPdf(h)
+    s = Settings()
+    requestlist = RequestlistPdf(s)
 
     # exclude 12th grade (last grade)
     for grade in orga.getPersistingGradeRange():
@@ -872,8 +849,8 @@ def plannerlist_generate(mode):
 
 @get('/admin/lists/generate/bookreturn')
 def bookreturn_generate():
-    with open('settings.ini') as h:
-        bookreturn = BookreturnPdf(h)
+    s = Settings()
+    bookreturn = BookreturnPdf(s)
 
     # generate overview lists for all grades
     for grade in orga.getGradeRange():
@@ -891,8 +868,8 @@ def bookreturn_generate():
 
 @get('/admin/lists/generate/requestloan')
 def requestloan_generate():
-    with open('settings.ini') as h:
-        bookloan = BookloanPdf(h)
+    s = Settings()
+    bookloan = BookloanPdf(h)
 
     yield 'Erzeuge Ausleihübersicht...<br />\n'
 
@@ -913,8 +890,8 @@ def requestloan_generate():
             continue
 
         # start new pdf
-        with open('settings.ini') as h:
-            loancontract = LoanContractPdf(c.toString(), h, advance=True)
+        s = Settings()
+        loancontract = LoanContractPdf(c.toString(), s, advance=True)
 
         for s in c.student.order_by(
                 lambda s: s.person.firstname).order_by(
@@ -930,8 +907,8 @@ def requestloan_generate():
 
 @get('/admin/lists/generate/bookloan')
 def bookloan_generate():
-    with open('settings.ini') as h:
-        bookloan = BookloanPdf(h)
+    s = Settings()
+    bookloan = BookloanPdf(h)
 
     yield 'Erzeuge Ausleihübersicht...<br />\n'
 
@@ -952,8 +929,8 @@ def bookloan_generate():
             continue
 
         # start new pdf
-        with open('settings.ini') as h:
-            loancontract = LoanContractPdf(c.toString(), h)
+        s = Settings()
+        loancontract = LoanContractPdf(c.toString(), set)
 
         for s in c.student.order_by(
                 lambda s: s.person.firstname).order_by(
@@ -971,8 +948,8 @@ def bookloan_generate():
 def bookpending_generate(mode):
     yield '<b>Nach Büchern:</b><ul>'
     for grade in orga.getGradeRange():
-        with open('settings.ini') as h:
-            pending = BookpendingPdf(h)
+        s = Settings()
+        pending = BookpendingPdf(s)
         n = pending.queryBooks(grade, tooLate=mode == 'tooLate')
         if n > 0:
             fname = pending.saveToFile(
@@ -1003,15 +980,15 @@ def bookpending_generate():
     yield '<b>Ausstehende Bücher:</b><br /><ul>'
     for g in orga.getGradeRange():
         yield '<li>Klasse {0}: '.format(g)
-        with open('settings.ini') as h:
-            by_books = BookpendingPdf(h)
+        s = Settings()
+        by_books = BookpendingPdf(s)
         by_books.addBooks(g)
         fname = by_books.saveToFile(suffix='Klasse{0}-nachBüchern'.format(g))
 
         yield '<a href="/admin/lists/download/{0}.pdf" target="_blank">nach Büchern</a>, '.format(fname, g)
 
-        with open('settings.ini') as h:
-            by_students = BookpendingPdf(h)
+        s = Settings()
+        by_students = BookpendingPdf(s)
         by_students.addStudents(g)
         fname = by_students.saveToFile(
             suffix='Klasse{0}-nachSchülern'.format(g))
@@ -1024,8 +1001,8 @@ def bookpending_generate():
 
 @get('/admin/lists/generate/classlist')
 def classlist_generate():
-    with open('settings.ini') as h:
-        classlist = ClassListPdf(h)
+    s = Settings()
+    classlist = ClassListPdf(s)
 
     yield 'Lade Klassen...\n'
 
@@ -1789,8 +1766,7 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
     @db_session
     def test_settings_post(self):
         s = Settings()
-        with open('settings.ini') as h:
-            s.load_from(h)
+        s.load_from(s)
 
         args = {
             'school_year': s.data['general']['school_year'],

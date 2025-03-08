@@ -20,6 +20,13 @@ Folgende LaTeX-Pakete werden außerdem vorausgesetzt:
 * makecell package (ubuntu: texlive-latex-extra)
 * german babel package (buntu: texlive-lang-german)
 
+Alternativ zu einem lokalen LaTeX-Compiler kann in der `settings.yaml` der [latex-online Compiler von Andrey Lushnikov](https://github.com/aslushnikov/latex-online) konfiguriert werden:
+```
+hosting:
+  remote_latex: 'https://compiler.my-server.de:2700'
+```
+Der Compiler sollte DSGVO-konform gehostet werden, da die zu erstellen PDFs teilweise personenbezogene Daten beeinhalten können.
+
 ### Notizen
 
 Convert XLSX to single PDF
