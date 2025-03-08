@@ -1,14 +1,15 @@
 #!/bin/bash
 
+GLOBAL_PYTHON=python3.10
 VENV_DIR=~/.local/share/pyschulbuecher/venv
-VENV_PIP="$VENV_DIR/bin/pip3"
-VENV_PY3="$VENV_DIR/bin/python3"
+VENV_PIP="$VENV_DIR/bin/pip"
+VENV_PY="$VENV_DIR/bin/python"
 
 echo "------------------------------------------------------------"
 echo "Checking python virtual environment $VENV_DIR"
 if [ ! -d "$VENV_DIR" ]; then
 	echo "Creating VENV"
-	python3 -m venv $VENV_DIR
+	GLOBAL_PYTHON -m venv $VENV_DIR
 fi
 
 if [ ! -f "$VENV_PIP" ]; then
@@ -16,8 +17,8 @@ if [ ! -f "$VENV_PIP" ]; then
 	exit 1
 fi
 
-if [ ! -f "$VENV_PY3" ]; then
-	echo "python3 not found at $VENV_PY3"
+if [ ! -f "$VENV_PY" ]; then
+	echo "python3 not found at $VENV_PY"
 	exit 1
 fi
 
@@ -29,4 +30,4 @@ $VENV_PIP install -r requirements.txt
 
 echo "------------------------------------------------------------"
 echo "Starting web server"
-$VENV_PY3 main.py
+$VENV_PY main.py

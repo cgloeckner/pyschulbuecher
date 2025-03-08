@@ -20,7 +20,6 @@ def main():
     # determine school year and load suitable database
 
     s = utils.Settings()
-    s.load()
 
     debug = True
 
