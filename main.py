@@ -20,12 +20,7 @@ def main():
     # determine school year and load suitable database
 
     s = utils.Settings()
-    try:
-        with open('settings.ini') as h:
-            s.load_from(h)
-    except FileNotFoundError:
-        # keep default values
-        pass
+    s.load()
 
     debug = True
 
@@ -51,14 +46,7 @@ def main():
     def landingpage():
         return dict()
 
-    port = 8000
-    for val in sys.argv:
-        if not val.startswith('--port='):
-            continue
-
-        port = int(val.split('--port=')[1])
-
-    run(host='localhost', reloader=True, debug=debug, port=port)
+    run(host='localhost', debug=debug, port=s.data['hosting']['port'])
 
 
 if __name__ == '__main__':

@@ -9,12 +9,18 @@ import os
 import configparser
 import datetime
 import xlsxwriter
+import yaml
 
 from bottle import template
-from latex import build_pdf
 
 from db import books, orga, loans
 from db.orm import Currency
+
+
+def compile_pdf(tex_code: str, path: str) -> None:
+    from latex import build_pdf
+    pdf = build_pdf(tex_code)
+    pdf.save_to(path)
 
 
 def shortName(firstname):
@@ -33,26 +39,15 @@ def shortName(firstname):
 class Settings(object):
 
     def __init__(self):
-        self.data = configparser.ConfigParser()
-        self.data['general'] = {
-            'school_year': '2019',
-            'address': 'Example School \\ Neustadt \\ Tel: 123-456-78900',
-            'headteacher': 'Mr. Boss'
-        }
-        self.data['deadline'] = {
-            'booklist_return': '17.03.',
-            'booklist_changes': '19.06.',
-            'bookreturn_graduate': '17.03.'
-        }
+        self.load()
 
-    def load_from(self, fhandle):
-        tmp = configparser.ConfigParser()
-        tmp.read_file(fhandle)
-        # overwrite internal data
-        self.data = tmp
+    def load(self,):
+        with open('settings.yaml', 'r') as file:
+            self.data = yaml.safe_load(file)
 
-    def save_to(self, fhandle):
-        self.data.write(fhandle)
+    def save(self):
+        with open('settings.yaml', 'w') as file:
+            yaml.dump(self.data, file)
 
 # -----------------------------------------------------------------------------
 
@@ -325,8 +320,7 @@ class ClasssetsPdf(object):
 
         # export PDF
         fname = self.getPath()
-        pdf = build_pdf(self.tex)
-        pdf.save_to(fname)
+        compile_pdf(self.tex, fname)
 
 # -----------------------------------------------------------------------------
 
@@ -377,8 +371,7 @@ class InventoryReport(object):
 
         # export PDF
         fname = self.getPath()
-        pdf = build_pdf(self.tex)
-        pdf.save_to(fname)
+        compile_pdf(self.tex, fname)
 
 # -----------------------------------------------------------------------------
 
@@ -427,8 +420,7 @@ class LoanReportPdf(object):
 
         # export PDF
         fname = self.getPath()
-        pdf = build_pdf(self.tex)
-        pdf.save_to(fname)
+        compile_pdf(self.tex, fname)
 
 # -----------------------------------------------------------------------------
 
@@ -497,8 +489,7 @@ class LoanContractPdf(object):
 
         # export PDF
         fname = self.getPath()
-        pdf = build_pdf(self.tex)
-        pdf.save_to(fname)
+        compile_pdf(self.tex, fname)
 
 # -----------------------------------------------------------------------------
 
@@ -601,8 +592,7 @@ class BooklistPdf(object):
         fname = os.path.join(
             self.export, 'Bücherzettel%d%s.pdf' %
             (grade, suffix))
-        pdf = build_pdf(tex)
-        pdf.save_to(fname)
+        compile_pdf(self.tex, fname)
 
     def infosheet(self):
         # render templates
@@ -615,8 +605,7 @@ class BooklistPdf(object):
 
         # export PDF
         fname = os.path.join(self.export, 'Bücherzettel_Information.pdf')
-        pdf = build_pdf(tex)
-        pdf.save_to(fname)
+        compile_pdf(self.tex, fname)
 
 # -----------------------------------------------------------------------------
 
@@ -676,8 +665,7 @@ class RequestlistPdf(object):
 
         # export PDF
         fname = self.getPath()
-        pdf = build_pdf(self.tex)
-        pdf.save_to(fname)
+        compile_pdf(self.tex, fname)
 
 # -----------------------------------------------------------------------------
 
@@ -742,8 +730,7 @@ class BookreturnPdf(object):
 
         # export PDF
         fname = self.getPath()
-        pdf = build_pdf(self.tex)
-        pdf.save_to(fname)
+        compile_pdf(self.tex, fname)
 
 
 # -----------------------------------------------------------------------------
@@ -815,8 +802,7 @@ class BookloanPdf(object):
 
         # export PDF
         fname = self.getPath()
-        pdf = build_pdf(self.tex)
-        pdf.save_to(fname)
+        compile_pdf(self.tex, fname)
 
 # -----------------------------------------------------------------------------
 
@@ -895,8 +881,7 @@ class BookpendingPdf(object):
 
         # export PDF
         fname = os.path.join(self.export, '%s.pdf' % pdfname)
-        pdf = build_pdf(self.tex)
-        pdf.save_to(fname)
+        compile_pdf(self.tex, fname)
 
         return pdfname
 
@@ -941,8 +926,7 @@ class ClassListPdf(object):
 
         # export PDF
         fname = self.getPath()
-        pdf = build_pdf(self.tex)
-        pdf.save_to(fname)
+        compile_pdf(self.tex, fname)
 
 # -----------------------------------------------------------------------------
 

@@ -1,12 +1,9 @@
-# PyCharm
-.idea
-
 # app data
 data*.db
 demand.json
 export/*
 *~
-settings.ini
+settings.yaml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

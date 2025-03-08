@@ -541,9 +541,7 @@ def settings_form_post():
     s.data['deadline']['booklist_changes'] = request.forms.deadline_booklist_changes
     s.data['deadline']['booklist_return'] = request.forms.deadline_booklist_return
     s.data['deadline']['bookreturn_graduate'] = request.forms.bookreturn_graduate
-
-    with open('settings.ini', 'w') as h:
-        s.save_to(h)
+    s.save()
 
     db.commit()
 
@@ -1803,8 +1801,7 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
         ret = self.app.post('/admin/settings', args)
 
         # override test-settings with original settings
-        with open('settings.ini', 'w') as h:
-            s.save_to(h)
+        s.save()
 
         self.assertEqual(ret.status_int, 302)  # 302=redirect
 

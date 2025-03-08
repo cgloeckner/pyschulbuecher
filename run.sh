@@ -4,10 +4,6 @@ VENV_DIR=~/.local/share/pyschulbuecher/venv
 VENV_PIP="$VENV_DIR/bin/pip3"
 VENV_PY3="$VENV_DIR/bin/python3"
 
-PORT=8001
-
-URL="http://localhost:$PORT"
-
 echo "------------------------------------------------------------"
 echo "Checking python virtual environment $VENV_DIR"
 if [ ! -d "$VENV_DIR" ]; then
@@ -32,9 +28,5 @@ $VENV_PIP install --upgrade pip
 $VENV_PIP install -r requirements.txt
 
 echo "------------------------------------------------------------"
-echo "Starting web browser on $URL"
-xdg-open "$URL" &
-
-echo "------------------------------------------------------------"
 echo "Starting web server"
-$VENV_PY3 main.py --port=$PORT
+$VENV_PY3 main.py
