@@ -1,7 +1,7 @@
 import os
 import bottle
 
-from db import loans
+from app.db import loan_queries as loans
 
 from app.tex.compiler import compile_pdf
 
@@ -33,7 +33,7 @@ class LoanReportPdf(object):
         """Generate loan report pdf file for the given person. This will contain
         all books that are currently given to this person
         """
-        lns = loans.orderLoanOverview(person.loan)
+        lns = loans.order_loan_overview(person.loan)
         self.tex += bottle.template(self.content, s=self.s, p=person, lns=lns)
 
     def saveToFile(self):

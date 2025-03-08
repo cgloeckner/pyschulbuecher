@@ -1,5 +1,5 @@
 %from utils import tex_escape
-%from db import loans
+%from app.db import loan_queries as loans
 %import datetime
 
 {\large Übersicht Leihexemplare \hfill {{!tex_escape(p.name)}}, {{!tex_escape(p.firstname)}} }

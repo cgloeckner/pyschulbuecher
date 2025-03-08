@@ -1,8 +1,8 @@
 %from utils import tex_escape
-%from db import loans
+%from app.db import loan_queries as loans
 %from app.utils import shortify_name
 
-{\LARGE Ausgabe der Leihexemplare in Klasse {{class_.toString(advance=advance)}} }
+{\LARGE Ausgabe der Leihexemplare in Klasse {{class_.to_string(advance=advance)}} }
 \hfill
 %year = int(s.data['general']['school_year'])
 {\large Schuljahr {{year}}/{{year+1}} }\\

@@ -13,8 +13,10 @@ from datetime import datetime
 from bottle import *
 from pony import orm
 
-from db.orm import db, db_session, Currency
-from db import orga, books, loans
+from app.db import db, db_session
+from app.db import orga_queries as orga
+from app.db import book_queries as books
+from app.db import loan_queries as loans
 from app import Settings
 from app.tex import *
 from app.xls import *
@@ -130,7 +132,7 @@ def books_index():
 @post('/admin/books/add')
 @errorhandler
 def books_add_post():
-    books.addBooks(request.forms.data)
+    books.add_books(request.forms.data)
 
     db.commit()
     redirect('/admin/books')
@@ -156,7 +158,7 @@ def books_add_post():
 
     print(args)
 
-    books.addBook('\t'.join(args))
+    books.add_book('\t'.join(args))
 
     db.commit()
     redirect('/admin/books')
@@ -175,7 +177,7 @@ def books_edit_post(id):
     b = db.Book[id]
     b.title = request.forms.title
     b.isbn = request.forms.isbn
-    b.price = Currency.fromString(
+    b.price = Currency.from_string(
         request.forms.price) if request.forms.price != '' else 0
     b.publisher = db.Publisher[int(request.forms.publisher_id)]
     b.stock = int(request.forms.stock)
@@ -233,7 +235,7 @@ def demand_report():
         demand.save_to(h)
 
     # create book demand report
-    bks = books.orderBooksList(books.getAllBooks())
+    bks = books.order_books_list(books.get_all_books())
     total = 0
     data = dict()
     for b in bks:
@@ -288,10 +290,10 @@ def demand_report():
 
 @get('/admin/apply_requests')
 def apply_requests():
-    for c in orga.getClasses():
+    for c in orga.get_classes():
         # convert book requests to loans
         for s in c.student:
-            loans.applyRequest(s)
+            loans.apply_request(s)
 
     db.commit()
 
@@ -309,7 +311,7 @@ def classes_index():
 @post('/admin/classes/add')
 @errorhandler
 def classes_add_post():
-    orga.addClasses(request.forms.data)
+    orga.add_classes(request.forms.data)
 
     db.commit()
     redirect('/admin/classes')
@@ -324,7 +326,7 @@ def classes_edit(id):
 @post('/admin/classes/edit/<id:int>')
 @errorhandler
 def classes_edit_post(id):
-    orga.updateClass(id, int(request.forms.grade), request.forms.tag,
+    orga.update_class(id, int(request.forms.grade), request.forms.tag,
                      int(request.forms.teacher_id))
 
     db.commit()
@@ -386,7 +388,7 @@ def students_index():
 @post('/admin/students/add')
 @errorhandler
 def students_add_post():
-    orga.addStudents(request.forms.data)
+    orga.add_students(request.forms.data)
 
     db.commit()
     redirect('/admin/students')
@@ -397,11 +399,11 @@ def students_add_post():
 def students_add_post():
     c = db.Class[request.forms.class_id]
     raw = '{0}\t{1}\t{2}'.format(
-        c.toString(
+        c.to_string(
             twoPlace=True),
         request.forms.name,
         request.forms.firstname)
-    orga.addStudent(raw)
+    orga.add_student(raw)
 
     db.commit()
     redirect('/admin/students')
@@ -411,7 +413,7 @@ def students_add_post():
 @errorhandler
 @view('admin/students_search')
 def students_search_post():
-    data = orga.getStudentsLike(request.forms.name, request.forms.firstname)
+    data = orga.get_students_like(request.forms.name, request.forms.firstname)
     return dict(data=data)
 
 
@@ -457,7 +459,7 @@ def students_add_post():
         request.forms.tag,
         request.forms.name,
         request.forms.firstname)
-    orga.addTeacher(raw)
+    orga.add_teacher(raw)
 
     db.commit()
     redirect('/admin/teachers')
@@ -466,7 +468,7 @@ def students_add_post():
 @post('/admin/teachers/add')
 @errorhandler
 def teachers_add_post():
-    orga.addTeachers(request.forms.data)
+    orga.add_teachers(request.forms.data)
 
     db.commit()
     redirect('/admin/teachers')
@@ -551,7 +553,7 @@ def advance_info():
 
 @get('/admin/advance/confirm')
 def advance_confirm():
-    for c in orga.getClasses():
+    for c in orga.get_classes():
         # advance every class
         c.grade += 1
 
@@ -594,11 +596,11 @@ def db_dump_generate():
 
     # sort classes
     classes = list(db.Class.select())
-    orga.sortClasses(classes)
+    orga.sort_classes(classes)
 
     for c in classes:
-        yield '%s<br />' % c.toString()
-        bks = books.getBooksUsedIn(c.grade, booklist=True)
+        yield '%s<br />' % c.to_string()
+        bks = books.get_books_used_in(c.grade, booklist=True)
         xlsx(c, bks)
 
     xlsx.saveToFile()
@@ -694,7 +696,7 @@ def studentloans_selection():
             lambda c: c.tag).order_by(
             lambda c: c.grade))
 
-    return dict(classes=classes, sortStudents=orga.sortStudents)
+    return dict(classes=classes, sort_students=orga.sort_students)
 
 
 @post('/admin/lists/generate/studentloans')
@@ -716,15 +718,15 @@ def studentsloans_generate():
     for c in db.Class.select().order_by(
             lambda c: c.tag).order_by(
             lambda c: c.grade):
-        yield '<li>{0}'.format(c.toString())
+        yield '<li>{0}'.format(c.to_string())
         students = students = list(c.student)
-        orga.sortStudents(students)
+        orga.sort_students(students)
 
         # start new pdf
         if split_pdf:
             s = Settings()
             loancontract = LoanContractPdf(
-                c.toString(), s, advance=next_year)
+                c.to_string(), s, advance=next_year)
 
         n = 0
         yield '<ul>'
@@ -761,18 +763,18 @@ def studentsloans_generate():
 def booklist_preview():
     all_books = dict()
 
-    for grade in orga.getGradeRange():
+    for grade in orga.get_grade_range():
         # fetch specific books
-        spec_bks = books.getBooksUsedIn(0, True)
+        spec_bks = books.get_books_used_in(0, True)
 
         # fetch and order books
-        bks_new = books.getBooksUsedIn(grade, booklist=True)
-        bks_old = books.getBooksStartedIn(grade, booklist=True)
+        bks_new = books.get_books_used_in(grade, booklist=True)
+        bks_old = books.get_books_started_in(grade, booklist=True)
 
         key = f'{grade:02d}'
-        all_books[key] = books.orderBooksList(bks_old)
+        all_books[key] = books.order_books_list(bks_old)
         if grade > 5:
-            all_books[f'{key}_neu'] = books.orderBooksList(bks_new)
+            all_books[f'{key}_neu'] = books.order_books_list(bks_new)
 
     return dict(all_books=all_books)
 
@@ -784,9 +786,9 @@ def booklist_generate():
 
     print('Detecting excluded books')
     exclude = set()
-    for g in orga.getGradeRange():
+    for g in orga.get_grade_range():
         grade_key = f'{g:02d}'
-        for b in books.getBooksUsedIn(g):
+        for b in books.get_books_used_in(g):
             # regular booklist
             key = f'{grade_key}_{b.id}'
             if request.forms.get(key) != 'on':
@@ -799,7 +801,7 @@ def booklist_generate():
     print('Generating Booklists')
     d = time.time()
     yield 'Bitte warten...'
-    for g in orga.getGradeRange():
+    for g in orga.get_grade_range():
         yield '<br>Klasse %d\n' % g
         booklist(g, exclude)
         if g > 5:
@@ -820,9 +822,9 @@ def requestlist_generate():
     requestlist = RequestlistPdf(s)
 
     # exclude 12th grade (last grade)
-    for grade in orga.getPersistingGradeRange():
+    for grade in orga.get_persisting_grade_range():
         yield 'Klasse %d<br />\n' % grade
-        for c in orga.getClassesByGrade(grade):
+        for c in orga.get_classes_by_grade(grade):
             requestlist(c)
     requestlist.saveToFile()
 
@@ -834,13 +836,13 @@ def plannerlist_generate(mode):
     planners = PlannerXls()
     classes = list()
     if mode == 'next':
-        r = orga.getPersistingGradeRange(delta=-1)
+        r = orga.get_persisting_grade_range(delta=-1)
         advance = True
     else:
-        r = orga.getGradeRange()
+        r = orga.get_grade_range()
         advance = False
     for grade in r:
-        for c in orga.getClassesByGrade(grade):
+        for c in orga.get_classes_by_grade(grade):
             classes.append(c)
     planners(classes, advance=advance)
     planners.saveToFile()
@@ -855,13 +857,13 @@ def bookreturn_generate():
     bookreturn = BookreturnPdf(s)
 
     # generate overview lists for all grades
-    for grade in orga.getGradeRange():
+    for grade in orga.get_grade_range():
         bookreturn.addOverview(grade)
 
     # generate return lists for all grades
-    for grade in orga.getGradeRange():
+    for grade in orga.get_grade_range():
         yield 'Klasse %d<br />\n' % grade
-        for c in orga.getClassesByGrade(grade):
+        for c in orga.get_classes_by_grade(grade):
             bookreturn(c)
     bookreturn.saveToFile()
 
@@ -876,9 +878,9 @@ def requestloan_generate():
     yield 'Erzeuge Ausleihübersicht...<br />\n'
 
     # generate return lists for all grades (for the next year)
-    for grade in orga.getGradeRange():
+    for grade in orga.get_grade_range():
         yield 'Klasse %d<br />\n' % (grade)
-        for c in orga.getClassesByGrade(grade-1):
+        for c in orga.get_classes_by_grade(grade-1):
             bookloan(c, True)
     bookloan.saveToFile()
     yield '<pre>%s</pre>\n' % bookloan.getPath()
@@ -893,7 +895,7 @@ def requestloan_generate():
 
         # start new pdf
         s = Settings()
-        loancontract = LoanContractPdf(c.toString(), s, advance=True)
+        loancontract = LoanContractPdf(c.to_string(), s, advance=True)
 
         for s in c.student.order_by(
                 lambda s: s.person.firstname).order_by(
@@ -915,9 +917,9 @@ def bookloan_generate():
     yield 'Erzeuge Ausleihübersicht...<br />\n'
 
     # generate return lists for all grades (for the current year)
-    for grade in orga.getGradeRange():
+    for grade in orga.get_grade_range():
         yield 'Klasse %d<br />\n' % grade
-        for c in orga.getClassesByGrade(grade):
+        for c in orga.get_classes_by_grade(grade):
             bookloan(c, True)
     bookloan.saveToFile()
     yield '<pre>%s</pre>\n' % bookloan.getPath()
@@ -932,7 +934,7 @@ def bookloan_generate():
 
         # start new pdf
         s = Settings()
-        loancontract = LoanContractPdf(c.toString(), set)
+        loancontract = LoanContractPdf(c.to_string(), set)
 
         for s in c.student.order_by(
                 lambda s: s.person.firstname).order_by(
@@ -949,7 +951,7 @@ def bookloan_generate():
 @get('/admin/lists/generate/returnlist/<mode>')
 def bookpending_generate(mode):
     yield '<b>Nach Büchern:</b><ul>'
-    for grade in orga.getGradeRange():
+    for grade in orga.get_grade_range():
         s = Settings()
         pending = BookpendingPdf(s)
         n = pending.queryBooks(grade, tooLate=mode == 'tooLate')
@@ -965,7 +967,7 @@ def bookpending_generate(mode):
 @get('/admin/lists/generate/loanlist/<grade>')
 def bookpending_generate(grade):
     yield '<b>Bücher in Klasse {0}</b><br />'.format(grade)
-    for c in orga.getClassesByGrade(grade):
+    for c in orga.get_classes_by_grade(grade):
         for s in c.student:
             yield '{0}, {1}<br /><ul>'.format(s.person.name, s.person.firstname)
             for l in s.person.loan:
@@ -980,18 +982,18 @@ def bookpending_generate(grade):
 @get('/admin/lists/generate/bookpending')
 def bookpending_generate():
     yield '<b>Ausstehende Bücher:</b><br /><ul>'
-    for g in orga.getGradeRange():
+    for g in orga.get_grade_range():
         yield '<li>Klasse {0}: '.format(g)
         s = Settings()
         by_books = BookpendingPdf(s)
-        by_books.addBooks(g)
+        by_books.add_books(g)
         fname = by_books.saveToFile(suffix='Klasse{0}-nachBüchern'.format(g))
 
         yield '<a href="/admin/lists/download/{0}.pdf" target="_blank">nach Büchern</a>, '.format(fname, g)
 
         s = Settings()
         by_students = BookpendingPdf(s)
-        by_students.addStudents(g)
+        by_students.add_students(g)
         fname = by_students.saveToFile(
             suffix='Klasse{0}-nachSchülern'.format(g))
 
@@ -1008,8 +1010,8 @@ def classlist_generate():
 
     yield 'Lade Klassen...\n'
 
-    classes = list(orga.getClasses())
-    orga.sortClasses(classes)
+    classes = list(orga.get_classes())
+    orga.sort_classes(classes)
     classlist(classes)
     classlist.saveToFile()
 
@@ -1842,13 +1844,13 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 
         args = dict()
         args["lowering"] = '10'
-        for grade in orga.getSecondary1Range():
-            for sub in books.getSubjects(elective=True):
+        for grade in orga.get_secondary_level1_range():
+            for sub in books.get_subjects(elective=True):
                 key = "%s_%s" % (grade, sub.tag)
                 args[key] = 63
         for grade in [11, 12]:
             for level in ['novices', 'advanced']:
-                for sub in books.getSubjects():
+                for sub in books.get_subjects():
                     key = "%s_%s_%s" % (grade, sub.tag, level)
                     args[key] = 23
 

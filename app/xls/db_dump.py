@@ -27,12 +27,12 @@ class DatabaseDumpXls(object):
 
     def __call__(self, class_, bks):
         # local import to avoid cycles
-        from db import loans
+        from app.db import loan_queries as loans
 
         # pre-order students abd books
-        bks = books.orderBooksList(bks)
+        bks = books.order_books_list(bks)
         students = list(class_.student)
-        orga.sortStudents(students)
+        orga.sort_students(students)
 
         title_format = self.data.add_format()
         title_format.set_bold()
@@ -41,7 +41,7 @@ class DatabaseDumpXls(object):
         rotate_format.set_rotation(90)
 
         # create tab sheet for this class
-        tab = self.data.add_worksheet(class_.toString())
+        tab = self.data.add_worksheet(class_.to_string())
         tab.set_column(0, 1, 12)
         tab.set_column(2, 2 + len(bks), 4)
         tab.set_row(0, 150, rotate_format)
@@ -58,7 +58,7 @@ class DatabaseDumpXls(object):
             tab.write(row + 2, 0, s.person.name)
             tab.write(row + 2, 1, shortify_name(s.person.firstname))
             for col, b in enumerate(bks):
-                n = loans.getLoanCount(s.person, b)
+                n = loans.get_loan_count(s.person, b)
                 tab.write(row + 2, col + 2, n if n > 0 else '')
 
     def saveToFile(self):

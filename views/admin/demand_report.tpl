@@ -1,14 +1,14 @@
-%import db.books as books
-%import db.orga as orga
+%from app.db import book_queries as books
+%from app.db import orga_queries as orga
 %from utils import bool2str
-%from db.orm import Currency
+%from app.db import Currency
 
 %include("header")
 
 %year = int(s.data['general']['school_year'])
 <h1>Bedarfsbericht für Schuljahr {{year+1}}/{{year+2}}</h1>
 
-<p><b>Gesamtsumme:</b> {{Currency.toString(total)}}</p>
+<p><b>Gesamtsumme:</b> {{Currency.to_string(total)}}</p>
 
 <center><b>Anmerkung:</b> In der untenstehenden Auflistung sind <b>keine</b> Klassensätze berücksichtigt.</center>
 
@@ -65,7 +65,7 @@
 		<td>{{b.title}}</td>
 		<td>{{b.publisher.name}}</td>
 		<td>{{b.isbn}}</td>
-		<td>{{Currency.toString(b.price)}}</td>
+		<td>{{Currency.to_string(b.price)}}</td>
 	
 		<td></td>
 		<td title="{{data[b.id]["in_use"]}} weiterhin in Ausleihe, {{data[b.id]["requested"]}} via Bücherzettel">{{data[b.id]["raw_demand"]}}</td>
@@ -87,7 +87,7 @@
 	%else:
 		%css = ''
 	%end
-		<td{{!css}}>{{Currency.toString(data[b.id]["costs"])}}</td>
+		<td{{!css}}>{{Currency.to_string(data[b.id]["costs"])}}</td>
 	</tr>
 %end
 </table>

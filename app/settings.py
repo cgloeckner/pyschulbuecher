@@ -2,6 +2,11 @@ import pathlib
 import yaml
 
 
+entry_grade = 5
+graduation_grade = 12
+course_grade = 11
+
+
 class Settings(object):
 
     def __init__(self, root_path: str = './'):

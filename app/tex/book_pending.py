@@ -2,7 +2,9 @@ import os
 import datetime
 import bottle
 
-from db import books, loans
+from app.db import book_queries as books
+from app.db import loan_queries as loans
+from app.db import orga_queries as orga
 
 from app.tex.compiler import compile_pdf
 
@@ -39,20 +41,20 @@ class BookpendingPdf(object):
         """Query and add all pending books for the given grade.
         """
         if tooLate:
-            def test(l): return l.tooLate()
+            def test(l): return l.too_late()
         else:
-            def test(l): return l.isPending()
+            def test(l): return l.is_pending()
 
         n = 0
         # iterate students in classes in grade
-        for b in books.getBooksFinishedIn(grade):
+        for b in books.get_books_finished_in(grade):
             k = 0
             # ignore class sets
             if b.classsets:
                 continue
             # add all pending loan records
             page = bottle.template(self.page_header, book=b)
-            for l in loans.queryLoansByBook(b):
+            for l in loans.query_loans_by_book(b):
                 # add if pending
                 if test(l):
                     page += bottle.template(self.page_content, l=l, i=k)

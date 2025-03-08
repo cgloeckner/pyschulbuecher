@@ -1,15 +1,15 @@
-%import db.books as books
+%from app.db import book_queries as books
 
 %include("header")
 <h1>Übersicht Verlage</h1>
 
 <ul>
-%for s in books.getPublishers():
+%for s in books.get_publishers():
 	<li><a class="edit" href="/admin/publishers/edit/{{s.id}}">&#9998;</a> {{s.name}}</li>
 %end
 </ul>
 
-%if len(books.getPublishers()) == 0:
+%if len(books.get_publishers()) == 0:
 <p>keine Verlage vorhanden</p>
 %end
 

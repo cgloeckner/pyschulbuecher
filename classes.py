@@ -10,8 +10,10 @@ from datetime import datetime
 from bottle import *
 from pony import orm
 
-from db.orm import db, db_session, Currency
-from db import orga, books, loans
+from app.db import db, db_session
+from app.db import orga_queries as orga
+from app.db import book_queries as books
+from app.db import loan_queries as loans
 from utils import errorhandler
 
 
@@ -33,8 +35,8 @@ def classes_grade_index(grade):
 @get('/classes/<grade:int>/<tag>')
 @view('classes/students_index')
 def classes_students_index(grade, tag):
-    bks = books.getBooksUsedIn(grade)
-    bks = books.orderBooksList(bks)
+    bks = books.get_books_used_in(grade)
+    bks = books.order_books_list(bks)
     bks.sort(key=lambda b: b.outGrade)
     c = orga.db.Class.get(grade=grade, tag=tag)
     if c is None:
@@ -53,14 +55,14 @@ def classes_requests_form(grade, tag, version):
 
     # query grade-specific books
     if tag.lower() == 'neu' or 'full' in version:
-        bks = books.getBooksUsedIn(query_grade, True)
+        bks = books.get_books_used_in(query_grade, True)
     else:
-        bks = books.getBooksStartedIn(query_grade, True)
+        bks = books.get_books_started_in(query_grade, True)
     # order queried books
-    bks = books.orderBooksList(bks)
+    bks = books.order_books_list(bks)
 
     # add misc books
-    bks += list(books.getBooksUsedIn(0, True))
+    bks += list(books.get_books_used_in(0, True))
     c = orga.db.Class.get(grade=grade, tag=tag)
     if c is None:
         abort(404)
@@ -77,19 +79,19 @@ def classes_requests_post(grade, tag, version):
 
     # query grade-specific books
     if tag.lower() == 'neu' or 'full' in version:
-        bks = books.getBooksUsedIn(query_grade, True)
+        bks = books.get_books_used_in(query_grade, True)
     else:
-        bks = books.getBooksStartedIn(query_grade, True)
+        bks = books.get_books_started_in(query_grade, True)
     # order queried books
-    bks = books.orderBooksList(bks)
+    bks = books.order_books_list(bks)
 
     # add misc books
-    bks += list(books.getBooksUsedIn(0, True))
-    for s in orga.getStudentsIn(grade, tag):
+    bks += list(books.get_books_used_in(0, True))
+    for s in orga.get_students_in(grade, tag):
         for b in bks:
             key = "%d_%d" % (s.id, b.id)
             status = request.forms.get(key) == 'on'
-            loans.updateRequest(s, b, status)
+            loans.update_request(s, b, status)
 
     db.commit()
     redirect('/classes/%d' % (grade))
@@ -100,8 +102,8 @@ def classes_requests_post(grade, tag, version):
 @post('/classes/loans/<grade:int>/<tag>')
 @errorhandler
 def classes_loans_post(grade, tag):
-    bks = books.getBooksUsedIn(grade)
-    for s in orga.getStudentsIn(grade, tag):
+    bks = books.get_books_used_in(grade)
+    for s in orga.get_students_in(grade, tag):
         for b in bks:
             key = "%d_%d" % (s.id, b.id)
             count = request.forms.get(key)
@@ -109,7 +111,7 @@ def classes_loans_post(grade, tag):
                 count = 0
             else:
                 count = int(count)
-            loans.updateLoan(s.person, b, count)
+            loans.update_loan(s.person, b, count)
 
     db.commit()
     redirect('/classes/%d' % (grade))

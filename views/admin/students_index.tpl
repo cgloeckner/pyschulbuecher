@@ -1,4 +1,4 @@
-%import db.orga as orga
+%from app.db import orga_queries as orga
 
 %include("header")
 <h1>Schüler verwalten</h1>
@@ -22,7 +22,7 @@
 
 <br />
 
-<b>Anzahl Schüler: {{orga.getStudentCount()}}</b>
+<b>Anzahl Schüler: {{orga.get_student_count()}}</b>
 
 <hr />
 
@@ -43,10 +43,10 @@
 	<tr>
 		<td>Klasse</td>
 		<td><select name="class_id">
-%for grade in orga.getClassGrades():
-	%for tag in orga.getClassTags(grade):
+%for grade in orga.get_class_grades():
+	%for tag in orga.get_class_tags(grade):
 		%c = orga.db.Class.get(grade=grade, tag=tag)
-				<option value="{{c.id}}">{{c.toString()}}</option>
+				<option value="{{c.id}}">{{c.to_string()}}</option>
 	%end
 %end
 			</select></td>

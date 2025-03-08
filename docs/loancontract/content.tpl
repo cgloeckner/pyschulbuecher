@@ -1,9 +1,9 @@
-%from db.orm import Currency
+%from app.db import Currency
 %from utils import tex_escape, shortify_name
-%from db import loans
+%from app.db import loan_queries as loans
 %import datetime
 
-{\Large Schulbuchübersicht } \hfill {\large {{!tex_escape(student.person.name)}}, {{!tex_escape(shortify_name(student.person.firstname))}} ({{student.class_.toString(advance=advance)}}) }
+{\Large Schulbuchübersicht } \hfill {\large {{!tex_escape(student.person.name)}}, {{!tex_escape(shortify_name(student.person.firstname))}} ({{student.class_.to_string(advance=advance)}}) }
 
 %if loan_report:
 	Ihnen wurden folgende Lehrbücher als Leihexemplare überlassen. Vermerken Sie die Inventarnummer und bewerten Sie den \linebreak Zustand des Buchs: \hfill neu \textbf{++} \quad gut \textbf{+} \quad mittel \textbf{$\circ$} \quad schlecht \textbf{-}

@@ -17,7 +17,7 @@
 		%continue # e.g. 4th grade (new 5th grade)
 	%end
 	%p = c.teacher.person
-	{{!tex_escape(c.toString())}} &
+	{{!tex_escape(c.to_string())}} &
 	{{!tex_escape(p.name)}}, {{!tex_escape(p.firstname[0])}}. &
 	{{len(c.student)}}
 	\\ \hline

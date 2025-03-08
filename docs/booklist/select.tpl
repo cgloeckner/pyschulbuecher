@@ -1,4 +1,4 @@
-%from db.orm import Currency
+%from app.db import Currency
 %from utils import tex_escape
 
 \def\arraystretch{1.25}
@@ -22,7 +22,7 @@ p{0.4cm} | p{0.4cm} | p{0.4cm} |
 %end
 \\ \hline
 %for b in bs:
-    %if b.workbook and not b.isAvailable():
+    %if b.workbook and not b.is_available():
         %print(f"ERROR: Workbook '{b.title}' #{b.id} is not available")
         %continue
     %end
@@ -64,7 +64,7 @@ p{0.4cm} | p{0.4cm} | p{0.4cm} |
         %end
     & 
     {\small {{!tex_escape(b.title)}}
-    %if b.isLongTerm():
+    %if b.is_long_term():
         \newline
         \scriptsize (bis Klasse {{b.outGrade}})
     %end
@@ -72,16 +72,16 @@ p{0.4cm} | p{0.4cm} | p{0.4cm} |
     &
     {\footnotesize {{!tex_escape(b.publisher.name)}}}
     &
-        %if b.isAvailable():
+        %if b.is_available():
     {\footnotesize {{!tex_escape(b.isbn)}} }
         &
-    {\small {{!tex_escape(Currency.toString(b.price, addSymbol=False))}} \euro }
+    {\small {{!tex_escape(Currency.to_string(b.price, addSymbol=False))}} \euro }
             %if not b.workbook:
     &
                 %if b.classsets:
     \multicolumn{3}{c|} { \small { Klassens\"atze } }
                 %else:
-                    %if not b.isAvailable():
+                    %if not b.is_available():
     \cellcolor{black!75}
     &
     \cellcolor{black!75}

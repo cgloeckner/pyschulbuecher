@@ -1,4 +1,4 @@
-%import db.orga as orga
+%from app.db import orga_queries as orga
 %from app.utils import shortify_name
 
 %include("header")
@@ -17,7 +17,7 @@
 		<td><a class="edit" href="/admin/students/edit/{{s.id}}">&#9998;</a></td>
 		<td>{{s.person.name}}</td>
 		<td>{{shortify_name(s.person.firstname)}}</td>
-		<td><a href="/classes/{{s.class_.grade}}/{{s.class_.tag}}">{{s.class_.toString()}}</a></td>
+		<td><a href="/classes/{{s.class_.grade}}/{{s.class_.tag}}">{{s.class_.to_string()}}</a></td>
 		<td><a href="/loan/person/{{s.person.id}}">ansehen</a></td>
 	</tr>
 %end

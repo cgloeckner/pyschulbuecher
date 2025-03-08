@@ -24,7 +24,7 @@ function toggleCol(id) {
 }
 
 function enterColumn(id) {
-	$('td[name="' + id + '"]').addClass('highlight');
+	$('td[name="' + id + '"]').add_class('highlight');
 }
 
 function leaveColumn(id) {

@@ -1,7 +1,7 @@
 import os
 import bottle
 
-from db import books, orga
+from app.db import book_queries as books, orga
 
 from app.tex.compiler import compile_pdf
 
@@ -33,14 +33,14 @@ class RequestlistPdf(object):
         """Generate requestlist pdf file for the given class.
         """
         # fetch specific books
-        spec_bks = books.getBooksUsedIn(0, True)
+        spec_bks = books.get_books_used_in(0, True)
 
         # fetch and order books that are used next year by this class
-        bks = books.getBooksStartedIn(class_.grade + 1, booklist=True)
-        bks = books.orderBooksList(bks)
+        bks = books.get_books_started_in(class_.grade + 1, booklist=True)
+        bks = books.order_books_list(bks)
 
         # query students
-        students = orga.getStudentsIn(class_.grade, class_.tag)
+        students = orga.get_students_in(class_.grade, class_.tag)
 
         # render template
         self.tex += bottle.template(

@@ -1,4 +1,4 @@
-%import db.orga as orga
+%from app.db import orga_queries as orga
 
 %include("header")
 <h1>Klassenverwaltung</h1>
@@ -10,12 +10,12 @@
 		<th>Klassenlehrer</th>
 		<th>Anzahl Schüler</th>
 	</tr>
-%for grade in orga.getClassGrades():
-	%for tag in orga.getClassTags(grade):
+%for grade in orga.get_class_grades():
+	%for tag in orga.get_class_tags(grade):
 		%c = orga.db.Class.get(grade=grade, tag=tag)
 	<tr>
 		<td><a class="edit" href="/admin/classes/edit/{{c.id}}">&#9998;</a></td>
-		<td><a href="/classes/{{grade}}/{{tag}}">{{c.toString()}}</a></td>
+		<td><a href="/classes/{{grade}}/{{tag}}">{{c.to_string()}}</a></td>
 		%if c.teacher is None:
 		<td>nicht zugewiesen</td>
 		%else:
@@ -29,7 +29,7 @@
 
 <hr />
 
-<b>Anzahl Klassen: {{orga.getClassesCount()}}</b>
+<b>Anzahl Klassen: {{orga.get_classes_count()}}</b>
 
 <hr />
 

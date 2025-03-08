@@ -5,7 +5,8 @@ import re
 
 from bottle import template, abort
 from pony import orm
-from db.orm import db, db_session
+
+from app.db import db, db_session
 from app.utils import shortify_name
 
 __author__ = "Christian Glöckner"

@@ -1,7 +1,7 @@
 import os
 import bottle
 
-from db import books
+from app.db import book_queries as books
 
 from app.tex.compiler import compile_pdf
 
@@ -42,20 +42,20 @@ class BooklistPdf(object):
         key's value is set to false.
         """
         # fetch special books
-        spec_bks = books.getBooksUsedIn(0, True)
+        spec_bks = books.get_books_used_in(0, True)
 
         # fetch and order books
         if new_students:
-            bks = books.getBooksUsedIn(grade, booklist=True)
+            bks = books.get_books_used_in(grade, booklist=True)
             suffix = '_Neuzugänge'
             deadline = 'Abgabe bei Anmeldung'
         else:
-            bks = books.getBooksStartedIn(grade, booklist=True)
+            bks = books.get_books_started_in(grade, booklist=True)
             suffix = ''
             date = self.s.data['deadline']['booklist_return']
             year = int(self.s.data['general']['school_year'])
             deadline = f'Abgabe bis spätestens {date}{year+1}'
-        bks = books.orderBooksList(bks)
+        bks = books.order_books_list(bks)
         if grade == 5:
             deadline = 'Abgabe bei Anmeldung'
 

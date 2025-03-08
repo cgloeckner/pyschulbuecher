@@ -4,9 +4,10 @@
 import loans
 import classes
 import admin
-from db import orga, utils
-from db import orga
-from db.orm import db, db_session
+from app.db import db, db_session
+from app.db import orga_queries as orga
+from app.db import book_queries as books
+from app.db import loan_queries as loans
 from pony import orm
 from bottle import *
 import locale

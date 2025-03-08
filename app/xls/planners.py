@@ -40,7 +40,7 @@ class PlannerXls(object):
                     if l.book == planner:
                         n += 1
                         break
-            tab.write(row, 0, c.toString(advance=advance))
+            tab.write(row, 0, c.to_string(advance=advance))
             tab.write(row, 1, n)
             row += 1
 

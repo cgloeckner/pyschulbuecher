@@ -1,5 +1,5 @@
-%import db.orga as orga
-%import db.loans as loans
+%from app.db import orga_queries as orga
+%from app.db import loan_queries as loans
 %from app.utils import shortify_name
 
 %include("header")
@@ -16,11 +16,11 @@
 
 %for c in classes:
 	<hr />
-	<h2>Klasse {{c.toString()}}: <span class="button" onClick="toggleClass('{{c.id}}');" title="Auswahl für {{c.toString()}} umkehren">↺</span></h2>
+	<h2>Klasse {{c.to_string()}}: <span class="button" onClick="toggleClass('{{c.id}}');" title="Auswahl für {{c.to_string()}} umkehren">↺</span></h2>
 	
 	<ol id="{{c.id}}">
 	%students = list(c.student)
-	%sortStudents(students)
+	%sort_students(students)
 	%for s in students:
 		<li>
 			<input type="checkbox" name="{{s.person.id}}" id="{{s.person.id}}" />

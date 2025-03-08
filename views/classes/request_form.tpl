@@ -1,8 +1,8 @@
-%import db.orga as orga
-%import db.loans as loans
+%from app.db import orga_queries as orga
+%from app.db import loan_queries as loans
 
 %include("header")
-<h1>Bücherzettel Klasse {{c.toString()}} (für Klasse {{grade+1}})</h1>
+<h1>Bücherzettel Klasse {{c.to_string()}} (für Klasse {{grade+1}})</h1>
 
 <form action="/classes/requests/{{grade}}/{{tag}}/{{version}}" id="requests" method="post">
 
@@ -81,7 +81,7 @@
 	</tr>
 	
 %i = 1
-%for s in orga.getStudentsIn(grade, tag):
+%for s in orga.get_students_in(grade, tag):
 	<!-- ==================== student #{{s.id}} ({{s.person.name}}, {{s.person.firstname}}) ==================== //-->
 	%if i % 2 == 0:
 	<tr class="gray select" id="{{s.id}}">
@@ -98,7 +98,7 @@
 			%continue
 		%end
 		%id = '%i_%i' % (s.id, b.id)
-		%if loans.isRequested(s, b):
+		%if loans.is_requested(s, b):
 			%total[b.id] += 1
 			%checked = 'checked="checked"'
 		%else:

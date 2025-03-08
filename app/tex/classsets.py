@@ -1,7 +1,7 @@
 import os
 import bottle
 
-from db import loans
+from app.db import loan_queries as loans
 
 from app.tex.compiler import compile_pdf
 
@@ -40,7 +40,7 @@ class ClasssetsPdf(object):
         all books that are currently given to this person
         """
         # count books before running template
-        lns = loans.orderLoanOverview(person.loan)
+        lns = loans.order_loan_overview(person.loan)
         n = 0
         for l in lns:
             if l.count > self.threshold:

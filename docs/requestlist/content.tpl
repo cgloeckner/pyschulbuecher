@@ -1,6 +1,6 @@
 %from utils import tex_escape, shortify_name
 
-{\LARGE Erfassung Bücherzettel {{class_.toString()}} }
+{\LARGE Erfassung Bücherzettel {{class_.to_string()}} }
 \hfill
 %year = int(s.data['general']['school_year'])
 {\large für Klasse {{class_.grade+1}} ({{year+1}}/{{year+2}}) }

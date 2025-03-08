@@ -1,6 +1,6 @@
-%from db.orm import Currency
+%from app.db import Currency
 %from utils import tex_escape, shortify_name
-%from db import loans
+%from app.db import loan_queries as loans
 %import datetime
 
 %year = int(s.data['general']['school_year'])

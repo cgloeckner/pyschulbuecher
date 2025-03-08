@@ -1,4 +1,4 @@
-%import db.books as books
+%from app.db import book_queries as books
 %from utils import bool2str
 
 %include("header")
@@ -11,7 +11,7 @@
 		<th>Fach</th>
 		<th>Wahlfach<br />(Sek. I)</th>
 	</tr>
-%for s in books.getSubjects():
+%for s in books.get_subjects():
 	<tr>
 		<td><a class="edit" href="/admin/subjects/edit/{{s.id}}">&#9998;</a></td>
 		<td>{{s.tag}}</td>
@@ -20,7 +20,7 @@
 	</tr>
 %end
 
-%if len(books.getSubjects()) == 0:
+%if len(books.get_subjects()) == 0:
 	<tr>
 		<td colspan="3">keine Fächer vorhanden</td>
 	</tr>

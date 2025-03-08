@@ -1,4 +1,4 @@
-{\LARGE Stammkurs {{class_.toString()}} }
+{\LARGE Stammkurs {{class_.to_string()}} }
 \hfill
 
 Liebe Kolleginnen und Kollegen,

@@ -1,6 +1,6 @@
 %from utils import tex_escape
 
-%from db.orm import Currency
+%from app.db import Currency
 
 \begin{longtable}{ | p{5cm} | c | c | c |}
     \hline
@@ -10,7 +10,7 @@
 	%if grade == 5:
 		kostenlos
 	%else:
-		{{Currency.toString(int(bk.price), addSymbol=False)}} \euro
+		{{Currency.to_string(int(bk.price), addSymbol=False)}} \euro
 	%end
 	& \checkinput & \checkinput \\ \hline
 %end

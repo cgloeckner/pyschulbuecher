@@ -8,281 +8,13 @@ import json
 import math
 from datetime import date
 
-from db.orm import db
-from db import books, orga
+from app.db import loan_queries, db
+from app.db import book_queries as books, orga
 
 __author__ = "Christian Glöckner"
 
 
-def orderLoanOverview(loans):
-    # 1st: outGrade, 2nd: subject, 3rd: title
-    loans = list(loans.order_by(lambda l: l.book.title))
-    loans.sort(key=lambda l: l.person.firstname)
-    loans.sort(key=lambda l: l.person.name)
-    loans.sort(
-        key=lambda l: l.book.subject.tag if l.book.subject is not None else '')
-    loans.sort(key=lambda l: l.book.outGrade)
-    loans.sort(key=lambda l: l.person.student.class_.tag if l.person.student is not None and l.person.student.class_ is not None else '')
-    loans.sort(
-        key=lambda l: l.person.student.class_.grade if l.person.student is not None and l.person.student.class_ is not None else -
-        1)
-    return loans
-
-
-def orderRequestOverview(requests):
-    # 1st: outGrade, 2nd: subject, 3rd: title
-    requests = list(requests.order_by(lambda r: r.book.title))
-    requests.sort(
-        key=lambda r: r.book.subject.tag if r.book.subject is not None else '')
-    requests.sort(key=lambda r: r.book.outGrade)
-    return requests
-
-
-def getExpectedReturns(student: db.Student):
-    """Returns a list of loans which are expected to be returned referring
-    the student's current grade.
-    """
-    return select(l
-                  for l in db.Loan
-                  if l.person == student.person
-                  and l.book.outGrade <= student.class_.grade
-                  )
-
-
-def isRequested(student: db.Student, book: db.Book):
-    """Returns whether the given book is requested by the given student.
-    """
-    for r in student.person.request:
-        if r.book == book:
-            return True
-    return False
-
-
-def getRequestCount(person: db.Person, book: db.Book):
-    """Returns whether the given book is requested by the given person.
-    """
-    for r in person.request:
-        if r.book == book:
-            return 1
-    return 0
-
-
-def updateRequest(student: db.Student, book: db.Book, status: bool):
-    """Update request status for the given book and the given student. If True
-    is provided, a request object is created. If not, no request object exists
-    for that student to that book.
-    """
-    was = isRequested(student, book)
-    if not was and status:
-        # new request
-        db.Request(person=student.person, book=book)
-    elif was and not status:
-        # delete request
-        r = db.Request.get(person=student.person, book=book)
-        r.delete()
-    # else: nothing to update
-
-
-def addLoan(person: db.Person, book: db.Book, count: int):
-    """Add the given number of books to the given person's loaning."""
-    l = db.Loan.get(person=person, book=book)
-    if l is None and count > 0:
-        # create new loan
-        db.Loan(person=person, book=book, given=date.today(), count=count)
-    elif l is not None:
-        # update it
-        l.count += count
-
-
-def updateLoan(person: db.Person, book: db.Book, count: int):
-    """Update the loan status for the given book and the given person. If the
-    count is set to zero, the loan object is deleted from the database.
-    Otherwise the loan object is updated. If no such object exists, it will be
-    created as needed.
-    """
-    l = db.Loan.get(person=person, book=book)
-    if l is None and count > 0:
-        # create new loan
-        db.Loan(person=person, book=book, given=date.today(), count=count)
-    elif l is not None:
-        if count == 0:
-            # delete loan
-            l.delete()
-        else:
-            # update it
-            l.count = count
-
-
-def getLoanCount(person: db.Person, book: db.Book):
-    """Return number of this specific book, either loaned by that person
-    or all together.
-    """
-    if person is not None:
-        # determine loan count
-        for l in person.loan:
-            if l.book == book:
-                return l.count
-        return 0
-
-    else:
-        # determine total loan count for all persons
-        return sum(l.count for l in db.Loan if l.book == book)
-
-
-def queryLoansByBook(book: db.Book):
-    """Return a list of persons who loan that book.
-    """
-    loans = select(l for l in db.Loan if l.book == book)
-    if loans is None:
-        loans = list()
-    else:
-        loans = orderLoanOverview(loans)
-    return loans
-
-
-def applyRequest(student: db.Student):
-    """Apply person's request be transfering to loaning these books.
-    Note that the requests are deleted after that.
-    """
-    # add loaning
-    bks = list()
-    for l in student.person.request:
-        if l.book.inGrade == 0:
-            # ignore special books
-            l.delete()
-        else:
-            updateLoan(student.person, l.book, 1)
-            bks.append(l.book)
-
-    # drop as requests
-    for b in bks:
-        updateRequest(student, b, False)
-
 # -----------------------------------------------------------------------------
-
-
-class DemandManager(object):
-
-    def __init__(self, grade_query=orga.getStudentsCount):
-        self.data = dict()
-        self.grade_query = grade_query
-
-    def parse(self, forms):
-        """Parse demand data from a form. The given forms parameter is a
-        function handle with __call__(key), where key is a UI-related name tag.
-        """
-        # note: str(grade) because json will dump to str it anyway
-        # parse student numbers for elective subjects (until 10th grade)
-        tmp = dict()
-        for grade in orga.getSecondary1Range():
-            tmp[str(grade)] = dict()
-            for sub in books.getSubjects(elective=True):
-                key = "%d_%s" % (grade, sub.tag)
-                val = forms(key)
-                tmp[str(grade)][sub.tag] = int(val) if val != "" else 0
-        # parse student numbers for each subject (after 11th grade)
-        for grade in orga.getSecondary2Range():
-            tmp[str(grade)] = dict()
-            for sub in books.getSubjects():
-                tmp[str(grade)][sub.tag] = dict()
-                for level in ['novices', 'advanced']:
-                    key = "%d_%s_%s" % (grade, sub.tag, level)
-                    val = forms(key)
-                    tmp[str(grade)][sub.tag][level] = int(
-                        val) if val != "" else 0
-        # overwrite internal data
-        self.data = tmp
-
-    def getUnavailableBooksCount(self, book):
-        """Return total amount of books that are continued to be in use during
-        the next school year.
-        """
-        continued = 0
-        for l in book.loan:
-            if l.person.student is None:
-                # count teacher books
-                continued += l.count
-            elif l.person.student.class_.grade < book.outGrade:
-                # count student books
-                continued += l.count
-        return continued
-
-    def countBooksInUse(self, book):
-        """Return total amount of books that will be used after the end of this
-        school year. Expected returns are not included, as well as requested
-        books.
-        """
-        in_use = 0
-        for l in book.loan:
-            if l.person.student is None:
-                # teacher books are in use
-                in_use += l.count
-            elif l.person.student.class_.grade < book.outGrade:
-                # student books are in use if loan is continued
-                in_use += l.count
-        return in_use
-
-    # @TODO für Klassensätze nutzen?!
-    def getStudentNumber(
-            self,
-            grade: int,
-            subject: db.Subject,
-            level: str = None):
-        """Return total number of students for the given grade and subject.
-        Optionally specified novice and/or advanced courses are considered.
-        """
-        # note: str(grade) because json will dump to str it anyway
-        assert level in [None, 'novices', 'advanced']
-
-        if str(grade) not in self.data:
-            # no such grade (maybe there is not 8th grade this year)
-            return 0
-        if subject.tag not in self.data[str(grade)]:
-            # no such subject (maybe there is no french class in this grade)
-            # note that the n th grade is currently (n-1)th grade
-            return self.grade_query(grade - 1)
-
-        if level is None:
-            # consider regular class
-            return self.data[str(grade)][subject.tag]
-        else:
-            # consider course levels
-            return self.data[str(grade)][subject.tag][level]
-
-    # @TODO für Klassensätze nutzen?!
-    def getMaxDemand(self, book: db.Book):
-        """Calculate worst case demand of the given book assuming.
-        Note that this calculates the demand for the NEXT year, so all grades
-        are considerd -1.
-        E.g. the new 10th grade is currently 9th grade now.
-        """
-        total = 0
-        for grade in range(book.inGrade, book.outGrade + 1):
-            if book.subject is None:
-                # use student count (e.g. cross-subject books)
-                # note that the n th grade is currently (n-1)th grade
-                total += self.grade_query(grade - 1)
-            elif grade <= 10:
-                # use regular class size
-                total += self.getStudentNumber(grade, book.subject)
-            else:
-                # consider course level
-                if book.novices:
-                    total += self.getStudentNumber(grade,
-                                                   book.subject, 'novices')
-                if book.advanced:
-                    total += self.getStudentNumber(grade,
-                                                   book.subject, 'advanced')
-        return total
-
-    def load_from(self, fhandle):
-        tmp = json.load(fhandle)
-        # overwrite internal data
-        self.data = tmp
-
-    def save_to(self, fhandle):
-        json.dump(self.data, fhandle, indent=4)
-
 
 # -----------------------------------------------------------------------------
 
@@ -305,101 +37,101 @@ class Tests(unittest.TestCase):
         db.drop_all_tables(with_all_data=True)
 
     @db_session
-    def test_isRequested(self):
+    def test_is_requested(self):
         Tests.prepare()
 
         db.Request(person=db.Student[3].person, book=db.Book[3])
 
-        self.assertTrue(isRequested(db.Student[3], db.Book[3]))
-        self.assertFalse(isRequested(db.Student[3], db.Book[5]))
-        self.assertFalse(isRequested(db.Student[1], db.Book[3]))
+        self.assertTrue(is_requested(db.Student[3], db.Book[3]))
+        self.assertFalse(is_requested(db.Student[3], db.Book[5]))
+        self.assertFalse(is_requested(db.Student[1], db.Book[3]))
 
     @db_session
-    def test_updateRequest(self):
+    def test_update_request(self):
         Tests.prepare()
 
         self.assertEqual(len(db.Student[3].person.request), 0)
 
         # register book 3
-        updateRequest(db.Student[3], db.Book[3], True)
+        update_request(db.Student[3], db.Book[3], True)
         self.assertEqual(len(db.Student[3].person.request), 1)
-        self.assertTrue(isRequested(db.Student[3], db.Book[3]))
+        self.assertTrue(is_requested(db.Student[3], db.Book[3]))
 
         # double-register book 3
-        updateRequest(db.Student[3], db.Book[3], True)
+        update_request(db.Student[3], db.Book[3], True)
         self.assertEqual(len(db.Student[3].person.request), 1)
 
         # double-unregister book 5
-        updateRequest(db.Student[3], db.Book[5], False)
+        update_request(db.Student[3], db.Book[5], False)
         self.assertEqual(len(db.Student[3].person.request), 1)
 
         # register book 5
-        updateRequest(db.Student[3], db.Book[5], True)
+        update_request(db.Student[3], db.Book[5], True)
         self.assertEqual(len(db.Student[3].person.request), 2)
-        self.assertTrue(isRequested(db.Student[3], db.Book[5]))
+        self.assertTrue(is_requested(db.Student[3], db.Book[5]))
 
         # unregister book 3
-        updateRequest(db.Student[3], db.Book[3], False)
+        update_request(db.Student[3], db.Book[3], False)
         self.assertEqual(len(db.Student[3].person.request), 1)
-        self.assertFalse(isRequested(db.Student[3], db.Book[3]))
+        self.assertFalse(is_requested(db.Student[3], db.Book[3]))
 
         # unregister book 5
-        updateRequest(db.Student[3], db.Book[5], False)
+        update_request(db.Student[3], db.Book[5], False)
         self.assertEqual(len(db.Student[3].person.request), 0)
-        self.assertFalse(isRequested(db.Student[3], db.Book[5]))
+        self.assertFalse(is_requested(db.Student[3], db.Book[5]))
 
     @db_session
-    def test_updateLoan(self):
+    def test_update_loan(self):
         Tests.prepare()
 
         s = db.Student[3]
         self.assertEqual(len(s.person.loan), 0)
 
         # register book 3
-        updateLoan(s.person, db.Book[3], 1)
+        update_loan(s.person, db.Book[3], 1)
         self.assertEqual(len(s.person.loan), 1)
-        self.assertEqual(getLoanCount(s.person, db.Book[3]), 1)
+        self.assertEqual(get_loan_count(s.person, db.Book[3]), 1)
 
         # register 2nd book 3
-        updateLoan(s.person, db.Book[3], 2)
+        update_loan(s.person, db.Book[3], 2)
         self.assertEqual(len(s.person.loan), 1)
-        self.assertEqual(getLoanCount(s.person, db.Book[3]), 2)
+        self.assertEqual(get_loan_count(s.person, db.Book[3]), 2)
 
         # return book 5 (not loaned yet)
-        updateLoan(s.person, db.Book[5], 0)
+        update_loan(s.person, db.Book[5], 0)
         self.assertEqual(len(s.person.loan), 1)
 
         # register book 5
-        updateLoan(s.person, db.Book[5], 1)
+        update_loan(s.person, db.Book[5], 1)
         self.assertEqual(len(s.person.loan), 2)
-        self.assertEqual(getLoanCount(s.person, db.Book[5]), 1)
+        self.assertEqual(get_loan_count(s.person, db.Book[5]), 1)
 
         # return book 3
-        updateLoan(s.person, db.Book[3], 0)
+        update_loan(s.person, db.Book[3], 0)
         self.assertEqual(len(s.person.loan), 1)
-        self.assertEqual(getLoanCount(s.person, db.Book[3]), 0)
+        self.assertEqual(get_loan_count(s.person, db.Book[3]), 0)
 
         # return book 5
-        updateLoan(s.person, db.Book[5], 0)
+        update_loan(s.person, db.Book[5], 0)
         self.assertEqual(len(s.person.loan), 0)
-        self.assertEqual(getLoanCount(s.person, db.Book[5]), 0)
+        self.assertEqual(get_loan_count(s.person, db.Book[5]), 0)
 
     @db_session
-    def test_getLoanCount_without_person(self):
+    def test_get_loan_count_without_person(self):
         Tests.prepare()
 
         # register some books
-        updateLoan(db.Student[3].person, db.Book[3], 2)
-        updateLoan(db.Student[1].person, db.Book[3], 1)
-        updateLoan(db.Student[2].person, db.Book[3], 4)
-        updateLoan(db.Teacher[2].person, db.Book[3], 30)
+        update_loan(db.Student[3].person, db.Book[3], 2)
+        update_loan(db.Student[1].person, db.Book[3], 1)
+        update_loan(db.Student[2].person, db.Book[3], 4)
+        update_loan(db.Teacher[2].person, db.Book[3], 30)
 
         # query total loan count without specifying a single person
-        n = getLoanCount(person=None, book=db.Book[3])
+        n = get_loan_count(person=None, book=db.Book[3])
         self.assertEqual(n, 37)
 
     @db_session
-    def test_addLoans(self):
+    def test_add_loans(self):
         Tests.prepare()
 
         # regular usecase
@@ -469,7 +201,7 @@ class Tests(unittest.TestCase):
         self.assertEqual(ln[0].given, date.today())
 
     @db_session
-    def test_getExpectedReturns(self):
+    def test_get_expected_returns(self):
         Tests.prepare()
 
         # give away some books to 12th grade student
@@ -487,7 +219,7 @@ class Tests(unittest.TestCase):
             given=date.today())
 
         # expected returns for 12th grade
-        ln = list(getExpectedReturns(db.Student[3]))
+        ln = list(get_expected_returns(db.Student[3]))
         self.assertEqual(len(ln), 3)
         bs = set()
         for l in ln:
@@ -499,7 +231,7 @@ class Tests(unittest.TestCase):
         # expected returns for 11th
         db.Student[3].class_.grade = 11
 
-        ln = list(getExpectedReturns(db.Student[3]))
+        ln = list(get_expected_returns(db.Student[3]))
         self.assertEqual(len(ln), 1)
         self.assertEqual(ln[0].book, db.Book[3])  # yet outdated (ends at 10)
 
@@ -518,33 +250,33 @@ class Tests(unittest.TestCase):
             given=date.today())
 
         # expected returns for 8th grade
-        ln = list(getExpectedReturns(db.Student[1]))
+        ln = list(get_expected_returns(db.Student[1]))
         self.assertEqual(len(ln), 1)
         self.assertEqual(ln[0].book, db.Book[2])
 
         # expected returns for 7th grade
         db.Student[1].class_.grade = 7
-        ln = list(getExpectedReturns(db.Student[1]))
+        ln = list(get_expected_returns(db.Student[1]))
         self.assertEqual(len(ln), 1)
 
     @db_session
-    def test_queryLoansByBook(self):
+    def test_query_loans_by_book(self):
         Tests.prepare()
 
         # modify db to have two students in one class
         db.Student[2].class_ = db.Class[2]
 
         # setup some loans
-        updateLoan(db.Student[2].person, db.Book[2], 2)
-        updateLoan(db.Teacher[2].person, db.Book[2], 3)
-        updateLoan(db.Student[1].person, db.Book[2], 1)
-        updateLoan(db.Student[3].person, db.Book[2], 6)
+        update_loan(db.Student[2].person, db.Book[2], 2)
+        update_loan(db.Teacher[2].person, db.Book[2], 3)
+        update_loan(db.Student[1].person, db.Book[2], 1)
+        update_loan(db.Student[3].person, db.Book[2], 6)
 
         # query loans
-        loans = queryLoansByBook(db.Book[1])
+        loans = query_loans_by_book(db.Book[1])
         self.assertEqual(len(loans), 0)
 
-        loans = queryLoansByBook(db.Book[2])
+        loans = query_loans_by_book(db.Book[2])
         self.assertEqual(len(loans), 4)
         self.assertEqual(
             db.Teacher[2].person,
@@ -595,13 +327,13 @@ class Tests(unittest.TestCase):
             '12_De_novices': 13,
             '12_De_advanced': 12,
         }
-        for grade in orga.getSecondary1Range():
-            for sub in books.getSubjects(elective=True):
+        for grade in orga.get_secondary_level1_range():
+            for sub in books.get_subjects(elective=True):
                 key = '%s_%s' % (grade, sub.tag)
                 if key not in keys:
                     keys[key] = 0
-        for grade in orga.getSecondary2Range():
-            for sub in books.getSubjects():
+        for grade in orga.get_secondary_level2_range():
+            for sub in books.get_subjects():
                 for level in ['novices', 'advanced']:
                     key = '%s_%s_%s' % (grade, sub.tag, level)
                     if key not in keys:

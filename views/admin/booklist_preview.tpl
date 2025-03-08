@@ -1,6 +1,6 @@
-%import db.books as books
+%from app.db import book_queries as books
 %from utils import bool2str
-%from db.orm import Currency
+%from app.db import Currency
 
 %include("header")
 <h1>Vorschau Bücherzettel</h1>

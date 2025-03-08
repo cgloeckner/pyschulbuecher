@@ -1,7 +1,7 @@
 import os
 import bottle
 
-from db import books, orga
+from app.db import book_queries as books, orga
 
 from app.tex.compiler import compile_pdf
 
@@ -35,8 +35,8 @@ class BookreturnPdf(object):
         """Generate overviews for class teachers about returning books.
         """
         # fetch and order books that are used next year by this class
-        bks = books.getBooksFinishedIn(grade)
-        bks = books.orderBooksList(bks)
+        bks = books.get_books_finished_in(grade)
+        bks = books.order_books_list(bks)
 
         # render template
         self.tex += bottle.template(self.overview, s=self.s, grade=grade, bks=bks)
@@ -45,11 +45,11 @@ class BookreturnPdf(object):
         """Generate requestlist pdf file for the given class.
         """
         # fetch and order books that are used next year by this class
-        bks = books.getBooksFinishedIn(class_.grade)
-        bks = books.orderBooksList(bks)
+        bks = books.get_books_finished_in(class_.grade)
+        bks = books.order_books_list(bks)
 
         # query students
-        students = orga.getStudentsIn(class_.grade, class_.tag)
+        students = orga.get_students_in(class_.grade, class_.tag)
 
         # render template
         self.tex += bottle.template(self.content, s=self.s, class_=class_, bks=bks, students=students)

@@ -1,4 +1,4 @@
-%import db.orga as orga
+%from app.db import orga_queries as orga
 %from app import Settings
 
 %s = Settings()
@@ -36,16 +36,16 @@
 		<button class="dropbtn"><a href="/classes">Klassen <span class="downarrow">&#9660;</span></a>
 		</button>
 		<div class="dropdown-content">
-%for grade in orga.getClassGrades():
+%for grade in orga.get_class_grades():
 	%if grade == 4:
 			<a href="/classes/{{grade}}">zukünftige 5</a>
 	%else:
 			<div class="submenu">
 				<a href="/classes/{{grade}}">{{grade}}. Klasse <span class="rightarrow">&#9654;</span></a>
 				<div class="dropdown-content">
-	%for tag in orga.getClassTags(grade):
+	%for tag in orga.get_class_tags(grade):
 		%c = orga.db.Class.get(grade=grade, tag=tag)
-					<a href="/classes/{{grade}}/{{tag}}">{{c.toString()}}</a>
+					<a href="/classes/{{grade}}/{{tag}}">{{c.to_string()}}</a>
 	%end
 				</div>
 			</div>

@@ -11,8 +11,8 @@ from datetime import datetime
 from bottle import *
 from pony import orm
 
-from db.orm import db, db_session
-from db import orga, books, loans
+from app.db import orga_queries, book_queries, loan_queries, db, db_session
+
 from utils import errorhandler
 
 
@@ -23,8 +23,8 @@ __author__ = "Christian Glöckner"
 @view('loan/person_listing')
 def loan_person_overview(id):
     person = db.Person[id]
-    loan = loans.orderLoanOverview(person.loan)
-    request = loans.orderRequestOverview(person.request)
+    loan = loans.order_loan_overview(person.loan)
+    request = loans.order_request_overview(person.request)
     return dict(person=person, loan=loan, request=request)
 
 
@@ -44,7 +44,7 @@ def loan_person_add(person_id):
         if raw.isnumeric():
             value = int(raw)
             if value > 0:
-                loans.addLoan(person, b, value)
+                loans.add_loan(person, b, value)
 
     db.commit()
     redirect('/loan/person/%d' % person_id)
@@ -57,7 +57,7 @@ def loan_person_add(person_id):
 
     for l in person.loan:
         if request.forms.get(str(l.book.id)) == 'on':
-            loans.updateLoan(person, db.Book[l.book.id], 0)
+            loans.update_loan(person, db.Book[l.book.id], 0)
 
     db.commit()
     redirect('/loan/person/%d' % person_id)
@@ -76,11 +76,11 @@ def loan_ajax_queryBooks():
     person = db.Person[int(request.query.person_id)]
     if request.query.by == 'subject':
         subject = db.Subject[value] if value is not None else None
-        bks = books.getRealBooksBySubject(subject, classsets)
+        bks = books.get_real_books_by_subject(subject, classsets)
     else:
-        bks = books.getRealBooksByGrade(value, classsets)
+        bks = books.get_real_books_by_grade(value, classsets)
 
-    bks = books.orderBooksIndex(bks)
+    bks = books.order_books_index(bks)
     return dict(person=person, bks=bks)
 
 
@@ -88,7 +88,7 @@ def loan_ajax_queryBooks():
 @view('loan/book_loan')
 def loan_book_queryLoan(book_id):
     book = db.Book[book_id]
-    l = loans.queryLoansByBook(book)
+    l = loans.query_loans_by_book(book)
 
     return dict(book=book, loans=l)
 
@@ -129,34 +129,34 @@ class Tests(unittest.TestCase):
         self.assertEqual(ret.status_int, 200)
 
         # request books
-        loans.updateRequest(s, db.Book[3], True)
-        loans.updateRequest(s, db.Book[5], True)
+        loans.update_request(s, db.Book[3], True)
+        loans.update_request(s, db.Book[5], True)
 
         # show person's loan overview (requests only)
         ret = self.app.get('/loan/person/%d' % (s.person.id))
         self.assertEqual(ret.status_int, 200)
 
         # loan books
-        loans.updateLoan(s.person, db.Book[2], True)
-        loans.updateLoan(s.person, db.Book[1], True)
-        loans.updateLoan(s.person, db.Book[4], True)
+        loans.update_loan(s.person, db.Book[2], True)
+        loans.update_loan(s.person, db.Book[1], True)
+        loans.update_loan(s.person, db.Book[4], True)
 
         # show person's loan overview (requests and loans)
         ret = self.app.get('/loan/person/%d' % (s.person.id))
         self.assertEqual(ret.status_int, 200)
 
         # unregister requests
-        loans.updateRequest(s, db.Book[3], False)
-        loans.updateRequest(s, db.Book[5], False)
+        loans.update_request(s, db.Book[3], False)
+        loans.update_request(s, db.Book[5], False)
 
         # show person's loan overview (loans only)
         ret = self.app.get('/loan/person/%d' % (s.person.id))
         self.assertEqual(ret.status_int, 200)
 
         # return books
-        loans.updateLoan(s.person, db.Book[2], False)
-        loans.updateLoan(s.person, db.Book[1], False)
-        loans.updateLoan(s.person, db.Book[4], False)
+        loans.update_loan(s.person, db.Book[2], False)
+        loans.update_loan(s.person, db.Book[1], False)
+        loans.update_loan(s.person, db.Book[4], False)
 
         # show person's loan overview without any
         ret = self.app.get('/loan/person/%d' % (s.person.id))

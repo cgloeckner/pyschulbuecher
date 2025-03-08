@@ -1,13 +1,13 @@
-%import db.orga as orga
+%from app.db import orga_queries as orga
 
 %include("header")
-<h1>Klasse {{c.toString()}} löschen</h1>
+<h1>Klasse {{c.to_string()}} löschen</h1>
 
 Folgende Schüler befinden sich in dieser Klasse:
 <ol>
 %m = 0
 %bks = dict()
-%students = orga.getStudentsIn(c.grade, c.tag)
+%students = orga.get_students_in(c.grade, c.tag)
 %for s in students:
 	<li>{{s.person.name}}, {{s.person.firstname}} \\
 	%lns = s.person.loan
@@ -29,7 +29,7 @@ Diese Klasse kann nicht gelöscht werden, da noch Bücher ausgeliehen sind:
 	%end
 	</ul>
 %else:
-Soll die Klasse {{c.toString()}} WIRKLICH gelöscht werden? <a href="/admin/classes/delete/{{c.id}}/confirm">Löschen bestätigen</a>
+Soll die Klasse {{c.to_string()}} WIRKLICH gelöscht werden? <a href="/admin/classes/delete/{{c.id}}/confirm">Löschen bestätigen</a>
 %end
 
 <hr />

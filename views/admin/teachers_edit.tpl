@@ -1,4 +1,4 @@
-%from db import orga
+%from app.db import orga_queries as orga
 
 %include("header")
 <h1>Lehrer bearbeiten</h1>

@@ -1,7 +1,7 @@
-%import db.books as books
-%import db.orga as orga
+%from app.db import book_queries as books
+%from app.db import orga_queries as orga
 %from utils import bool2str
-%from db.orm import Currency
+%from app.db import Currency
 
 %include("header")
 
@@ -20,15 +20,15 @@
 	<tr>
 		<th class="rotate">Klassenstufe</th>
 		<th class="rotate">Gesamtzahl Schüler</th>
-	%for sub in books.getSubjects(elective=True):
+	%for sub in books.get_subjects(elective=True):
 		<th>{{sub.tag}}</th>
 	%end
 	</tr>
 %for grade in range(5, 10+1):
 	<tr>
 		<td>{{grade}}</td>
-		<td id="{{grade}}_status">{{orga.getStudentsCount(grade-1)}}</td>
-	%for sub in books.getSubjects(elective=True):
+		<td id="{{grade}}_status">{{orga.get_students_count(grade-1)}}</td>
+	%for sub in books.get_subjects(elective=True):
 		<td><input type="text" class="short" maxLength="3" name="{{grade}}_{{sub.tag}}" value="{{demand.getStudentNumber(grade, sub)}}" /></td>
 	%end
 	</tr>
@@ -37,7 +37,7 @@
 
 <h2>Schülerzahlen Sekundarstufe II</h2>
 
-%subjects = books.getSubjects()
+%subjects = books.get_subjects()
 <table class="books">
 	<tr>
 		<th>Kurs</th>

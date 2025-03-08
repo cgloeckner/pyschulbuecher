@@ -1,8 +1,8 @@
 %from utils import tex_escape
-%from db import loans
+%from app.db import loan_queries as loans
 %from app.utils import shortify_name
 
-{\LARGE Ausleihliste zur Bücherrückgabe {{class_.toString()}} }
+{\LARGE Ausleihliste zur Bücherrückgabe {{class_.to_string()}} }
 \hfill
 %year = int(s.data['general']['school_year'])
 {\large Schuljahr {{year}}/{{year+1}} }
@@ -86,7 +86,7 @@ Bitte sammeln Sie die untenstehenden Bücher von Ihren Schülern ein. Beachten S
 	%for b in bks:
 		%if not b.workbook and not b.classsets:
 		&
-			%n = loans.getLoanCount(s.person, b)
+			%n = loans.get_loan_count(s.person, b)
 			%if n > 0:
 		{{n}}
 			%end		

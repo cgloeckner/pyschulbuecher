@@ -23,12 +23,12 @@ class SubjectCouncilXls(object):
         self.data = xlsxwriter.Workbook(self.getPath(subject))
 
         """items = {
-            'Leihbuch': books.getRealBooksBySubject(subject, False),
-            'AH': books.getWorkbooksBySubject(subject),
-            'Klassensatz': books.getClasssetsBySubject(subject)
+            'Leihbuch': books.get_real_books_by_subject(subject, False),
+            'AH': books.get_workbooks_by_subject(subject),
+            'Klassensatz': books.get_classsets_by_subject(subject)
         }"""
         
-        all_books = books.orderBooksIndex(books.getAllBooks())
+        all_books = books.order_books_index(books.get_all_books())
 
         title_format = self.data.add_format()
         title_format.set_bold()

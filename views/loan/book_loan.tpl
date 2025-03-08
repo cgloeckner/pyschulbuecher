@@ -13,7 +13,7 @@
 %for l in loans:
 	<tr>
 	%if l.person.student is not None:
-		<td>{{l.person.student.class_.toString()}}</td>
+		<td>{{l.person.student.class_.to_string()}}</td>
 	%else:
 		<td>{{l.person.teacher.tag.upper()}}</td>
 	%end

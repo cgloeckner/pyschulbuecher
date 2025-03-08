@@ -1,4 +1,4 @@
-%from db.orm import Currency
+%from app.db import Currency
 
 %include("header")
 <h1>Schuljahreswechsel</h1>

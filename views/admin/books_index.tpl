@@ -1,6 +1,6 @@
-%import db.books as books
+%from app.db import book_queries as books
 %from utils import bool2str
-%from db.orm import Currency
+%from app.db import Currency
 
 %include("header")
 <h1>Übersicht Bücher</h1>
@@ -33,7 +33,7 @@
 		<tr>
 			<td><b>Verlag</b></td>
 			<td><select name="publisher_id">
-%for i, p in enumerate(books.getPublishers()):
+%for i, p in enumerate(books.get_publishers()):
 				<option value="{{p.id}}"\\
 %if i == 0:
  selected\\
@@ -54,7 +54,7 @@
 			<td><b>Fach</b></td>
 			<td><select name="subject_id">
 				<option value="">verschiedene</option>
-%for s in books.getSubjects():
+%for s in books.get_subjects():
 				<option value="{{s.id}}">{{s.tag}} ({{s.name}})</option>
 %end
 			</select></td>
@@ -115,13 +115,13 @@
 
 <br /><br />
 
-%for s in books.getSubjects():
+%for s in books.get_subjects():
 <a href="#{{s.tag}}">{{s.tag}}</a> &nbsp;
 %end
 
 <table class="books">
 %old = None
-%bs = books.orderBooksIndex(books.getAllBooks())
+%bs = books.order_books_index(books.get_all_books())
 %for b in bs:
 	%tag = b.subject.tag if b.subject is not None else 'versch.'
 	%if old is None or old != tag:
@@ -159,9 +159,9 @@
 	%end
 		<td><a class="edit" href="/admin/books/edit/{{b.id}}">&#9998;</a></td>
 		<td><a href="/loan/book/{{b.id}}" target="_blank">{{b.title}}</a></td>
-		<td><a href="{{b.getQueryUrl()}}" target="_blank">{{b.isbn}}</a></td>
+		<td><a href="{{b.get_query_url()}}" target="_blank">{{b.isbn}}</a></td>
 	%if b.price is not None:
-		<td>{{Currency.toString(b.price)}}</td>
+		<td>{{Currency.to_string(b.price)}}</td>
 	%else:
 		<td>-</td>
 	%end

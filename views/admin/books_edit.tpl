@@ -1,5 +1,5 @@
-%from db import books
-%from db.orm import Currency
+%from app.db import book_queries as books
+%from app.db import Currency
 %from utils import bool2checked
 
 %include("header")
@@ -20,7 +20,7 @@
 		<tr>
 			<td>Preis</td>
 %if b.price is not None:
-			<td><input type="text" name="price" value="{{Currency.toString(b.price).split('€')[0].rstrip()}}" />€</td>
+			<td><input type="text" name="price" value="{{Currency.to_string(b.price).split('€')[0].rstrip()}}" />€</td>
 %else:
 			<td><input type="text" name="price" value="" />€</td>
 %end
@@ -28,7 +28,7 @@
 		<tr>
 			<td>Verlag</td>
 			<td><select name="publisher_id">
-%for p in books.getPublishers():
+%for p in books.get_publishers():
 				<option value="{{p.id}}"\\
 %if p.id == b.publisher.id:
  selected\\
@@ -57,7 +57,7 @@
  selected\\
 %end
 >verschiedene</option>
-%for s in books.getSubjects():
+%for s in books.get_subjects():
 				<option value="{{s.id}}"\\
 %if b.subject is not None and b.subject.id == s.id:
  selected\\

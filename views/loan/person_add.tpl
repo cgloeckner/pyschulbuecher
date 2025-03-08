@@ -1,4 +1,4 @@
-%from db import orga, books
+%from app.db import orga_queries as orga, books
 
 %include("header")
 <h1>Leihexemplar hinzufügen</h1>
@@ -8,13 +8,13 @@
 		<td>Fach</td>
 		<td><select name="subject_id" id="subject_id">
 			<option value="" selected>verschiedene</option>
-%for s in books.getSubjects():
+%for s in books.get_subjects():
 			<option value="{{s.id}}">{{s.tag}} ({{s.name}})</option>
 %end
 		</select></td>
 		<td>Klassenstufe</td>
 		<td><select name="grade_id" id="grade_id">
-%for grade in orga.getClassGrades(regular=True):
+%for grade in orga.get_class_grades(regular=True):
 			<option value="{{grade}}">Klasse {{grade}}</option>
 %end
 		</select></td>

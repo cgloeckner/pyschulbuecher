@@ -1,5 +1,5 @@
 %from utils import tex_escape
-%from db import orga
+%from app.db import orga_queries as orga
 
 {\LARGE Information zur Bücherrückgabe Klasse {{grade}} }
 
@@ -8,7 +8,7 @@
 {\large Schuljahr {{year}}/{{year+1}} }
 
 %teachers = list()
-%for c in orga.getClassesByGrade(grade):
+%for c in orga.get_classes_by_grade(grade):
 	%if c.teacher is not None:
 		%teachers.append(c.teacher)
 	%end

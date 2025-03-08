@@ -1,9 +1,9 @@
-%import db.orga as orga
-%import db.loans as loans
+%from app.db import orga_queries as orga
+%from app.db import loan_queries as loans
 %from app.utils import shortify_name
 
 %include("header")
-<h1>Bücherübersicht Klasse {{c.toString()}}</h1>
+<h1>Bücherübersicht Klasse {{c.to_string()}}</h1>
 <a href="/admin/classes/edit/{{c.id}}">Bearbeiten</a><br />
 
 <form action="/classes/loans/{{grade}}/{{tag}}" id="requests" method="post">
@@ -58,7 +58,7 @@
 	</tr>
 	
 %i = 1
-%for s in orga.getStudentsIn(grade, tag):
+%for s in orga.get_students_in(grade, tag):
 	<!-- ==================== student #{{s.id}} ({{s.person.name}}, {{s.person.firstname}}) ==================== //-->
 	%if i % 2 == 0:
 	<tr class="gray select">
@@ -74,7 +74,7 @@
 		%if b.workbook or b.classsets:
 			%continue
 		%end
-		%value = loans.getLoanCount(s.person, b)
+		%value = loans.get_loan_count(s.person, b)
 		%count[b.id] += value
 		%value = '' if value == 0 else value
 		%id = '%i_%i' % (s.id, b.id)
