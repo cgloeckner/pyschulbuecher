@@ -1,4 +1,4 @@
-%from utils import tex_escape, shortName
+%from utils import tex_escape, shortify_name
 
 {\LARGE Erfassung Bücherzettel {{class_.toString()}} }
 \hfill
@@ -81,7 +81,7 @@ Bitte für jedes gewünschte Freiexemplar ein Kreuz setzen:
 		{\small {{i}} } &
 	%i += 1
 		{\footnotesize {{!tex_escape(s.person.name)}} } &
-		{\footnotesize {{!tex_escape(shortName(s.person.firstname))}} }
+		{\footnotesize {{!tex_escape(shortify_name(s.person.firstname))}} }
 	%for b in bks:
 		%if not b.workbook and not b.classsets:
 		&

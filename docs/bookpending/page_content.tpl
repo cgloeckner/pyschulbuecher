@@ -1,4 +1,4 @@
-%from utils import tex_escape, shortName
+%from utils import tex_escape, shortify_name
 
 %if i % 2 == 0:
     \showrowcolors
@@ -8,6 +8,6 @@
 {{i+1}} &
 {{!tex_escape(l.person.student.class_.toString())}} &
 {{!tex_escape(l.person.name)}} &
-{{!tex_escape(shortName(l.person.firstname))}} &
+{{!tex_escape(shortify_name(l.person.firstname))}} &
 {{l.count}}x
 \\ \hline

@@ -15,7 +15,9 @@ from pony import orm
 
 from db.orm import db, db_session, Currency
 from db import orga, books, loans
-from db.utils import Settings, SubjectCouncilXls, PlannerXls, DatabaseDumpXls, LoanReportPdf, LoanContractPdf, BooklistPdf, RequestlistPdf, BookreturnPdf, BookloanPdf, BookpendingPdf, ClassListPdf, ClasssetsPdf, InventoryReport
+from app import Settings
+from app.tex import *
+from app.xls import *
 from utils import errorhandler
 
 

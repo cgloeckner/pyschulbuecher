@@ -1,5 +1,5 @@
 %from db.orm import Currency
-%from utils import tex_escape, shortName
+%from utils import tex_escape, shortify_name
 %from db import loans
 %import datetime
 

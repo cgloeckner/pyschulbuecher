@@ -1,6 +1,6 @@
 %from utils import tex_escape
 %from db import loans
-%from utils import shortName
+%from app.utils import shortify_name
 
 {\LARGE Ausleihliste zur Bücherrückgabe {{class_.toString()}} }
 \hfill
@@ -82,7 +82,7 @@ Bitte sammeln Sie die untenstehenden Bücher von Ihren Schülern ein. Beachten S
 		{\small {{i}} } &
 	%i += 1
 		{\footnotesize {{!tex_escape(s.person.name)}} } &
-		{\footnotesize {{!tex_escape(shortName(s.person.firstname))}} }
+		{\footnotesize {{!tex_escape(shortify_name(s.person.firstname))}} }
 	%for b in bks:
 		%if not b.workbook and not b.classsets:
 		&

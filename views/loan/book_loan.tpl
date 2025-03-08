@@ -1,5 +1,5 @@
 
-%from utils import shortName
+%from app.utils import shortify_name
 
 %include("header")
 <h1>Leihliste für {{book.title}}</h1>
@@ -17,7 +17,7 @@
 	%else:
 		<td>{{l.person.teacher.tag.upper()}}</td>
 	%end
-		<td><a href="/loan/person/{{l.person.id}}">{{l.person.name}}, {{shortName(l.person.firstname)}}</a></td>
+		<td><a href="/loan/person/{{l.person.id}}">{{l.person.name}}, {{shortify_name(l.person.firstname)}}</a></td>
 		<td>{{l.count}}</td>
 	</tr>
 %end

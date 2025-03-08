@@ -1,6 +1,6 @@
 %import db.orga as orga
 %import db.loans as loans
-%from utils import shortName
+%from app.utils import shortify_name
 
 %include("header")
 <h1>Bücherübersicht Klasse {{c.toString()}}</h1>
@@ -67,7 +67,7 @@
 	%end
 		<td><a class="edit" href="/admin/students/edit/{{s.id}}">&#9998;</a></td>
 		<td>{{i}}</td>
-		<td class="name"><a href="/loan/person/{{s.person.id}}">{{s.person.name}}, {{shortName(s.person.firstname)}}</a></td>
+		<td class="name"><a href="/loan/person/{{s.person.id}}">{{s.person.name}}, {{shortify_name(s.person.firstname)}}</a></td>
 	%i += 1
 	%j = 1
 	%for b in books:

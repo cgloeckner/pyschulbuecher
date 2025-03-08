@@ -1,6 +1,6 @@
 %import db.orga as orga
 %import db.loans as loans
-%from utils import shortName
+%from app.utils import shortify_name
 
 %include("header")
 <h1>Leihlisten für Schüler: <span class="button" style="font-size: 100%;" onClick="toggleAll();" title="Auswahl für Klassen umkehren">↺</span></h1>
@@ -24,7 +24,7 @@
 	%for s in students:
 		<li>
 			<input type="checkbox" name="{{s.person.id}}" id="{{s.person.id}}" />
-			<label for="{{s.person.id}}">{{s.person.name}}, {{shortName(s.person.firstname)}}</label>
+			<label for="{{s.person.id}}">{{s.person.name}}, {{shortify_name(s.person.firstname)}}</label>
 		</li>
 	%end
 	</ol>

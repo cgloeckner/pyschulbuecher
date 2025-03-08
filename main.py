@@ -12,6 +12,8 @@ from bottle import *
 import locale
 import sys
 
+from app import Settings
+
 
 __author__ = "Christian Glöckner"
 
@@ -19,7 +21,7 @@ __author__ = "Christian Glöckner"
 def main():
     # determine school year and load suitable database
 
-    s = utils.Settings()
+    s = Settings()
 
     debug = True
 

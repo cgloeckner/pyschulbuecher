@@ -1,5 +1,5 @@
 %import db.orga as orga
-%from db.utils import Settings
+%from app import Settings
 
 %s = Settings()
 %try:
