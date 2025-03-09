@@ -3,7 +3,8 @@ import bottle
 from app import db, db_session, Settings
 
 
-__author__ = "Christian Glöckner"
+__author__ = 'Christian Glöckner'
+__version__ = 'v0.2.1'
 
 
 def main(debug: bool = True) -> None:

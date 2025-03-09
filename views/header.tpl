@@ -1,3 +1,4 @@
+%from main import __version__
 %from app.db import orga_queries
 %from app import Settings
 
@@ -71,7 +72,6 @@
 		</div>
 	</div>
 	
-	<span class="info">Lernmittel ({{year}}/{{year+1}}) - v0.2.1</span>
+	<span class="info">Lernmittel ({{year}}/{{year+1}}) - {{__version__}}</span>
 </div>
 <div class="content">
-
