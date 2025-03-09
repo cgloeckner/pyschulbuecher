@@ -6,6 +6,8 @@ from datetime import date
 
 from pony.orm import *
 
+from app.db import db
+
 
 __author__ = "Christian Glöckner"
 

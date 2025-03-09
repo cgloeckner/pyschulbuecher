@@ -7,8 +7,10 @@ __author__ = "Christian Glöckner"
 
 import unittest
 
-from db import orm, orga, books, loans, utils
+from app.db import orga_queries, book_queries, loan_queries
 
+import test.db.orm as orm
+import test.db.utils as utils
 import test.admin as admin_routes
 import test.classes as classes_routes
 import test.loans as loans_routes
