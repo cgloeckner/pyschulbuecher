@@ -1,5 +1,5 @@
 %from app import tex_escape
-%from app.db import loan_queries as loans
+%from app.db import loan_queries
 %from app.utils import shortify_name
 
 {\LARGE Ausgabe der Leihexemplare in Klasse {{class_.to_string(advance=advance)}} }

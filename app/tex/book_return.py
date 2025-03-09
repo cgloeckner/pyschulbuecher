@@ -1,7 +1,7 @@
 import os
 import bottle
 
-from app.db import book_queries as books, orga
+from app.db import book_queries, orga_queries
 
 from app.tex.compiler import compile_pdf
 
@@ -32,11 +32,11 @@ class BookreturnPdf(object):
         return os.path.join(self.export, 'Rückgaben.pdf')
 
     def addOverview(self, grade):
-        """Generate overviews for class teachers about returning books.
+        """Generate overviews for class teachers about returning book_queries.
         """
         # fetch and order books that are used next year by this class
-        bks = books.get_books_finished_in(grade)
-        bks = books.order_books_list(bks)
+        bks = book_queries.get_books_finished_in(grade)
+        bks = book_queries.order_books_list(bks)
 
         # render template
         self.tex += bottle.template(self.overview, s=self.s, grade=grade, bks=bks)
@@ -45,11 +45,11 @@ class BookreturnPdf(object):
         """Generate requestlist pdf file for the given class.
         """
         # fetch and order books that are used next year by this class
-        bks = books.get_books_finished_in(class_.grade)
-        bks = books.order_books_list(bks)
+        bks = book_queries.get_books_finished_in(class_.grade)
+        bks = book_queries.order_books_list(bks)
 
         # query students
-        students = orga.get_students_in(class_.grade, class_.tag)
+        students = orga_queries.get_students_in(class_.grade, class_.tag)
 
         # render template
         self.tex += bottle.template(self.content, s=self.s, class_=class_, bks=bks, students=students)

@@ -28,9 +28,9 @@ def suite():
     """
     suite = unittest.TestSuite()
     register(suite, orm.Tests)
-    register(suite, orga.Tests)
-    register(suite, books.Tests)
-    register(suite, loans.Tests)
+    register(suite, orga_queries.Tests)
+    register(suite, book_queries.Tests)
+    register(suite, loan_queries.Tests)
     register(suite, utils.Tests)
     register(suite, admin_routes.Tests)
     register(suite, classes_routes.Tests)

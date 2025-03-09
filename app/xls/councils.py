@@ -1,7 +1,7 @@
 import os
 import xlsxwriter
 
-from app.db import books
+from app.db import book_queries
 
 
 class SubjectCouncilXls(object):
@@ -23,12 +23,12 @@ class SubjectCouncilXls(object):
         self.data = xlsxwriter.Workbook(self.getPath(subject))
 
         """items = {
-            'Leihbuch': books.get_real_books_by_subject(subject, False),
-            'AH': books.get_workbooks_by_subject(subject),
-            'Klassensatz': books.get_classsets_by_subject(subject)
+            'Leihbuch': book_queries.get_real_books_by_subject(subject, False),
+            'AH': book_queries.get_workbooks_by_subject(subject),
+            'Klassensatz': book_queries.get_classsets_by_subject(subject)
         }"""
         
-        all_books = books.order_books_index(books.get_all_books())
+        all_books = book_queries.order_books_index(book_queries.get_all_books())
 
         title_format = self.data.add_format()
         title_format.set_bold()

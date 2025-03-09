@@ -1,4 +1,4 @@
-%from app.db import book_queries as books
+%from app.db import book_queries
 %from app import bool2str
 %from app.db import Currency
 
@@ -33,7 +33,7 @@
 		<tr>
 			<td><b>Verlag</b></td>
 			<td><select name="publisher_id">
-%for i, p in enumerate(books.get_publishers()):
+%for i, p in enumerate(book_queries.get_publishers()):
 				<option value="{{p.id}}"\\
 %if i == 0:
  selected\\
@@ -54,7 +54,7 @@
 			<td><b>Fach</b></td>
 			<td><select name="subject_id">
 				<option value="">verschiedene</option>
-%for s in books.get_subjects():
+%for s in book_queries.get_subjects():
 				<option value="{{s.id}}">{{s.tag}} ({{s.name}})</option>
 %end
 			</select></td>
@@ -115,13 +115,13 @@
 
 <br /><br />
 
-%for s in books.get_subjects():
+%for s in book_queries.get_subjects():
 <a href="#{{s.tag}}">{{s.tag}}</a> &nbsp;
 %end
 
 <table class="books">
 %old = None
-%bs = books.order_books_index(books.get_all_books())
+%bs = book_queries.order_books_index(book_queries.get_all_books())
 %for b in bs:
 	%tag = b.subject.tag if b.subject is not None else 'versch.'
 	%if old is None or old != tag:

@@ -12,9 +12,9 @@ from bottle import *
 from pony import orm
 
 from app import db, db_session
-from app.db import orga_queries as orga
-from app.db import book_queries as books
-from app.db import loan_queries as loans
+from app.db import orga_queries
+from app.db import book_queries
+from app.db import loan_queries
 
 from app.utils import errorhandler
 
@@ -35,7 +35,7 @@ class Tests(unittest.TestCase):
         import db.orga
         import db.books
 
-        db.orga.Tests.prepare()
+        db.orga_queries.Tests.prepare()
         db.books.Tests.prepare()
 
     def setUp(self):
@@ -61,34 +61,34 @@ class Tests(unittest.TestCase):
         self.assertEqual(ret.status_int, 200)
 
         # request books
-        loans.update_request(s, db.Book[3], True)
-        loans.update_request(s, db.Book[5], True)
+        loan_queries.update_request(s, db.Book[3], True)
+        loan_queries.update_request(s, db.Book[5], True)
 
         # show person's loan overview (requests only)
         ret = self.app.get('/loan/person/%d' % (s.person.id))
         self.assertEqual(ret.status_int, 200)
 
         # loan books
-        loans.update_loan(s.person, db.Book[2], True)
-        loans.update_loan(s.person, db.Book[1], True)
-        loans.update_loan(s.person, db.Book[4], True)
+        loan_queries.update_loan(s.person, db.Book[2], True)
+        loan_queries.update_loan(s.person, db.Book[1], True)
+        loan_queries.update_loan(s.person, db.Book[4], True)
 
         # show person's loan overview (requests and loans)
         ret = self.app.get('/loan/person/%d' % (s.person.id))
         self.assertEqual(ret.status_int, 200)
 
         # unregister requests
-        loans.update_request(s, db.Book[3], False)
-        loans.update_request(s, db.Book[5], False)
+        loan_queries.update_request(s, db.Book[3], False)
+        loan_queries.update_request(s, db.Book[5], False)
 
         # show person's loan overview (loans only)
         ret = self.app.get('/loan/person/%d' % (s.person.id))
         self.assertEqual(ret.status_int, 200)
 
         # return books
-        loans.update_loan(s.person, db.Book[2], False)
-        loans.update_loan(s.person, db.Book[1], False)
-        loans.update_loan(s.person, db.Book[4], False)
+        loan_queries.update_loan(s.person, db.Book[2], False)
+        loan_queries.update_loan(s.person, db.Book[1], False)
+        loan_queries.update_loan(s.person, db.Book[4], False)
 
         # show person's loan overview without any
         ret = self.app.get('/loan/person/%d' % (s.person.id))

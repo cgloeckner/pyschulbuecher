@@ -14,9 +14,9 @@ from bottle import *
 from pony import orm
 
 from app.db import db, db_session, DemandManager
-from app.db import orga_queries as orga
-from app.db import book_queries as books
-from app.db import loan_queries as loans
+from app.db import orga_queries
+from app.db import book_queries
+from app.db import loan_queries
 from app import Settings
 from app.tex import *
 from app.xls import *
@@ -38,7 +38,7 @@ class Tests(unittest.TestCase):
         import db.orga
         import db.books
 
-        db.orga.Tests.prepare()
+        db.orga_queries.Tests.prepare()
         db.books.Tests.prepare()
 
     def setUp(self):
@@ -854,13 +854,13 @@ Titel3\t0815-002\t1234\tKlett\t10\t12\tRu\tTrue\tFalse\tFalse\tFalse\tTrue\t
 
         args = dict()
         args["lowering"] = '10'
-        for grade in orga.get_secondary_level1_range():
-            for sub in books.get_subjects(elective=True):
+        for grade in orga_queries.get_secondary_level1_range():
+            for sub in book_queries.get_subjects(elective=True):
                 key = "%s_%s" % (grade, sub.tag)
                 args[key] = 63
         for grade in [11, 12]:
             for level in ['novices', 'advanced']:
-                for sub in books.get_subjects():
+                for sub in book_queries.get_subjects():
                     key = "%s_%s_%s" % (grade, sub.tag, level)
                     args[key] = 23
 

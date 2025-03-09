@@ -1,7 +1,7 @@
 import os
 import bottle
 
-from app.db import loan_queries as loans
+from app.db import loan_queries
 
 from app.tex.compiler import compile_pdf
 
@@ -45,10 +45,10 @@ class LoanContractPdf(object):
         all books that are currently given to him or her. With 'loan_report'
         all books are listed as "you loan these books"
         """
-        lns = loans.order_loan_overview(student.person.loan)
+        lns = loan_queries.order_loan_overview(student.person.loan)
         rqs = list()
         if include_requests:
-            rqs = loans.order_request_overview(student.person.request)
+            rqs = loan_queries.order_request_overview(student.person.request)
         self.tex += bottle.template(
             self.content, s=self.s, student=student, lns=lns, rqs=rqs, advance=self.advance,
             loan_report=loan_report

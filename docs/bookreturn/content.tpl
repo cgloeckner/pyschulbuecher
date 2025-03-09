@@ -1,5 +1,5 @@
 %from app import tex_escape
-%from app.db import loan_queries as loans
+%from app.db import loan_queries
 %from app.utils import shortify_name
 
 {\LARGE Ausleihliste zur Bücherrückgabe {{class_.to_string()}} }
@@ -86,7 +86,7 @@ Bitte sammeln Sie die untenstehenden Bücher von Ihren Schülern ein. Beachten S
 	%for b in bks:
 		%if not b.workbook and not b.classsets:
 		&
-			%n = loans.get_loan_count(s.person, b)
+			%n = loan_queries.get_loan_count(s.person, b)
 			%if n > 0:
 		{{n}}
 			%end		

@@ -1,9 +1,9 @@
 import os
 import bottle
 
-from app.db import book_queries as books
-from app.db import loan_queries as loans
-from app.db import orga_queries as orga
+from app.db import book_queries
+from app.db import loan_queries
+from app.db import orga_queries
 
 from app.tex.compiler import compile_pdf
 
@@ -40,19 +40,19 @@ class BookloanPdf(object):
             grade += 1
 
         # fetch and order books that were requested by this class
-        bks = books.get_books_used_in(grade)
-        bks = books.order_books_list(bks)
+        bks = book_queries.get_books_used_in(grade)
+        bks = book_queries.order_books_list(bks)
 
         # fetch special books
-        spec_bks = books.get_books_used_in(0, True)
+        spec_bks = book_queries.get_books_used_in(0, True)
 
         # query students
-        students = orga.get_students_in(class_.grade, class_.tag)
+        students = orga_queries.get_students_in(class_.grade, class_.tag)
 
         if request:
-            query_func = loans.get_request_count
+            query_func = loan_queries.get_request_count
         else:
-            query_func = loans.get_loan_count
+            query_func = loan_queries.get_loan_count
 
         # render template
         self.tex += bottle.template(

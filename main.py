@@ -1,50 +1,35 @@
-from app.db import db, db_session
-from app.db import orga_queries as orga
-from app.db import book_queries as books
-from app.db import loan_queries as loans
-from pony import orm
-from bottle import *
-import locale
-import sys
+import bottle
 
-from app import Settings
+from app import db, db_session, Settings
 
 
 __author__ = "Christian Glöckner"
 
 
-def main():
-    # determine school year and load suitable database
-
+def main(debug: bool = True) -> None:
     s = Settings()
+    year = s.data['general']['school_year']
+    port = s.data['hosting']['port']
 
-    debug = True
-
-    db.bind(
-        'sqlite',
-        'data%s.db' %
-        s.data['general']['school_year'],
-        create_db=True)
+    db.bind('sqlite', f'data{year}.db', create_db=True)
     db.generate_mapping(create_tables=True)
 
-    app = default_app()
+    app = bottle.default_app()
     app.catchall = not debug
     app.install(db_session)
 
-
-    @get('/static/<fname>')
+    @app.get('/static/<fname>')
     def static_files(fname):
-        return static_file(fname, root='./static')
+        return bottle.static_file(fname, root='./static')
 
-
-    @get('/')
-    @view('home')
+    @app.get('/')
+    @bottle.view('home')
     def landingpage():
         return dict()
 
     import app.routes
-
-    run(host='localhost', debug=debug, port=s.data['hosting']['port'])
+    
+    bottle.run(host='localhost', debug=debug, port=port)
 
 
 if __name__ == '__main__':

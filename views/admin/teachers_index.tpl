@@ -1,4 +1,4 @@
-%from app.db import orga_queries as orga
+%from app.db import orga_queries
 
 %include("header")
 <h1>Lehrer verwalten</h1>
@@ -12,7 +12,7 @@
 		<th>Klasse</th>
 		<th>Leihen</th>
 	</tr>
-%for t in orga.get_teachers():
+%for t in orga_queries.get_teachers():
 	<tr>
 		<td><a class="edit" href="/admin/teachers/edit/{{t.id}}">&#9998;</a></td>
 		<td>{{t.tag.upper()}}</td>

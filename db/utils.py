@@ -18,7 +18,7 @@ class Tests(unittest.TestCase):
         import db.books
         import db.orga
 
-        db.orga.Tests.prepare()
+        db.orga_queries.Tests.prepare()
         db.books.Tests.prepare()
 
     def setUp(self):
@@ -30,10 +30,10 @@ class Tests(unittest.TestCase):
     @db_session
     def test_create_custom_booklist(self):
         # create custom database content (real world example)
-        books.add_subjects(
+        book_queries.add_subjects(
             "Mathematik\tMa\nDeutsch\tDe\nEnglisch\tEn\nPhysik\tPh")
-        books.add_publishers("Klett\nCornelsen")
-        books.add_books(
+        book_queries.add_publishers("Klett\nCornelsen")
+        book_queries.add_books(
             """Ein Mathe-Buch\t978-3-7661-5000-4\t32,80 €\tCornelsen\t5\t12\tMa\tTrue\tTrue\tFalse\tFalse\tTrue
 Mathe AH\t978-3-7661-5007-3\t8,80 €\tCornelsen\t5\t12\tMa\tTrue\tTrue\tTrue\tFalse\tTrue
 Deutsch-Buch mit sehr langam Titel und damit einigen Zeilenumbrüchen .. ach und Umlaute in größeren Mengen öÖäÄüÜß sowie Sonderzeichen !"§$%&/()=?.:,;-_@\t978-3-12-104104-6\t35,95 €\tKlett\t11\t12\tDe\tTrue\tTrue\tFalse\tFalse\tTrue
@@ -55,8 +55,8 @@ Tafelwerk\t978-3-06-001611-2\t13,50 €\tCornelsen\t7\t12\tFalse\tFalse\tFalse\t
         Tests.prepare()
 
         # create custom database content (real world example)
-        books.add_subjects("Deutsch\tDe\nPhysik\tPh")
-        books.add_books(
+        book_queries.add_subjects("Deutsch\tDe\nPhysik\tPh")
+        book_queries.add_books(
             """Ein Mathe-Buch\t978-3-7661-5000-4\t32,80 €\tCornelsen\t5\t12\tMa\tTrue\tTrue\tFalse\tFalse\tTrue
 Mathe AH\t978-3-7661-5007-3\t8,80 €\tCornelsen\t5\t12\tMa\tTrue\tTrue\tTrue\tFalse\tTrue
 Deutsch-Buch mit sehr langam Titel und damit einigen Zeilenumbrüchen .. ach und Umlaute in größeren Mengen öÖäÄüÜß sowie Sonderzeichen !"§$%&/()=?.:,;-_@\t978-3-12-104104-6\t35,95 €\tKlett\t11\t12\tDe\tTrue\tTrue\tFalse\tFalse\tTrue

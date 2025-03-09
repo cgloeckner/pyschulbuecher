@@ -1,54 +1,54 @@
-from bottle import get, post, view, request, redirect
-import math
+import bottle
 
-from app.db import db, Settings, DemandManager
+from app.db import db, orga_queries
 from app.utils import errorhandler
-from app.tex import *
-from app.xls import *
 
 
-@get('/admin/classes')
-@view('admin/classes_index')
+app = bottle.default_app()
+
+
+@app.get('/admin/classes')
+@bottle.view('admin/classes_index')
 def classes_index():
     return dict()
 
 
-@post('/admin/classes/add')
+@app.post('/admin/classes/add')
 @errorhandler
 def classes_add_post():
-    orga.add_classes(request.forms.data)
+    orga_queries.add_classes(app.request.forms.data)
 
     db.commit()
-    redirect('/admin/classes')
+    app.redirect('/admin/classes')
 
 
-@get('/admin/classes/edit/<id:int>')
-@view('admin/classes_edit')
+@app.get('/admin/classes/edit/<id:int>')
+@bottle.view('admin/classes_edit')
 def classes_edit(id):
     return dict(c=db.Class[id])
 
 
-@post('/admin/classes/edit/<id:int>')
+@app.post('/admin/classes/edit/<id:int>')
 @errorhandler
 def classes_edit_post(id):
-    orga.update_class(id, int(request.forms.grade), request.forms.tag,
-                     int(request.forms.teacher_id))
+    orga_queries.update_class(id, int(app.request.forms.grade), app.request.forms.tag,
+                     int(app.request.forms.teacher_id))
 
     db.commit()
-    redirect('/admin/classes')
+    app.redirect('/admin/classes')
 
 
-@get('/admin/classes/move/<id:int>')
-@view('admin/classes_move')
+@app.get('/admin/classes/move/<id:int>')
+@bottle.view('admin/classes_move')
 def classes_edit(id):
     return dict(c=db.Class[id])
 
 
-@post('/admin/classes/move/<id:int>')
+@app.post('/admin/classes/move/<id:int>')
 @errorhandler
 def classes_move_post(id):
     # fetch target class
-    new_id = int(request.forms.class_id)
+    new_id = int(app.request.forms.class_id)
     new_class = db.Class[new_id]
 
     # move students to new class
@@ -56,20 +56,20 @@ def classes_move_post(id):
     for s in db.Class[id].student:
         # note that form names are always strings
         key = str(s.id)
-        if request.forms.get(key) == 'on':
+        if app.request.forms.get(key) == 'on':
             s.class_ = new_class
 
     db.commit()
-    redirect('/admin/classes/move/%d' % new_id)
+    app.redirect('/admin/classes/move/%d' % new_id)
 
 
-@post('/admin/classes/delete/<id:int>')
-@view('admin/classes_delete')
+@app.post('/admin/classes/delete/<id:int>')
+@bottle.view('admin/classes_delete')
 def class_delete_prompt(id):
     return dict(c=db.Class[id])
 
 
-@get('/admin/classes/delete/<id:int>/confirm')
+@app.get('/admin/classes/delete/<id:int>/confirm')
 @errorhandler
 def classes_delete_post(id):
     c = db.Class[id]
@@ -79,4 +79,4 @@ def classes_delete_post(id):
     c.delete()
 
     db.commit()
-    redirect('/admin/classes')
+    app.redirect('/admin/classes')

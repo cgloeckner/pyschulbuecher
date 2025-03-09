@@ -1,5 +1,5 @@
-%from app.db import orga_queries as orga
-%from app.db import loan_queries as loans
+%from app.db import orga_queries
+%from app.db import loan_queries
 %from app.utils import shortify_name
 
 %include("header")
@@ -58,7 +58,7 @@
 	</tr>
 	
 %i = 1
-%for s in orga.get_students_in(grade, tag):
+%for s in orga_queries.get_students_in(grade, tag):
 	<!-- ==================== student #{{s.id}} ({{s.person.name}}, {{s.person.firstname}}) ==================== //-->
 	%if i % 2 == 0:
 	<tr class="gray select">
@@ -74,7 +74,7 @@
 		%if b.workbook or b.classsets:
 			%continue
 		%end
-		%value = loans.get_loan_count(s.person, b)
+		%value = loan_queries.get_loan_count(s.person, b)
 		%count[b.id] += value
 		%value = '' if value == 0 else value
 		%id = '%i_%i' % (s.id, b.id)

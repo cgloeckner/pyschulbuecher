@@ -1,4 +1,4 @@
-%from app.db import orga_queries as orga
+%from app.db import orga_queries
 
 %include("header")
 <h1>Klasse bearbeiten</h1>
@@ -29,7 +29,7 @@
  selected\\
 %end
 >-</option>
-%for t in orga.get_teachers():
+%for t in orga_queries.get_teachers():
 				<option value="{{t.id}}"\\
 	%if c.teacher == t:
  selected\\

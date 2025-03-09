@@ -1,16 +1,16 @@
-from bottle import *
-from pony import orm
+import bottle
 
-from app import db, db_session, errorhandler
-from app.db import orga_queries as orga
-from app.db import book_queries as books
-from app.db import loan_queries as loans
+from app import db
+from app.db import loan_queries
 
 
-@get('/loan/book/<book_id:int>')
-@view('loan/book_loan')
+app = bottle.default_app()
+
+
+@app.get('/loan/book/<book_id:int>')
+@bottle.view('loan/book_loan')
 def loan_book_queryLoan(book_id):
     book = db.Book[book_id]
-    l = loans.query_loans_by_book(book)
+    l = loan_queries.query_loans_by_book(book)
 
     return dict(book=book, loans=l)

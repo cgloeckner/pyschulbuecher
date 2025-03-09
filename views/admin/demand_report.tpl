@@ -1,5 +1,5 @@
-%from app.db import book_queries as books
-%from app.db import orga_queries as orga
+%from app.db import book_queries
+%from app.db import orga_queries
 %from app import bool2str
 %from app.db import Currency
 

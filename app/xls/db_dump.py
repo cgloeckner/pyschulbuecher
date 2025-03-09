@@ -3,7 +3,7 @@ import xlsxwriter
 
 from app.utils import shortify_name
 
-from app.db import books, orga
+from app.db import book_queries, orga_queries
 
 
 class DatabaseDumpXls(object):
@@ -27,12 +27,12 @@ class DatabaseDumpXls(object):
 
     def __call__(self, class_, bks):
         # local import to avoid cycles
-        from app.db import loan_queries as loans
+        from app.db import loan_queries
 
         # pre-order students abd books
-        bks = books.order_books_list(bks)
+        bks = book_queries.order_books_list(bks)
         students = list(class_.student)
-        orga.sort_students(students)
+        orga_queries.sort_students(students)
 
         title_format = self.data.add_format()
         title_format.set_bold()
@@ -58,7 +58,7 @@ class DatabaseDumpXls(object):
             tab.write(row + 2, 0, s.person.name)
             tab.write(row + 2, 1, shortify_name(s.person.firstname))
             for col, b in enumerate(bks):
-                n = loans.get_loan_count(s.person, b)
+                n = loan_queries.get_loan_count(s.person, b)
                 tab.write(row + 2, col + 2, n if n > 0 else '')
 
     def saveToFile(self):

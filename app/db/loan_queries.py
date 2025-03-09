@@ -8,13 +8,13 @@ from pony.orm import *
 def order_loan_overview(loans):
     # 1st: outGrade, 2nd: subject, 3rd: title
     loans = list(loans.order_by(lambda l: l.book.title))
-    loans.sort(key=lambda l: l.person.firstname)
-    loans.sort(key=lambda l: l.person.name)
-    loans.sort(
+    loan_queries.sort(key=lambda l: l.person.firstname)
+    loan_queries.sort(key=lambda l: l.person.name)
+    loan_queries.sort(
         key=lambda l: l.book.subject.tag if l.book.subject is not None else '')
-    loans.sort(key=lambda l: l.book.outGrade)
-    loans.sort(key=lambda l: l.person.student.class_.tag if l.person.student is not None and l.person.student.class_ is not None else '')
-    loans.sort(
+    loan_queries.sort(key=lambda l: l.book.outGrade)
+    loan_queries.sort(key=lambda l: l.person.student.class_.tag if l.person.student is not None and l.person.student.class_ is not None else '')
+    loan_queries.sort(
         key=lambda l: l.person.student.class_.grade if l.person.student is not None and l.person.student.class_ is not None else -
         1)
     return loans
@@ -69,7 +69,7 @@ def update_request(student: db.Student, book: db.Book, status: bool):
         db.Request(person=student.person, book=book)
     elif was and not status:
         # delete request
-        r = db.Request.get(person=student.person, book=book)
+        r = db.app.request.get(person=student.person, book=book)
         r.delete()
     # else: nothing to update
 
@@ -132,7 +132,7 @@ def query_loans_by_book(book: db.Book):
 
 
 def apply_request(student: db.Student):
-    """Apply person's request be transfering to loaning these books.
+    """Apply person's request be transfering to loaning these book_queries.
     Note that the requests are deleted after that.
     """
     # add loaning

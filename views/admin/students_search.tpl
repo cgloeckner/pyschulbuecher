@@ -1,4 +1,4 @@
-%from app.db import orga_queries as orga
+%from app.db import orga_queries
 %from app.utils import shortify_name
 
 %include("header")

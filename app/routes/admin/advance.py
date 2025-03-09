@@ -1,21 +1,21 @@
-from bottle import get, view, redirect
+import bottle
 
-from app.db import orga_queries as orga
-from app.db import db
+from app.db import db, orga_queries
 
+app = bottle.default_app()
 
-@get('/admin/advance')
-@view('admin/advance')
+@app.get('/admin/advance')
+@bottle.view('admin/advance')
 def advance_info():
     return dict()
 
 
-@get('/admin/advance/confirm')
+@app.get('/admin/advance/confirm')
 def advance_confirm():
-    for c in orga.get_classes():
+    for c in orga_queries.get_classes():
         # advance every class
         c.grade += 1
 
     db.commit()
 
-    redirect('/')
+    app.redirect('/')

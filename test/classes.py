@@ -11,43 +11,43 @@ from bottle import *
 from pony import orm
 
 from app.db import db, db_session
-from app.db import orga_queries as orga
-from app.db import book_queries as books
-from app.db import loan_queries as loans
+from app.db import orga_queries
+from app.db import book_queries
+from app.db import loan_queries
 from app.utils import errorhandler
 
 
 __author__ = "Christian Glöckner"
 
 
-@get('/classes')
-@view('classes/class_index')
+@app.get('/classes')
+@bottle.view('classes/class_index')
 def class_index():
     return dict()
 
 
-@get('/classes/<grade:int>')
-@view('classes/grade_index')
+@app.get('/classes/<grade:int>')
+@bottle.view('classes/grade_index')
 def classes_grade_index(grade):
     return dict(grade=grade)
 
 
-@get('/classes/<grade:int>/<tag>')
-@view('classes/students_index')
+@app.get('/classes/<grade:int>/<tag>')
+@bottle.view('classes/students_index')
 def classes_students_index(grade, tag):
-    bks = books.get_books_used_in(grade)
-    bks = books.order_books_list(bks)
+    bks = book_queries.get_books_used_in(grade)
+    bks = book_queries.order_books_list(bks)
     bks.sort(key=lambda b: b.outGrade)
-    c = orga.db.Class.get(grade=grade, tag=tag)
+    c = orga_queries.db.Class.get(grade=grade, tag=tag)
     if c is None:
-        abort(404)
+        app.abort(404)
     return dict(grade=grade, tag=tag, books=bks, c=c)
 
 # -----------------------------------------------------------------------------
 
 
-@get('/classes/requests/<grade:int>/<tag>/<version>')
-@view('classes/request_form')
+@app.get('/classes/requests/<grade:int>/<tag>/<version>')
+@bottle.view('classes/request_form')
 def classes_requests_form(grade, tag, version):
     query_grade = grade
     if 'next' in version:
@@ -55,22 +55,22 @@ def classes_requests_form(grade, tag, version):
 
     # query grade-specific books
     if tag.lower() == 'neu' or 'full' in version:
-        bks = books.get_books_used_in(query_grade, True)
+        bks = book_queries.get_books_used_in(query_grade, True)
     else:
-        bks = books.get_books_started_in(query_grade, True)
+        bks = book_queries.get_books_started_in(query_grade, True)
     # order queried books
-    bks = books.order_books_list(bks)
+    bks = book_queries.order_books_list(bks)
 
     # add misc books
-    bks += list(books.get_books_used_in(0, True))
-    c = orga.db.Class.get(grade=grade, tag=tag)
+    bks += list(book_queries.get_books_used_in(0, True))
+    c = orga_queries.db.Class.get(grade=grade, tag=tag)
     if c is None:
-        abort(404)
+        app.abort(404)
 
     return dict(grade=grade, tag=tag, books=bks, c=c, version=version)
 
 
-@post('/classes/requests/<grade:int>/<tag>/<version>')
+@app.post('/classes/requests/<grade:int>/<tag>/<version>')
 @errorhandler
 def classes_requests_post(grade, tag, version):
     query_grade = grade
@@ -79,42 +79,42 @@ def classes_requests_post(grade, tag, version):
 
     # query grade-specific books
     if tag.lower() == 'neu' or 'full' in version:
-        bks = books.get_books_used_in(query_grade, True)
+        bks = book_queries.get_books_used_in(query_grade, True)
     else:
-        bks = books.get_books_started_in(query_grade, True)
+        bks = book_queries.get_books_started_in(query_grade, True)
     # order queried books
-    bks = books.order_books_list(bks)
+    bks = book_queries.order_books_list(bks)
 
     # add misc books
-    bks += list(books.get_books_used_in(0, True))
-    for s in orga.get_students_in(grade, tag):
+    bks += list(book_queries.get_books_used_in(0, True))
+    for s in orga_queries.get_students_in(grade, tag):
         for b in bks:
             key = "%d_%d" % (s.id, b.id)
-            status = request.forms.get(key) == 'on'
-            loans.update_request(s, b, status)
+            status = app.request.forms.get(key) == 'on'
+            loan_queries.update_request(s, b, status)
 
     db.commit()
-    redirect('/classes/%d' % (grade))
+    app.redirect('/classes/%d' % (grade))
 
 # -----------------------------------------------------------------------------
 
 
-@post('/classes/loans/<grade:int>/<tag>')
+@app.post('/classes/loans/<grade:int>/<tag>')
 @errorhandler
 def classes_loans_post(grade, tag):
-    bks = books.get_books_used_in(grade)
-    for s in orga.get_students_in(grade, tag):
+    bks = book_queries.get_books_used_in(grade)
+    for s in orga_queries.get_students_in(grade, tag):
         for b in bks:
             key = "%d_%d" % (s.id, b.id)
-            count = request.forms.get(key)
+            count = app.request.forms.get(key)
             if count is None or count == "":
                 count = 0
             else:
                 count = int(count)
-            loans.update_loan(s.person, b, count)
+            loan_queries.update_loan(s.person, b, count)
 
     db.commit()
-    redirect('/classes/%d' % (grade))
+    app.redirect('/classes/%d' % (grade))
 
 # -----------------------------------------------------------------------------
 
@@ -127,7 +127,7 @@ class Tests(unittest.TestCase):
         import db.orga
         import db.books
 
-        db.orga.Tests.prepare()
+        db.orga_queries.Tests.prepare()
         db.books.Tests.prepare()
 
     def setUp(self):

@@ -1,4 +1,4 @@
-%from app.db import book_queries as books
+%from app.db import book_queries
 %from app import bool2str
 %from app.db import Currency
 

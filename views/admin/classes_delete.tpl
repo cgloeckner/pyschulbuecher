@@ -1,4 +1,4 @@
-%from app.db import orga_queries as orga
+%from app.db import orga_queries
 
 %include("header")
 <h1>Klasse {{c.to_string()}} löschen</h1>
@@ -7,7 +7,7 @@ Folgende Schüler befinden sich in dieser Klasse:
 <ol>
 %m = 0
 %bks = dict()
-%students = orga.get_students_in(c.grade, c.tag)
+%students = orga_queries.get_students_in(c.grade, c.tag)
 %for s in students:
 	<li>{{s.person.name}}, {{s.person.firstname}} \\
 	%lns = s.person.loan

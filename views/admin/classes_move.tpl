@@ -1,11 +1,11 @@
-%from app.db import orga_queries as orga
+%from app.db import orga_queries
 
 %include("header")
 <h1>Schüler aus Klasse {{c.to_string()}} verschieben</h1>
 
 <form action="/admin/classes/move/{{c.id}}" id="classes" method="post">
 %stds = list(c.student)
-%orga.sort_students(stds)
+%orga_queries.sort_students(stds)
 
 <span class="button" style="font-size: 200%;" onClick="toggleAll();" title="Auswahl für alle umkehren">↺</span>
 <p>
@@ -17,9 +17,9 @@
 </p>
 
 Neue Klasse: <select name="class_id">
-%for grade in orga.get_class_grades():
-	%for tag in orga.get_class_tags(grade):
-		%c2 = orga.db.Class.get(grade=grade, tag=tag)
+%for grade in orga_queries.get_class_grades():
+	%for tag in orga_queries.get_class_tags(grade):
+		%c2 = orga_queries.db.Class.get(grade=grade, tag=tag)
 				<option value="{{c2.id}}"\\
 		%if s.class_ == c2:
  selected\\

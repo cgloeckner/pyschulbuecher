@@ -1,7 +1,7 @@
 import json
 
-from app.db import orga_queries as orga
-from app.db import book_queries as books
+from app.db import orga_queries
+from app.db import book_queries
 from app.db import db
 
 from pony.orm import *
@@ -9,7 +9,7 @@ from pony.orm import *
 
 class DemandManager(object):
 
-    def __init__(self, grade_query=orga.get_students_count, filename: str = './demand.json'):
+    def __init__(self, grade_query=orga_queries.get_students_count, filename: str = './demand.json'):
         self.data = dict()
         self.grade_query = grade_query
         self.filename = filename
@@ -21,16 +21,16 @@ class DemandManager(object):
         # note: str(grade) because json will dump to str it anyway
         # parse student numbers for elective subjects (until 10th grade)
         tmp = dict()
-        for grade in orga.get_secondary_level1_range():
+        for grade in orga_queries.get_secondary_level1_range():
             tmp[str(grade)] = dict()
-            for sub in books.get_subjects(elective=True):
+            for sub in book_queries.get_subjects(elective=True):
                 key = "%d_%s" % (grade, sub.tag)
                 val = forms(key)
                 tmp[str(grade)][sub.tag] = int(val) if val != "" else 0
         # parse student numbers for each subject (after 11th grade)
-        for grade in orga.get_secondary_level2_range():
+        for grade in orga_queries.get_secondary_level2_range():
             tmp[str(grade)] = dict()
-            for sub in books.get_subjects():
+            for sub in book_queries.get_subjects():
                 tmp[str(grade)][sub.tag] = dict()
                 for level in ['novices', 'advanced']:
                     key = "%d_%s_%s" % (grade, sub.tag, level)
@@ -57,7 +57,7 @@ class DemandManager(object):
     def count_books_in_use(self, book):
         """Return total amount of books that will be used after the end of this
         school year. Expected returns are not included, as well as requested
-        books.
+        book_queries.
         """
         in_use = 0
         for l in book.loan:

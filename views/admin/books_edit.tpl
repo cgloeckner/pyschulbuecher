@@ -1,4 +1,4 @@
-%from app.db import book_queries as books
+%from app.db import book_queries
 %from app.db import Currency
 %from app import bool2checked
 
@@ -28,7 +28,7 @@
 		<tr>
 			<td>Verlag</td>
 			<td><select name="publisher_id">
-%for p in books.get_publishers():
+%for p in book_queries.get_publishers():
 				<option value="{{p.id}}"\\
 %if p.id == b.publisher.id:
  selected\\
@@ -57,7 +57,7 @@
  selected\\
 %end
 >verschiedene</option>
-%for s in books.get_subjects():
+%for s in book_queries.get_subjects():
 				<option value="{{s.id}}"\\
 %if b.subject is not None and b.subject.id == s.id:
  selected\\

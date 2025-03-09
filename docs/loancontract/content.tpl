@@ -1,6 +1,6 @@
 %from app.db import Currency
 %from app import tex_escape, shortify_name
-%from app.db import loan_queries as loans
+%from app.db import loan_queries
 %import datetime
 
 {\Large Schulbuchübersicht } \hfill {\large {{!tex_escape(student.person.name)}}, {{!tex_escape(shortify_name(student.person.firstname))}} ({{student.class_.to_string(advance=advance)}}) }

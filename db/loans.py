@@ -9,7 +9,7 @@ import math
 from datetime import date
 
 from app.db import loan_queries, db
-from app.db import book_queries as books, orga
+from app.db import book_queries, orga_queries
 
 __author__ = "Christian Glöckner"
 
@@ -27,7 +27,7 @@ class Tests(unittest.TestCase):
         import db.orga
         import db.books
 
-        db.orga.Tests.prepare()
+        db.orga_queries.Tests.prepare()
         db.books.Tests.prepare()
 
     def setUp(self):
@@ -327,13 +327,13 @@ class Tests(unittest.TestCase):
             '12_De_novices': 13,
             '12_De_advanced': 12,
         }
-        for grade in orga.get_secondary_level1_range():
-            for sub in books.get_subjects(elective=True):
+        for grade in orga_queries.get_secondary_level1_range():
+            for sub in book_queries.get_subjects(elective=True):
                 key = '%s_%s' % (grade, sub.tag)
                 if key not in keys:
                     keys[key] = 0
-        for grade in orga.get_secondary_level2_range():
-            for sub in books.get_subjects():
+        for grade in orga_queries.get_secondary_level2_range():
+            for sub in book_queries.get_subjects():
                 for level in ['novices', 'advanced']:
                     key = '%s_%s_%s' % (grade, sub.tag, level)
                     if key not in keys:

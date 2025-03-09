@@ -1,14 +1,14 @@
-from bottle import get, post, view, request
+import bottle
 import math
 
-from app.db import db, Settings, DemandManager
-from app.tex import *
-from app.xls import *
+from app.db import Settings, DemandManager, book_queries
 
 
+app = bottle.default_app()
 
-@get('/admin/demand')
-@view('admin/demand_form')
+
+@app.get('/admin/demand')
+@bottle.view('admin/demand_form')
 def demand_form():
     s = Settings()
 
@@ -19,21 +19,21 @@ def demand_form():
     return dict(s=s, demand=demand)
 
 
-@post('/admin/demand')
-@view('admin/demand_report')
+@app.post('/admin/demand')
+@bottle.view('admin/demand_report')
 def demand_report():
     s = Settings()
     
     # percentage of lowering the stock to gain buffer (e.g. for damaged books)
-    lowering = int(request.forms.lowering)
+    lowering = int(app.request.forms.lowering)
 
     # fetch demand from UI input
     demand = DemandManager()
-    demand.parse(request.forms.get)
+    demand.parse(app.request.forms.get)
     demand.save_to_file()
 
     # create book demand report
-    bks = books.order_books_list(books.get_all_books())
+    bks = book_queries.order_books_list(book_queries.get_all_books())
     total = 0
     data = dict()
     for b in bks:

@@ -1,8 +1,8 @@
 import os
 import bottle
 
-from app.db import book_queries as books
-from app.db import loan_queries as loans
+from app.db import book_queries
+from app.db import loan_queries
 
 from app.tex.compiler import compile_pdf
 
@@ -32,12 +32,12 @@ class InventoryReport(object):
     def __call__(self):
         """Collect all books (existing, loaned, remaining)
         """
-        all_bks = books.get_real_books()
-        all_bks = books.order_books_index(all_bks)
+        all_bks = book_queries.get_real_books()
+        all_bks = book_queries.order_books_index(all_bks)
 
         loan_count = dict()
         for b in all_bks:
-            loan_count[b] = loans.get_loan_count(person=None, book=b)
+            loan_count[b] = loan_queries.get_loan_count(person=None, book=b)
 
         self.tex += bottle.template(self.content, s=self.s, all_bks=all_bks, loan_count=loan_count)
 

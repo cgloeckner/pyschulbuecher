@@ -1,32 +1,31 @@
-from bottle import get, post, view, request, redirect
-import math
 import sys
 import shutil
+import bottle
 
-from app.db import db, Settings, DemandManager
-from app.utils import errorhandler
-from app.tex import *
-from app.xls import *
+from app.db import db, Settings
 
 
-@get('/admin/settings')
-@view('admin/settings')
+app = bottle.default_app()
+
+
+@app.get('/admin/settings')
+@bottle.view('admin/settings')
 def settings_form():
     s = Settings()
 
     return dict(s=s)
 
 
-@post('/admin/settings')
+@app.post('/admin/settings')
 def settings_form_post():
     s = Settings()
     current_year = s.data['general']['school_year']
 
     s = Settings()
-    s.data['general']['school_year'] = request.forms.school_year
-    s.data['deadline']['booklist_changes'] = request.forms.deadline_booklist_changes
-    s.data['deadline']['booklist_return'] = request.forms.deadline_booklist_return
-    s.data['deadline']['bookreturn_graduate'] = request.forms.bookreturn_graduate
+    s.data['general']['school_year'] = app.request.forms.school_year
+    s.data['deadline']['booklist_changes'] = app.request.forms.deadline_booklist_changes
+    s.data['deadline']['booklist_return'] = app.request.forms.deadline_booklist_return
+    s.data['deadline']['bookreturn_graduate'] = app.request.forms.bookreturn_graduate
     s.save()
 
     db.commit()
@@ -46,4 +45,4 @@ def settings_form_post():
         print('=' * 80)
         sys.exit(0)
 
-    redirect('/admin/settings')
+    app.redirect('/admin/settings')
