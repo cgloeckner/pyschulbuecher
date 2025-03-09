@@ -9,9 +9,10 @@ from pony.orm import *
 
 class DemandManager(object):
 
-    def __init__(self, grade_query=orga.get_students_count):
+    def __init__(self, grade_query=orga.get_students_count, filename: str = './demand.json'):
         self.data = dict()
         self.grade_query = grade_query
+        self.filename = filename
 
     def parse(self, forms):
         """Parse demand data from a form. The given forms parameter is a
@@ -39,7 +40,7 @@ class DemandManager(object):
         # overwrite internal data
         self.data = tmp
 
-    def getUnavailableBooksCount(self, book):
+    def get_unavailable_books_count(self, book):
         """Return total amount of books that are continued to be in use during
         the next school year.
         """
@@ -53,7 +54,7 @@ class DemandManager(object):
                 continued += l.count
         return continued
 
-    def countBooksInUse(self, book):
+    def count_books_in_use(self, book):
         """Return total amount of books that will be used after the end of this
         school year. Expected returns are not included, as well as requested
         books.
@@ -69,7 +70,7 @@ class DemandManager(object):
         return in_use
 
     # @TODO für Klassensätze nutzen?!
-    def getStudentNumber(
+    def get_student_number(
             self,
             grade: int,
             subject: db.Subject,
@@ -96,7 +97,7 @@ class DemandManager(object):
             return self.data[str(grade)][subject.tag][level]
 
     # @TODO für Klassensätze nutzen?!
-    def getMaxDemand(self, book: db.Book):
+    def get_max_demand(self, book: db.Book):
         """Calculate worst case demand of the given book assuming.
         Note that this calculates the demand for the NEXT year, so all grades
         are considerd -1.
@@ -110,19 +111,19 @@ class DemandManager(object):
                 total += self.grade_query(grade - 1)
             elif grade <= 10:
                 # use regular class size
-                total += self.getStudentNumber(grade, book.subject)
+                total += self.get_student_number(grade, book.subject)
             else:
                 # consider course level
                 if book.novices:
-                    total += self.getStudentNumber(grade, book.subject, 'novices')
+                    total += self.get_student_number(grade, book.subject, 'novices')
                 if book.advanced:
-                    total += self.getStudentNumber(grade, book.subject, 'advanced')
+                    total += self.get_student_number(grade, book.subject, 'advanced')
         return total
 
-    def load_from(self, fhandle):
-        tmp = json.load(fhandle)
-        # overwrite internal data
-        self.data = tmp
+    def load_from_file(self):
+        with open(self.filename, 'r') as h:
+            self.data = json.load(h)
 
-    def save_to(self, fhandle):
-        json.dump(self.data, fhandle, indent=4)
+    def save_to_file(self):
+        with open(self.filename, 'w') as h:
+            json.dump(self.data, h, indent=4)

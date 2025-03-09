@@ -14,7 +14,7 @@ from app.db import db, db_session
 from app.db import orga_queries as orga
 from app.db import book_queries as books
 from app.db import loan_queries as loans
-from utils import errorhandler
+from app.utils import errorhandler
 
 
 __author__ = "Christian Glöckner"

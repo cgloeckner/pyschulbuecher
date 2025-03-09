@@ -1,4 +1,4 @@
-%from utils import tex_escape, shortify_name
+%from app import tex_escape, shortify_name
 
 %if i % 2 == 0:
     \showrowcolors

@@ -1,5 +1,5 @@
 %from app.db import Currency
-%from utils import tex_escape, shortify_name
+%from app import tex_escape, shortify_name
 %from app.db import loan_queries as loans
 %import datetime
 

@@ -1,6 +1,6 @@
 %from app.db import book_queries as books
 %from app.db import orga_queries as orga
-%from utils import bool2str
+%from app import bool2str
 %from app.db import Currency
 
 %include("header")
@@ -29,7 +29,7 @@
 		<td>{{grade}}</td>
 		<td id="{{grade}}_status">{{orga.get_students_count(grade-1)}}</td>
 	%for sub in books.get_subjects(elective=True):
-		<td><input type="text" class="short" maxLength="3" name="{{grade}}_{{sub.tag}}" value="{{demand.getStudentNumber(grade, sub)}}" /></td>
+		<td><input type="text" class="short" maxLength="3" name="{{grade}}_{{sub.tag}}" value="{{demand.get_student_number(grade, sub)}}" /></td>
 	%end
 	</tr>
 %end
@@ -50,7 +50,7 @@
 	<tr>
 		<td>{{grade}} {{'gA' if level == 'novices' else 'eA'}}</td>
 		%for s in subjects:
-		<td><input type="text" class="short" maxLength="3" name="{{grade}}_{{s.tag}}_{{level}}" value="{{demand.getStudentNumber(grade, s, level)}}"  /></td>
+		<td><input type="text" class="short" maxLength="3" name="{{grade}}_{{s.tag}}_{{level}}" value="{{demand.get_student_number(grade, s, level)}}"  /></td>
 		%end
 	</tr>
 	%end

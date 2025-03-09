@@ -3,7 +3,7 @@ import xlsxwriter
 
 from app.utils import shortify_name
 
-from db.orm import books, orga
+from app.db import books, orga
 
 
 class DatabaseDumpXls(object):

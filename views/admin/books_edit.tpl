@@ -1,6 +1,6 @@
 %from app.db import book_queries as books
 %from app.db import Currency
-%from utils import bool2checked
+%from app import bool2checked
 
 %include("header")
 <h1>Buch bearbeiten</h1>

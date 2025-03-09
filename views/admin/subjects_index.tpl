@@ -1,5 +1,5 @@
 %from app.db import book_queries as books
-%from utils import bool2str
+%from app import bool2str
 
 %include("header")
 <h1>Übersicht Fächer</h1>

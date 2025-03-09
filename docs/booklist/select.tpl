@@ -1,5 +1,5 @@
 %from app.db import Currency
-%from utils import tex_escape
+%from app import tex_escape
 
 \def\arraystretch{1.25}
 

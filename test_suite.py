@@ -9,9 +9,9 @@ import unittest
 
 from db import orm, orga, books, loans, utils
 
-import admin as admin_routes
-import classes as classes_routes
-import loans as loans_routes
+import test.admin as admin_routes
+import test.classes as classes_routes
+import test.loans as loans_routes
 
 
 def register(suite, class_):

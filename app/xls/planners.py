@@ -1,7 +1,7 @@
 import os
 import xlsxwriter
 
-from db.orm import db
+from app.db import db
 
 
 class PlannerXls(object):

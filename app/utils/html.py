@@ -1,15 +1,4 @@
-#!/usr/bin/python3
-# -*- coding: utf-8 -*-
-
 import re
-
-from bottle import template, abort
-from pony import orm
-
-from app.db import db, db_session
-from app.utils import shortify_name
-
-__author__ = "Christian Glöckner"
 
 
 def tex_escape(text):
@@ -40,16 +29,6 @@ def tex_escape(text):
                 key=lambda item: -
                 len(item))))
     return regex.sub(lambda match: conv[match.group()], text)
-
-
-def errorhandler(func):
-    def wrapper(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except orm.core.OrmError as e:
-            db.rollback()
-            abort(400, str(e))
-    return wrapper
 
 
 def bool2str(b: bool):

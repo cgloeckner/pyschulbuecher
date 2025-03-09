@@ -1,9 +1,3 @@
-#!/usr/bin/python3
-# -*- coding: utf-8 -*-
-
-import loans
-import classes
-import admin
 from app.db import db, db_session
 from app.db import orga_queries as orga
 from app.db import book_queries as books
@@ -47,6 +41,8 @@ def main():
     @view('home')
     def landingpage():
         return dict()
+
+    import app.routes
 
     run(host='localhost', debug=debug, port=s.data['hosting']['port'])
 

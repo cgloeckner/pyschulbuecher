@@ -1,4 +1,4 @@
-%from utils import tex_escape
+%from app import tex_escape
 %from app.db import orga_queries as orga
 
 {\LARGE Information zur Bücherrückgabe Klasse {{grade}} }

@@ -1,4 +1,4 @@
-%from utils import tex_escape
+%from app import tex_escape
 
 %from app.db import Currency
 

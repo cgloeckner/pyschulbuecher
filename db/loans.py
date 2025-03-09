@@ -365,23 +365,23 @@ class Tests(unittest.TestCase):
         # @TODO für Klassensätze nutzen?!
         """
         # test student number queries
-        self.assertEqual(d.getStudentNumber(5, sub_la), 19)
-        self.assertEqual(d.getStudentNumber(5, sub_fr), 27)
-        self.assertEqual(d.getStudentNumber(5, sub_ru), 13)
-        self.assertEqual(d.getStudentNumber(5, sub_ma), 73)
-        self.assertEqual(d.getStudentNumber(6, sub_fr), 8)
-        self.assertEqual(d.getStudentNumber(6, sub_ru), 0)
-        self.assertEqual(d.getStudentNumber(8, sub_ma), 0)
-        self.assertEqual(d.getStudentNumber(11, sub_ma, 'novices'), 20)
-        self.assertEqual(d.getStudentNumber(12, sub_ma, 'advanced'), 7)
-        self.assertEqual(d.getStudentNumber(11, sub_de, 'novices'), 18)
+        self.assertEqual(d.get_student_number(5, sub_la), 19)
+        self.assertEqual(d.get_student_number(5, sub_fr), 27)
+        self.assertEqual(d.get_student_number(5, sub_ru), 13)
+        self.assertEqual(d.get_student_number(5, sub_ma), 73)
+        self.assertEqual(d.get_student_number(6, sub_fr), 8)
+        self.assertEqual(d.get_student_number(6, sub_ru), 0)
+        self.assertEqual(d.get_student_number(8, sub_ma), 0)
+        self.assertEqual(d.get_student_number(11, sub_ma, 'novices'), 20)
+        self.assertEqual(d.get_student_number(12, sub_ma, 'advanced'), 7)
+        self.assertEqual(d.get_student_number(11, sub_de, 'novices'), 18)
 
         # test demands for some books
-        self.assertEqual(d.getMaxDemand(math1), 20+13) # both novices courses
-        self.assertEqual(d.getMaxDemand(math2), 17+7) # both advanced courses
-        self.assertEqual(d.getMaxDemand(math3), 73+67+55) # grade 5,6,8
-        self.assertEqual(d.getMaxDemand(de), 18+22+13+12) # all 11th/12th grade course use it
-        self.assertEqual(d.getMaxDemand(fr), 27+8) # 27 from 5th grade + 8 from 6th grade
+        self.assertEqual(d.get_max_demand(math1), 20+13) # both novices courses
+        self.assertEqual(d.get_max_demand(math2), 17+7) # both advanced courses
+        self.assertEqual(d.get_max_demand(math3), 73+67+55) # grade 5,6,8
+        self.assertEqual(d.get_max_demand(de), 18+22+13+12) # all 11th/12th grade course use it
+        self.assertEqual(d.get_max_demand(fr), 27+8) # 27 from 5th grade + 8 from 6th grade
         """
 
         # test saving and loading
@@ -458,6 +458,6 @@ class Tests(unittest.TestCase):
 
         d = DemandManager()
 
-        in_use = d.countBooksInUse(b)
+        in_use = d.count_books_in_use(b)
         # 2 (5th loan) + 7 (6th loan)
         self.assertEqual(in_use, 9)

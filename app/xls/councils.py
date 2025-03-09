@@ -1,7 +1,7 @@
 import os
 import xlsxwriter
 
-from db.orm import books
+from app.db import books
 
 
 class SubjectCouncilXls(object):

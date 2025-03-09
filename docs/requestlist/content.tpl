@@ -1,4 +1,4 @@
-%from utils import tex_escape, shortify_name
+%from app import tex_escape, shortify_name
 
 {\LARGE Erfassung Bücherzettel {{class_.to_string()}} }
 \hfill
