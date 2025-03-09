@@ -2,15 +2,7 @@
 %from app import Settings
 
 %s = Settings()
-%try:
-%	with open('settings.ini') as h:
-%		s.load_from(h)
-%	end
-%	year = int(s.data['general']['school_year'])
-%except FileNotFoundError:
-%	# keep default values
-%	year = 0
-%end
+%year = int(s.data['general']['school_year'])
 <!DOCTYPE html>
 <html>
 <head>
@@ -23,7 +15,7 @@
 	<link rel="stylesheet" type="text/css" href="/static/layout.css">
 	<link rel="stylesheet" type="text/css" href="/static/navigation.css">
 	<link rel="stylesheet" type="text/css" href="/static/subnavigation.css">
-	<title>Schulbuchverwaltung {{year}}/{{year+1}}</title>
+	<title>Lernmittel {{year}}/{{year+1}}</title>
 </head>
 
 <body>
@@ -79,7 +71,7 @@
 		</div>
 	</div>
 	
-	<span class="info">Schulbuchverwaltung ({{year}}/{{year+1}}) - v0.2.1</span>
+	<span class="info">Lernmittel ({{year}}/{{year+1}}) - v0.2.1</span>
 </div>
 <div class="content">
 
