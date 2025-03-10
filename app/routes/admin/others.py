@@ -15,4 +15,4 @@ def apply_requests():
 
     db.commit()
 
-    app.redirect('/')
+    bottle.redirect('/')

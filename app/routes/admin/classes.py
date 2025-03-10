@@ -19,7 +19,7 @@ def classes_add_post():
     orga_queries.add_classes(bottle.request.forms.data)
 
     db.commit()
-    app.redirect('/admin/classes')
+    bottle.redirect('/admin/classes')
 
 
 @app.get('/admin/classes/edit/<id:int>')
@@ -35,7 +35,7 @@ def classes_edit_post(id):
                      int(bottle.request.forms.teacher_id))
 
     db.commit()
-    app.redirect('/admin/classes')
+    bottle.redirect('/admin/classes')
 
 
 @app.get('/admin/classes/move/<id:int>')
@@ -60,7 +60,7 @@ def classes_move_post(id):
             s.class_ = new_class
 
     db.commit()
-    app.redirect('/admin/classes/move/%d' % new_id)
+    bottle.redirect('/admin/classes/move/%d' % new_id)
 
 
 @app.post('/admin/classes/delete/<id:int>')
@@ -79,4 +79,4 @@ def classes_delete_post(id):
     c.delete()
 
     db.commit()
-    app.redirect('/admin/classes')
+    bottle.redirect('/admin/classes')

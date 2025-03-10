@@ -21,7 +21,7 @@ def publishers_add_post():
             db.Publisher(name=name)
 
     db.commit()
-    app.redirect('/admin/publishers')
+    bottle.redirect('/admin/publishers')
 
 
 @app.get('/admin/publishers/edit/<id:int>')
@@ -38,7 +38,7 @@ def publishers_edit_post(id):
     p.name = bottle.request.forms.name
 
     db.commit()
-    app.redirect('/admin/publishers')
+    bottle.redirect('/admin/publishers')
 
 
 @app.post('/admin/publishers/delete/<id:int>')
@@ -47,4 +47,4 @@ def publishers_delete(id):
     db.Publisher[id].delete()
 
     db.commit()
-    app.redirect('/admin/publishers')
+    bottle.redirect('/admin/publishers')

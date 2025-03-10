@@ -25,4 +25,4 @@ def classes_loans_post(grade, tag):
             loan_queries.update_loan(s.person, b, count)
 
     db.commit()
-    app.redirect('/classes/%d' % (grade))
+    bottle.redirect('/classes/%d' % (grade))

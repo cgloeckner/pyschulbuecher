@@ -58,4 +58,4 @@ def classes_requests_post(grade, tag, version):
             loan_queries.update_request(s, b, status)
 
     db.commit()
-    app.redirect('/classes/%d' % (grade))
+    bottle.redirect('/classes/%d' % (grade))

@@ -45,4 +45,4 @@ def settings_form_post():
         print('=' * 80)
         sys.exit(0)
 
-    app.redirect('/admin/settings')
+    bottle.redirect('/admin/settings')

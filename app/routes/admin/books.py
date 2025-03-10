@@ -20,7 +20,7 @@ def books_add_post():
     book_queries.add_books(bottle.request.forms.data)
 
     db.commit()
-    app.redirect('/admin/books')
+    bottle.redirect('/admin/books')
 
 
 @app.post('/admin/books/addSingle')
@@ -46,7 +46,7 @@ def books_add_post():
     book_queries.add_book('\t'.join(args))
 
     db.commit()
-    app.redirect('/admin/books')
+    bottle.redirect('/admin/books')
 
 
 @app.get('/admin/books/edit/<id:int>')
@@ -78,7 +78,7 @@ def books_edit_post(id):
     b.comment = bottle.request.forms.comment
 
     db.commit()
-    app.redirect('/admin/books')
+    bottle.redirect('/admin/books')
 
 
 @app.post('/admin/books/delete/<id:int>')
@@ -87,4 +87,4 @@ def books_delete(id):
     db.Book[id].delete()
 
     db.commit()
-    app.redirect('/admin/books')
+    bottle.redirect('/admin/books')

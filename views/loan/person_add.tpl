@@ -1,4 +1,4 @@
-%from app.db import orga_queries, books
+%from app.db import orga_queries, book_queries
 
 %include("header")
 <h1>Leihexemplar hinzufügen</h1>

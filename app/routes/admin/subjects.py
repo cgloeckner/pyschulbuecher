@@ -22,7 +22,7 @@ def subjects_add_post():
             db.Subject(name=name, tag=tag)
 
     db.commit()
-    app.redirect('/admin/subjects')
+    bottle.redirect('/admin/subjects')
 
 
 @app.get('/admin/subjects/edit/<id:int>')
@@ -41,7 +41,7 @@ def subjects_edit_post(id):
     s.elective = bottle.request.forms.elective == 'on'
 
     db.commit()
-    app.redirect('/admin/subjects')
+    bottle.redirect('/admin/subjects')
 
 
 @app.post('/admin/subjects/delete/<id:int>')
@@ -50,4 +50,4 @@ def subjects_delete(id):
     db.Subject[id].delete()
 
     db.commit()
-    app.redirect('/admin/subjects')
+    bottle.redirect('/admin/subjects')

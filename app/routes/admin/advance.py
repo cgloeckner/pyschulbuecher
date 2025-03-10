@@ -18,4 +18,4 @@ def advance_confirm():
 
     db.commit()
 
-    app.redirect('/')
+    bottle.redirect('/')

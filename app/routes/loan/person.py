@@ -35,7 +35,7 @@ def loan_person_add(person_id):
                 loan_queries.add_loan(person, b, value)
 
     db.commit()
-    app.redirect('/loan/person/%d' % person_id)
+    bottle.redirect(f'/loan/person/{person_id}')
 
 
 @app.post('/loan/person/<person_id:int>/back')
@@ -48,4 +48,4 @@ def loan_person_add(person_id):
             loan_queries.update_loan(person, db.Book[l.book.id], 0)
 
     db.commit()
-    app.redirect('/loan/person/%d' % person_id)
+    bottle.redirect(f'/loan/person/{person_id}')

@@ -23,7 +23,7 @@ def students_add_post():
     orga_queries.add_teacher(raw)
 
     db.commit()
-    app.redirect('/admin/teachers')
+    bottle.redirect('/admin/teachers')
 
 
 @app.post('/admin/teachers/add')
@@ -32,7 +32,7 @@ def teachers_add_post():
     orga_queries.add_teachers(bottle.request.forms.data)
 
     db.commit()
-    app.redirect('/admin/teachers')
+    bottle.redirect('/admin/teachers')
 
 
 @app.get('/admin/teachers/edit/<id:int>')
@@ -50,7 +50,7 @@ def teachers_edit_post(id):
     s.tag = bottle.request.forms.tag.lower()
 
     db.commit()
-    app.redirect('/admin/teachers')
+    bottle.redirect('/admin/teachers')
 
 
 @app.post('/admin/teachers/delete/<id:int>')
@@ -59,4 +59,4 @@ def teachers_delete_post(id):
     db.Teacher[id].delete()
 
     db.commit()
-    app.redirect('/admin/teachers')
+    bottle.redirect('/admin/teachers')
