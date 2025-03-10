@@ -115,3 +115,7 @@ td.bookKeep {
 	color: green;
 }
 
+span.error {
+	font-weight: bold;
+	background-color: red;
+}

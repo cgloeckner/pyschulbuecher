@@ -5,10 +5,20 @@
 %remote_latex = settings.data['hosting']['remote_latex']
 <p>
 	<b>LaTeX-Compiler:</b> 
-%if remote_latex == '':
-	<i>lokal</i>
+%if remote_latex in ['', None]:
+	%from app.tex import check_local_compiler
+	%if check_local_compiler():
+	<span>pdflatex</span>
+	%else:
+	<span class="error">pdflatex nicht gefunden!</span>
+	%end
 %else:
-	<a href="{{remote_latex}}" target="_blank">{{remote_latex}}</a>
+	%from app.tex import check_remote_compiler
+	%if check_remote_compiler(remote_latex):
+	<span><a href="{{remote_latex}}" target="_blank">{{remote_latex}}</a></span>
+	%else:
+	<span class="error"><a href="{{remote_latex}}" target="_blank">{{remote_latex}}</a> nicht verfügbar!</span>
+	%end
 %end
 </p>
 
