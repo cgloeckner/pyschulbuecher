@@ -1,22 +1,25 @@
 import datetime
 
-from app.db.orm import *
-
 from pony.orm import *
+
+from app.db.orm import db
 
 
 def order_loan_overview(loans):
     # 1st: outGrade, 2nd: subject, 3rd: title
     loans = list(loans.order_by(lambda l: l.book.title))
-    loan_queries.sort(key=lambda l: l.person.firstname)
-    loan_queries.sort(key=lambda l: l.person.name)
-    loan_queries.sort(
-        key=lambda l: l.book.subject.tag if l.book.subject is not None else '')
-    loan_queries.sort(key=lambda l: l.book.outGrade)
-    loan_queries.sort(key=lambda l: l.person.student.class_.tag if l.person.student is not None and l.person.student.class_ is not None else '')
-    loan_queries.sort(
-        key=lambda l: l.person.student.class_.grade if l.person.student is not None and l.person.student.class_ is not None else -
-        1)
+    loans.sort(key=lambda l: l.person.firstname)
+    loans.sort(key=lambda l: l.person.name)
+    loans.sort(key=lambda l: l.book.subject.tag if l.book.subject is not None else '')
+    loans.sort(key=lambda l: l.book.outGrade)
+    loans.sort(
+        key=lambda l: l.person.student.class_.tag if l.person.student is not None
+        and l.person.student.class_ is not None else ''
+    )
+    loans.sort(
+        key=lambda l: l.person.student.class_.grade if l.person.student is not None
+        and l.person.student.class_ is not None else -1
+    )
     return loans
 
 
