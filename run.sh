@@ -1,7 +1,8 @@
 #!/bin/bash
 
 GLOBAL_PYTHON=python3.10
-VENV_DIR=~/.local/share/pyschulbuecher/venv
+PREF_DIR=~/.local/share/pyschulbuecher
+VENV_DIR="$PREF_DIR/venv"
 VENV_PIP="$VENV_DIR/bin/pip"
 VENV_PY="$VENV_DIR/bin/python"
 
@@ -9,7 +10,10 @@ echo "------------------------------------------------------------"
 echo "Checking python virtual environment $VENV_DIR"
 if [ ! -d "$VENV_DIR" ]; then
 	echo "Creating VENV"
-	GLOBAL_PYTHON -m venv $VENV_DIR
+	if [ ! -d "$PREF_DIR" ]; then
+		mkdir $PREF_DIR
+	fi
+	$GLOBAL_PYTHON -m venv $VENV_DIR
 fi
 
 if [ ! -f "$VENV_PIP" ]; then
