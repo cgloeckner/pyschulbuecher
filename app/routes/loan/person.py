@@ -28,7 +28,7 @@ def loan_person_add(person_id):
     person = db.Person[person_id]
 
     for b in db.Book.select():
-        raw = app.request.forms.get(str(b.id), '')
+        raw = bottle.request.forms.get(str(b.id), '')
         if raw.isnumeric():
             value = int(raw)
             if value > 0:
@@ -44,7 +44,7 @@ def loan_person_add(person_id):
     person = db.Person[person_id]
 
     for l in person.loan:
-        if app.request.forms.get(str(l.book.id)) == 'on':
+        if bottle.request.forms.get(str(l.book.id)) == 'on':
             loan_queries.update_loan(person, db.Book[l.book.id], 0)
 
     db.commit()

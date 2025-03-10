@@ -16,7 +16,7 @@ def publishers_index():
 @app.post('/admin/publishers/add')
 @errorhandler
 def publishers_add_post():
-    for name in app.request.forms.data.split('\n'):
+    for name in bottle.request.forms.data.split('\n'):
         if len(name) > 0:
             db.Publisher(name=name)
 
@@ -35,7 +35,7 @@ def publishers_edit_form(id):
 @errorhandler
 def publishers_edit_post(id):
     p = db.Publisher[id]
-    p.name = app.request.forms.name
+    p.name = bottle.request.forms.name
 
     db.commit()
     app.redirect('/admin/publishers')

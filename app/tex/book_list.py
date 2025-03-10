@@ -82,15 +82,13 @@ class BooklistPdf(object):
         tex += bottle.template(self.footer, s=self.s)
 
         # export tex (debug purpose)
-        dbg_fname = os.path.join(self.texdir, '%d_%s.tex' % (grade, suffix))
+        dbg_fname = os.path.join(self.texdir, f'grade_suffix.tex')
         with open(dbg_fname, 'w') as h:
             h.write(tex)
 
         # export PDF
-        fname = os.path.join(
-            self.export, 'Bücherzettel%d%s.pdf' %
-            (grade, suffix))
-        compile_pdf(self.s.data['hosting']['remote_latex'], self.tex, fname)
+        fname = os.path.join(self.export, f'Bücherzettel{grade}{suffix}.pdf')
+        compile_pdf(self.s.data['hosting']['remote_latex'], tex, fname)
 
     def infosheet(self):
         # render templates
@@ -103,4 +101,4 @@ class BooklistPdf(object):
 
         # export PDF
         fname = os.path.join(self.export, 'Bücherzettel_Information.pdf')
-        compile_pdf(self.s.data['hosting']['remote_latex'], self.tex, fname)
+        compile_pdf(self.s.data['hosting']['remote_latex'], tex, fname)

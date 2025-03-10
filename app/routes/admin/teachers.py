@@ -17,9 +17,9 @@ def teachers_index():
 @errorhandler
 def students_add_post():
     raw = '{0}\t{1}\t{2}'.format(
-        app.request.forms.tag,
-        app.request.forms.name,
-        app.request.forms.firstname)
+        bottle.request.forms.tag,
+        bottle.request.forms.name,
+        bottle.request.forms.firstname)
     orga_queries.add_teacher(raw)
 
     db.commit()
@@ -29,7 +29,7 @@ def students_add_post():
 @app.post('/admin/teachers/add')
 @errorhandler
 def teachers_add_post():
-    orga_queries.add_teachers(app.request.forms.data)
+    orga_queries.add_teachers(bottle.request.forms.data)
 
     db.commit()
     app.redirect('/admin/teachers')
@@ -45,9 +45,9 @@ def students_edit(id):
 @errorhandler
 def teachers_edit_post(id):
     s = db.Teacher[id]
-    s.person.name = app.request.forms.name
-    s.person.firstname = app.request.forms.firstname
-    s.tag = app.request.forms.tag.lower()
+    s.person.name = bottle.request.forms.name
+    s.person.firstname = bottle.request.forms.firstname
+    s.tag = bottle.request.forms.tag.lower()
 
     db.commit()
     app.redirect('/admin/teachers')

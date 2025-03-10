@@ -16,7 +16,7 @@ def subjects_index():
 @app.post('/admin/subjects/add')
 @errorhandler
 def subjects_add_post():
-    for line in app.request.forms.data.split('\n'):
+    for line in bottle.request.forms.data.split('\n'):
         if len(line) > 0:
             tag, name = line.split('\t')
             db.Subject(name=name, tag=tag)
@@ -36,9 +36,9 @@ def subjects_edit_form(id):
 @errorhandler
 def subjects_edit_post(id):
     s = db.Subject[id]
-    s.tag = app.request.forms.tag
-    s.name = app.request.forms.name
-    s.elective = app.request.forms.elective == 'on'
+    s.tag = bottle.request.forms.tag
+    s.name = bottle.request.forms.name
+    s.elective = bottle.request.forms.elective == 'on'
 
     db.commit()
     app.redirect('/admin/subjects')

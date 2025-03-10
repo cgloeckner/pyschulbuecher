@@ -72,7 +72,7 @@ def update_request(student: db.Student, book: db.Book, status: bool):
         db.Request(person=student.person, book=book)
     elif was and not status:
         # delete request
-        r = db.app.request.get(person=student.person, book=book)
+        r = db.bottle.request.get(person=student.person, book=book)
         r.delete()
     # else: nothing to update
 

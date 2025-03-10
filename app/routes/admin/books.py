@@ -17,7 +17,7 @@ def books_index():
 @app.post('/admin/books/add')
 @errorhandler
 def books_add_post():
-    book_queries.add_books(app.request.forms.data)
+    book_queries.add_books(bottle.request.forms.data)
 
     db.commit()
     app.redirect('/admin/books')
@@ -26,20 +26,20 @@ def books_add_post():
 @app.post('/admin/books/addSingle')
 @errorhandler
 def books_add_post():
-    args = [app.request.forms.title, app.request.forms.isbn, app.request.forms.price]
+    args = [bottle.request.forms.title, bottle.request.forms.isbn, bottle.request.forms.price]
 
-    args.append(db.Publisher[int(app.request.forms.publisher_id)].name)
-    args.append(app.request.forms.inGrade)
-    args.append(app.request.forms.outGrade)
-    args.append(db.Subject[int(app.request.forms.subject_id)
-                           ].tag if app.request.forms.subject_id != "" else "")
+    args.append(db.Publisher[int(bottle.request.forms.publisher_id)].name)
+    args.append(bottle.request.forms.inGrade)
+    args.append(bottle.request.forms.outGrade)
+    args.append(db.Subject[int(bottle.request.forms.subject_id)
+                           ].tag if bottle.request.forms.subject_id != "" else "")
 
-    args.append("True" if app.request.forms.novices == 'on' else "False")
-    args.append("True" if app.request.forms.advanced == 'on' else "False")
-    args.append("True" if app.request.forms.workbook == 'on' else "False")
-    args.append("True" if app.request.forms.classsets == 'on' else "False")
-    args.append("True" if app.request.forms.for_loan == 'on' else "False")
-    args.append(app.request.forms.comment)
+    args.append("True" if bottle.request.forms.novices == 'on' else "False")
+    args.append("True" if bottle.request.forms.advanced == 'on' else "False")
+    args.append("True" if bottle.request.forms.workbook == 'on' else "False")
+    args.append("True" if bottle.request.forms.classsets == 'on' else "False")
+    args.append("True" if bottle.request.forms.for_loan == 'on' else "False")
+    args.append(bottle.request.forms.comment)
 
     print(args)
 
@@ -60,22 +60,22 @@ def books_edit_form(id):
 @errorhandler
 def books_edit_post(id):
     b = db.Book[id]
-    b.title = app.request.forms.title
-    b.isbn = app.request.forms.isbn
+    b.title = bottle.request.forms.title
+    b.isbn = bottle.request.forms.isbn
     b.price = Currency.from_string(
-        app.request.forms.price) if app.request.forms.price != '' else 0
-    b.publisher = db.Publisher[int(app.request.forms.publisher_id)]
-    b.stock = int(app.request.forms.stock)
-    b.inGrade = int(app.request.forms.inGrade)
-    b.outGrade = int(app.request.forms.outGrade)
-    b.subject = db.Subject[int(app.request.forms.subject_id)
-                           ] if app.request.forms.subject_id != "" else None
-    b.novices = True if app.request.forms.novices == 'on' else False
-    b.advanced = True if app.request.forms.advanced == 'on' else False
-    b.workbook = True if app.request.forms.workbook == 'on' else False
-    b.classsets = True if app.request.forms.classsets == 'on' else False
-    b.for_loan = True if app.request.forms.for_loan == 'on' else False
-    b.comment = app.request.forms.comment
+        bottle.request.forms.price) if bottle.request.forms.price != '' else 0
+    b.publisher = db.Publisher[int(bottle.request.forms.publisher_id)]
+    b.stock = int(bottle.request.forms.stock)
+    b.inGrade = int(bottle.request.forms.inGrade)
+    b.outGrade = int(bottle.request.forms.outGrade)
+    b.subject = db.Subject[int(bottle.request.forms.subject_id)
+                           ] if bottle.request.forms.subject_id != "" else None
+    b.novices = True if bottle.request.forms.novices == 'on' else False
+    b.advanced = True if bottle.request.forms.advanced == 'on' else False
+    b.workbook = True if bottle.request.forms.workbook == 'on' else False
+    b.classsets = True if bottle.request.forms.classsets == 'on' else False
+    b.for_loan = True if bottle.request.forms.for_loan == 'on' else False
+    b.comment = bottle.request.forms.comment
 
     db.commit()
     app.redirect('/admin/books')

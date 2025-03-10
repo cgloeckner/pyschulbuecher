@@ -17,7 +17,7 @@ def classes_loans_post(grade, tag):
     for s in orga_queries.get_students_in(grade, tag):
         for b in bks:
             key = "%d_%d" % (s.id, b.id)
-            count = app.request.forms.get(key)
+            count = bottle.request.forms.get(key)
             if count is None or count == "":
                 count = 0
             else:

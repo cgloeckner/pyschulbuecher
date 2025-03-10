@@ -44,7 +44,7 @@ def book_inventory():
     inv()
     inv.saveToFile()
     yield '<pre>%s</pre>' % inv.getPath()
-
+    yield '<hr>Fertig'
 
 @app.get('/admin/lists/generate/councils')
 def councils_generate():
@@ -127,10 +127,10 @@ def studentloans_selection():
 
 @app.post('/admin/lists/generate/studentloans')
 def studentsloans_generate():
-    next_year = app.request.forms.get('next_year') == 'on'
-    use_requests = app.request.forms.get('use_requests') == 'on'
-    split_pdf = app.request.forms.get('split_pdf') == 'on'
-    loan_report = app.request.forms.get('loan_report') == 'on'
+    next_year = bottle.request.forms.get('next_year') == 'on'
+    use_requests = bottle.request.forms.get('use_requests') == 'on'
+    split_pdf = bottle.request.forms.get('split_pdf') == 'on'
+    loan_report = bottle.request.forms.get('loan_report') == 'on'
 
     if not split_pdf:
         s = Settings()
@@ -151,14 +151,13 @@ def studentsloans_generate():
         # start new pdf
         if split_pdf:
             s = Settings()
-            loancontract = LoanContractPdf(
-                c.to_string(), s, advance=next_year)
+            loancontract = LoanContractPdf(c.to_string(), s, advance=next_year)
 
         n = 0
         yield '<ul>'
         for s in students:
             # add student if selected
-            if app.request.forms.get(str(s.person.id)) == 'on':
+            if bottle.request.forms.get(str(s.person.id)) == 'on':
                 yield '<li>{0}, {1}</li>'.format(s.person.name, s.person.firstname)
                 n += 1
                 loancontract(
@@ -196,11 +195,11 @@ def booklist_generate():
         for b in book_queries.get_books_used_in(g):
             # regular booklist
             key = f'{grade_key}_{b.id}'
-            if app.request.forms.get(key) != 'on':
+            if bottle.request.forms.get(key) != 'on':
                 exclude.add(key)
             # new student's booklist
             key = f'{grade_key}_neu_{b.id}'
-            if app.request.forms.get(key) != 'on':
+            if bottle.request.forms.get(key) != 'on':
                 exclude.add(key)
 
     print('Generating Booklists')
@@ -339,7 +338,7 @@ def bookloan_generate():
 
         # start new pdf
         s = Settings()
-        loancontract = LoanContractPdf(c.to_string(), set)
+        loancontract = LoanContractPdf(c.to_string(), s)
 
         for s in c.student.order_by(
                 lambda s: s.person.firstname).order_by(

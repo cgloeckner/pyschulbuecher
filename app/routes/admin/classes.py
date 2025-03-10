@@ -16,7 +16,7 @@ def classes_index():
 @app.post('/admin/classes/add')
 @errorhandler
 def classes_add_post():
-    orga_queries.add_classes(app.request.forms.data)
+    orga_queries.add_classes(bottle.request.forms.data)
 
     db.commit()
     app.redirect('/admin/classes')
@@ -31,8 +31,8 @@ def classes_edit(id):
 @app.post('/admin/classes/edit/<id:int>')
 @errorhandler
 def classes_edit_post(id):
-    orga_queries.update_class(id, int(app.request.forms.grade), app.request.forms.tag,
-                     int(app.request.forms.teacher_id))
+    orga_queries.update_class(id, int(bottle.request.forms.grade), bottle.request.forms.tag,
+                     int(bottle.request.forms.teacher_id))
 
     db.commit()
     app.redirect('/admin/classes')
@@ -48,7 +48,7 @@ def classes_edit(id):
 @errorhandler
 def classes_move_post(id):
     # fetch target class
-    new_id = int(app.request.forms.class_id)
+    new_id = int(bottle.request.forms.class_id)
     new_class = db.Class[new_id]
 
     # move students to new class
@@ -56,7 +56,7 @@ def classes_move_post(id):
     for s in db.Class[id].student:
         # note that form names are always strings
         key = str(s.id)
-        if app.request.forms.get(key) == 'on':
+        if bottle.request.forms.get(key) == 'on':
             s.class_ = new_class
 
     db.commit()

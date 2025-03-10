@@ -25,11 +25,11 @@ def demand_report():
     s = Settings()
     
     # percentage of lowering the stock to gain buffer (e.g. for damaged books)
-    lowering = int(app.request.forms.lowering)
+    lowering = int(bottle.request.forms.lowering)
 
     # fetch demand from UI input
     demand = DemandManager()
-    demand.parse(app.request.forms.get)
+    demand.parse(bottle.request.forms.get)
     demand.save_to_file()
 
     # create book demand report

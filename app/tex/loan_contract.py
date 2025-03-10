@@ -8,12 +8,7 @@ from app.tex.compiler import compile_pdf
 
 
 class LoanContractPdf(object):
-    def __init__(
-            self,
-            prefix,
-            settings,
-            export='export',
-            advance=False):
+    def __init__(self, prefix, settings, export='export', advance=False):
         # load LaTeX templates
         with open('docs/loancontract/header.tpl') as f:
             self.header = f.read()

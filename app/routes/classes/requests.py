@@ -54,7 +54,7 @@ def classes_requests_post(grade, tag, version):
     for s in orga_queries.get_students_in(grade, tag):
         for b in bks:
             key = "%d_%d" % (s.id, b.id)
-            status = app.request.forms.get(key) == 'on'
+            status = bottle.request.forms.get(key) == 'on'
             loan_queries.update_request(s, b, status)
 
     db.commit()

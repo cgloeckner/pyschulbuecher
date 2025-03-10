@@ -22,10 +22,10 @@ def settings_form_post():
     current_year = s.data['general']['school_year']
 
     s = Settings()
-    s.data['general']['school_year'] = app.request.forms.school_year
-    s.data['deadline']['booklist_changes'] = app.request.forms.deadline_booklist_changes
-    s.data['deadline']['booklist_return'] = app.request.forms.deadline_booklist_return
-    s.data['deadline']['bookreturn_graduate'] = app.request.forms.bookreturn_graduate
+    s.data['general']['school_year'] = bottle.request.forms.school_year
+    s.data['deadline']['booklist_changes'] = bottle.request.forms.deadline_booklist_changes
+    s.data['deadline']['booklist_return'] = bottle.request.forms.deadline_booklist_return
+    s.data['deadline']['bookreturn_graduate'] = bottle.request.forms.bookreturn_graduate
     s.save()
 
     db.commit()
