@@ -9,7 +9,7 @@ def check_local_compiler() -> bool:
 
 def check_remote_compiler(url: str) -> bool:
     try:
-        ret = requests.get(f'{url}/version')
+        ret = requests.get(f'{url}/version', timeout=1)
         return ret.status_code == 200
     except requests.exceptions.ConnectionError:
         return False
