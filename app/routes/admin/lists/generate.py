@@ -185,12 +185,14 @@ def studentsloans_generate():
 
 @app.post('/admin/lists/generate/booklist')
 def booklist_generate():
+    ranging = orga_queries.get_grade_range()
+
     s = Settings()
     booklist = BooklistPdf(s)
 
     print('Detecting excluded books')
     exclude = set()
-    for g in orga_queries.get_grade_range():
+    for g in ranging:
         grade_key = f'{g:02d}'
         for b in book_queries.get_books_used_in(g):
             # regular booklist
@@ -205,7 +207,7 @@ def booklist_generate():
     print('Generating Booklists')
     d = time.time()
     yield 'Bitte warten...'
-    for g in orga_queries.get_grade_range():
+    for g in ranging():
         yield '<br>Klasse %d\n' % g
         booklist(g, exclude)
         if g > 5:
@@ -226,7 +228,7 @@ def requestlist_generate():
     requestlist = RequestlistPdf(s)
 
     # exclude 12th grade (last grade)
-    for grade in orga_queries.get_persisting_grade_range():
+    for grade in orga_queries.get_persisting_grade_range(-1):
         yield 'Klasse %d<br />\n' % grade
         for c in orga_queries.get_classes_by_grade(grade):
             requestlist(c)

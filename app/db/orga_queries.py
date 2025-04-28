@@ -10,7 +10,6 @@ from app.db import db, db_session
 def get_grade_range():
     return range(entry_grade, graduation_grade + 1)
 
-
 def get_persisting_grade_range(delta=0):
     return range(entry_grade + delta, graduation_grade + delta)
 
