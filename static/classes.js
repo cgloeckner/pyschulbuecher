@@ -31,3 +31,7 @@ function leaveColumn(id) {
 	$('td[name="' + id + '"]').removeClass('highlight');
 }
 
+function clearColumn(id) {
+     $('input[type="text"][name$="_' + id + '"]').val('')
+}
+

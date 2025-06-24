@@ -45,8 +45,11 @@
 
 \begin{Form}[action={}]
 
+\newcounter{textfieldcounter}
+
 \newcommand{\textinput}[1] {
-    \raisebox{-0.2cm}{\TextField[width=#1, height=0.75cm, bordercolor=black!25!white]{\null}}
+    \refstepcounter{textfieldcounter} 
+    \raisebox{-0.2cm}{\TextField[width=#1, height=0.75cm, bordercolor=black!25!white, name={Field\thetextfieldcounter}]{\null}}
 }
 
 \newcommand{\checkinput} {

@@ -39,7 +39,8 @@
 	%if b.workbook or b.classsets:
 		%continue
 	%end
-	<td class="rotate" name="{{b.id}}" onmouseover="enterColumn({{b.id}});" onmouseOut="leaveColumn({{b.id}});">\\
+	<td class="rotate" name="{{b.id}}" onmouseover="enterColumn({{b.id}});" onmouseOut="leaveColumn({{b.id}});">
+<input type="button" value="=0" onClick="clearColumn({{b.id}});">
 	%i += 1
 	%if b.subject is not None:
 {{b.subject.tag}} \\
