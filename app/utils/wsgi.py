@@ -11,5 +11,5 @@ def errorhandler(func):
             return func(*args, **kwargs)
         except orm.core.OrmError as e:
             db.rollback()
-            bottle.app.abort(400, str(e))
+            bottle.abort(400, str(e))
     return wrapper
