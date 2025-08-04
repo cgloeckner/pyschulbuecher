@@ -4,6 +4,14 @@
 %include("header")
 <h1>Bücherzettel Klasse {{c.to_string()}} (für Klasse {{grade+1}})</h1>
 
+<p>Parallelklassen: 
+%for other_tag in orga_queries.get_class_tags(grade):
+	%if other_tag != tag:
+		<a href="/classes/requests/{{grade}}/{{other_tag}}/{{version}}">{{grade}}{{other_tag}}</a>
+	%end
+%end
+</p>
+
 <form action="/classes/requests/{{grade}}/{{tag}}/{{version}}" id="requests" method="post">
 
 %total = dict()

@@ -16,8 +16,9 @@ Bitte beachten Sie:
 \begin{enumerate}
 	\item Überprüfen Sie die Anzahl der Ihnen zur Verfügung gestellten Bücher. Bitten melden Sie \textbf{fehlende oder beschädigte Bücher} umgehend, sodass Sie Ersatz erhalten können.
 	\item Stellen Sie jedem Schüler seine \textbf{Leihliste} (A5) zur Verfügung und quittieren Sie darauf die Ausgabe der aufgelisteten Bücher.
-	\item Die Eltern quittieren den Erhalt. Fordern Sie die Leihlisten \textbf{binnen einer Woche zurück}.
-	\item \textbf{Überprüfen Sie} die von den Schülern zurückgegebene \textbf{Leihlisten} auf \textbf{Vollständigkeit} und quittieren Sie den Erhalt in der zweiten Spalte. \textbf{Geben} Sie den Hefter \textbf{vollständig} beim Schulbuchverantwortlichen \textbf{ab}.
+	\item Änderungen sind in Absprache mit dem Lernmittelverantwortlichen \textbf{in rot} auf der \textbf{Leihliste} (A5) vorzunehmen.
+	\item Die Eltern quittieren den Erhalt. Fordern Sie die Leihlisten \textbf{binnen einer Woche zurück}. Nichteinhaltung führt zur Rückgabe \textbf{aller Leihexemplare} bei der Klassenleitung.
+	\item \textbf{Überprüfen Sie} die von den Schülern zurückgegebene \textbf{Leihlisten} auf \textbf{Vollständigkeit}. \textbf{Geben} Sie die Leihlisten \textbf{vollständig} beim Schulbuchverantwortlichen \textbf{ab}.
 \end{enumerate}
 
 %num_bks = len([b for b in bks if not b.workbook and not b.classsets])
@@ -143,6 +144,6 @@ Bitte beachten Sie:
 	\hline
 \end{longtable}
 
-Diese Übersicht verbleibt beim Klassenleiter. \\
+Diese Übersicht verbleibt bei der Klassenleitung. \\
 
 \pagebreak

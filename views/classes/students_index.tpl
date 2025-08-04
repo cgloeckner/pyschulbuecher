@@ -4,6 +4,15 @@
 
 %include("header")
 <h1>Bücherübersicht Klasse {{c.to_string()}}</h1>
+
+<p>Parallelklassen: 
+%for other_tag in orga_queries.get_class_tags(grade):
+	%if other_tag != tag:
+		<a href="/classes/{{grade}}/{{other_tag}}">{{grade}}{{other_tag}}</a>
+	%end
+%end
+</p>
+
 <a href="/admin/classes/edit/{{c.id}}">Bearbeiten</a><br />
 
 <form action="/classes/loans/{{grade}}/{{tag}}" id="requests" method="post">
