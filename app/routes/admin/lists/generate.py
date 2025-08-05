@@ -287,7 +287,7 @@ def requestloan_generate():
     for grade in orga_queries.get_grade_range():
         yield 'Klasse %d<br />\n' % (grade)
         for c in orga_queries.get_classes_by_grade(grade-1):
-            bookloan(c, True)
+            bookloan(c, True, True)
     bookloan.saveToFile()
     yield '<pre>%s</pre>\n' % bookloan.getPath()
 

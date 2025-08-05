@@ -1,5 +1,5 @@
 \documentclass[10pt,a4paper, twocolumn]{article}
-\usepackage[a4paper, landscape, left=2cm, right=2cm, top=2.5cm, bottom=1cm]{geometry}
+\usepackage[a4paper, landscape, left=0.5cm, right=0.5cm, top=1.5cm, bottom=0.5cm]{geometry}
 \usepackage{eurosym}
 \usepackage[utf8]{inputenc}
 \usepackage{makecell}

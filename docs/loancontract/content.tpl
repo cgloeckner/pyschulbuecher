@@ -9,7 +9,7 @@
 	Ihnen wurden folgende Lehrbücher als Leihexemplare überlassen. Vermerken Sie die Inventarnummer und bewerten Sie den \linebreak Zustand des Buchs: \hfill neu \textbf{++} \quad gut \textbf{+} \quad mittel \textbf{$\circ$} \quad schlecht \textbf{-}
 
 	\rowcolors{1}{white}{black!10}
-	\begin{tabular}[c]{ | p{0.75cm} | c | p{5.5cm} | c | c | }
+	\begin{tabular}[c]{ | p{0.75cm} | c | p{6.5cm} | c | c | }
 		\hline
 		
 		\textbf{\small Fach} &
@@ -54,18 +54,17 @@
 
 	\end{tabular}
 
-	\vspace{1.5cm}
+	\vspace{1cm}
 
-	\rule{4.5cm}{0.4pt} \hfill \rule{4.5cm}{0.4pt}
-
-	Datum, Ort \hfill Unterschrift Klassenleiter:in
+	\rule{4.5cm}{0.4pt} \hfill \rule{4.5cm}{0.4pt} \\
+	Datum, Ort \hfill Unterschrift Klassenleitung \\
 
 % else:
 
 	Ihnen wurden folgende Lehrbücher als Leihexemplare überlassen. Vermerken Sie die Inventarnummer und bewerten Sie den \linebreak Zustand des Buchs: \hfill neu \textbf{++} \quad gut \textbf{+} \quad mittel \textbf{$\circ$} \quad schlecht \textbf{-}
 
 	\rowcolors{1}{white}{black!10}
-	\begin{tabular}[c]{ | p{0.75cm} | c | p{5.5cm} | c | c | }
+	\begin{tabular}[c]{ | p{0.75cm} | c | p{6.5cm} | c | c | }
 		\hline
 		
 		\textbf{\small Fach} &
@@ -153,21 +152,18 @@
 	%end
 
 	\end{tabular}
+	
+	\vspace{1cm}
 
-	\vspace{1.5cm}
-
-	\rule{4.5cm}{0.4pt} \hfill \rule{4.5cm}{0.4pt}
-
-	Datum, Ort \hfill Unterschrift Klassenleiter:in
-
-	\vfill
-
+	\rule{4.5cm}{0.4pt} \hfill \rule{4.5cm}{0.4pt} \\
+	Datum, Ort \hfill Unterschrift Klassenleitung \\
+	
 	{ \large Bereits ausgeliehene Bücher }
 
 	Bitte überprüfen Sie den Zustand folgender Lehrbücher:
 
 	\rowcolors{1}{white}{black!10}
-	\begin{tabular}[c]{ | p{0.75cm} | c | p{5.5cm} | c | c | }
+	\begin{tabular}[c]{ | p{0.75cm} | c | p{6.5cm} | c | c | }
 		\hline
 		
 		\textbf{\small Fach} &
@@ -214,16 +210,14 @@
 	%end
 %end
 
-\vfill
-
 Hiermit bestätige ich im Besitz der oben genannten Bücher zu sein.
 
-\vspace{1.5cm}
+\vspace{1cm}
 
-\rule{4.5cm}{0.4pt} \hfill \rule{4.5cm}{0.4pt}
+\rule{4.5cm}{0.4pt} \hfill \rule{4.5cm}{0.4pt} \\
+Datum, Ort \hfill Unterschrift Eltern \\
 
-Datum, Ort \hfill Unterschrift Eltern
-
+\null\vfill
 
 \pagebreak
 

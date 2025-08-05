@@ -31,12 +31,12 @@ class BookloanPdf(object):
     def getPath(self):
         return os.path.join(self.export, 'Ausgaben.pdf')
 
-    def __call__(self, class_, request=False):
+    def __call__(self, class_, request=False, inc_grade=False):
         """Generate requestlist pdf file for the given class. If `requests` is
         provided with true, the request list for this year is used.
         """
         grade = class_.grade
-        if request:
+        if inc_grade:
             grade += 1
 
         # fetch and order books that were requested by this class
@@ -57,7 +57,7 @@ class BookloanPdf(object):
         # render template
         self.tex += bottle.template(
             self.content, s=self.s, class_=class_, bks=bks, students=students, spec_bks=spec_bks,
-            query_func=query_func, advance=request
+            query_func=query_func, advance=inc_grade
         )
 
     def saveToFile(self):
