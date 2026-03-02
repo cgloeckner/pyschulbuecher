@@ -10,14 +10,17 @@ def order_loan_overview(loans):
     loans = list(loans.order_by(lambda l: l.book.title))
     loans.sort(key=lambda l: l.person.firstname)
     loans.sort(key=lambda l: l.person.name)
-    loans.sort(key=lambda l: l.book.subject.tag if l.book.subject is not None else '')
+    loans.sort(key=lambda l: l.book.subject.tag
+               if l.book.subject is not None else '')
     loans.sort(key=lambda l: l.book.outGrade)
     loans.sort(
-        key=lambda l: l.person.student.class_.tag if l.person.student is not None
+        key=lambda l: l.person.student.class_.tag
+        if l.person.student is not None
         and l.person.student.class_ is not None else ''
     )
     loans.sort(
-        key=lambda l: l.person.student.class_.grade if l.person.student is not None
+        key=lambda l: l.person.student.class_.grade
+        if l.person.student is not None
         and l.person.student.class_ is not None else -1
     )
     return loans
@@ -26,15 +29,15 @@ def order_loan_overview(loans):
 def order_request_overview(requests):
     # 1st: outGrade, 2nd: subject, 3rd: title
     requests = list(requests.order_by(lambda r: r.book.title))
-    requests.sort(
-        key=lambda r: r.book.subject.tag if r.book.subject is not None else '')
+    requests.sort(key=lambda r: r.book.subject.tag \
+                  if r.book.subject is not None else '')
     requests.sort(key=lambda r: r.book.outGrade)
     return requests
 
 
 def get_expected_returns(student: db.Student):
-    """Returns a list of loans which are expected to be returned referring
-    the student's current grade.
+    """Returns a list of loans which are expected to be returned
+    referring the student's current grade.
     """
     return select(l
                   for l in db.Loan
@@ -62,9 +65,9 @@ def get_request_count(person: db.Person, book: db.Book):
 
 
 def update_request(student: db.Student, book: db.Book, status: bool):
-    """Update request status for the given book and the given student. If True
-    is provided, a request object is created. If not, no request object exists
-    for that student to that book.
+    """Update request status for the given book and the given student.
+    If True is provided, a request object is created. If not, no request
+    object exists for that student to that book.
     """
     was = is_requested(student, book)
     if not was and status:
@@ -82,22 +85,24 @@ def add_loan(person: db.Person, book: db.Book, count: int):
     l = db.Loan.get(person=person, book=book)
     if l is None and count > 0:
         # create new loan
-        db.Loan(person=person, book=book, given=datetime.date.today(), count=count)
+        db.Loan(person=person, book=book, given=datetime.date.today(),
+                count=count)
     elif l is not None:
         # update it
         l.count += count
 
 
 def update_loan(person: db.Person, book: db.Book, count: int):
-    """Update the loan status for the given book and the given person. If the
-    count is set to zero, the loan object is deleted from the database.
-    Otherwise the loan object is updated. If no such object exists, it will be
-    created as needed.
+    """Update the loan status for the given book and the given person.
+    If the count is set to zero, the loan object is deleted from the
+    database. Otherwise the loan object is updated. If no such object
+    exists, it will be created as needed.
     """
     l = db.Loan.get(person=person, book=book)
     if l is None and count > 0:
         # create new loan
-        db.Loan(person=person, book=book, given=datetime.date.today(), count=count)
+        db.Loan(person=person, book=book, given=datetime.date.today(),
+                count=count)
     elif l is not None:
         if count == 0:
             # delete loan
@@ -135,8 +140,8 @@ def query_loans_by_book(book: db.Book):
 
 
 def apply_request(student: db.Student):
-    """Apply person's request be transfering to loaning these book_queries.
-    Note that the requests are deleted after that.
+    """Apply person's request be transfering to loaning these
+    book_queries. Note that the requests are deleted after that.
     """
     # add loaning
     bks = list()

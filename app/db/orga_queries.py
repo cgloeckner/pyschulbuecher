@@ -24,20 +24,32 @@ def get_secondary_level2_range():
 
 def get_class_grades(regular=False):
     """Return a list of grades for which classes exist.
-    If regular class grades are queried, entry and alumni grade are excluded.
+    If regular class grades are queried, entry and alumni grade are
+    excluded.
     """
     classes = None
     if regular:
-        classes = select(c.grade for c in db.Class if c.grade in get_grade_range()).order_by(lambda g: g)
+        classes = select(
+            c.grade
+            for c in db.Class
+            if c.grade in get_grade_range()
+        ).order_by(lambda g: g)
     else:
-        classes = select(c.grade for c in db.Class).order_by(lambda g: g)
+        classes = select(
+            c.grade
+            for c in db.Class
+        ).order_by(lambda g: g)
     return set(classes)
 
 
 def get_class_tags(grade: int):
     """Return a list of tags for which classes exist in the given grade.
     """
-    return select(c.tag for c in db.Class if c.grade == grade).order_by(lambda t: t)
+    return select(
+        c.tag
+        for c in db.Class
+        if c.grade == grade
+    ).order_by(lambda t: t)
 
 
 def get_classes():
@@ -49,7 +61,11 @@ def get_classes():
 def get_classes_by_grade(grade: int):
     """Return a list of classes which exist in the given grade.
     """
-    return select(c for c in db.Class if c.grade == grade).order_by(db.Class.tag)
+    return select(
+        c
+        for c in db.Class
+        if c.grade == grade
+    ).order_by(db.Class.tag)
 
 
 def get_classes_count():
@@ -85,7 +101,8 @@ def sort_students(students: list):
     considers Umlate while sorting, e.h. handling O and Ö equally instead of
     sorting Ö after Z, do not sort "van Something" behind "Z"
     """
-    students.sort(key=lambda s: (phonebook_key(s.person.name), s.person.firstname))
+    students.sort(key=lambda s: (phonebook_key(s.person.name), 
+                                 s.person.firstname))
 
 
 def get_students_in(grade: int, tag: str):
@@ -108,15 +125,19 @@ def parse_class(raw: str):
 
 
 def add_class(raw: str):
-    """Add a new class from a ggiven raw string. This string contains the
-    grade (with ALWAYS two characters, like '08') followed by the class tag
-    (e.g. '08a'), where uppercase characters are ignored. No teacher is
-    assigned to this class.
+    """Add a new class from a ggiven raw string. This string contains
+    the grade (with ALWAYS two characters, like '08') followed by the
+    class tag (e.g. '08a'), where uppercase characters are ignored. No
+    teacher is assigned to this class.
     """
     # split data
     grade, tag = parse_class(raw)
 
-    existing = select(c for c in db.Class if c.grade == grade and c.tag == tag)
+    existing = select(
+        c
+        for c in db.Class
+        if c.grade == grade and c.tag == tag
+    )
     if existing.count() > 0:
         raise orm.core.ConstraintError('Class %s aready existing' % raw)
 
@@ -124,8 +145,8 @@ def add_class(raw: str):
 
 
 def add_classes(raw: str):
-    """Add classes from a given raw string dump, assuming all students being
-    separated by newlines. Each line is handled by add_class().
+    """Add classes from a given raw string dump, assuming all students
+    being separated by newlines. Each line is handled by add_class().
     """
     for data in raw.split('\n'):
         if len(data) > 0:
@@ -134,7 +155,11 @@ def add_classes(raw: str):
 
 def update_class(id: int, grade: int, tag: str, teacher_id: int):
     # try to query class with grade and tag
-    cs = select(c for c in db.Class if c.grade == grade and c.tag == tag)
+    cs = select(
+        c
+        for c in db.Class
+        if c.grade == grade and c.tag == tag
+    )
     if cs.count() > 0:
         assert(cs.count() == 1)
         if cs.get().id != id:
@@ -164,9 +189,9 @@ def add_student(raw: str):
     """Add a new students from a given raw string dump, assuming all
     information being separated by tabs in the following order:
         Class, Name, FirstName
-    Note that the Class must contain both, grade and tag (e.g. `08A` or
-    `11ABC`). If a class does not exist, it needs to be added in the first
-    place. Uppercase class tags are ignored.
+    Note that the Class must contain both, grade and tag (e.g. `08A`
+    or `11ABC`). If a class does not exist, it needs to be added in the
+    first place. Uppercase class tags are ignored.
     """
     # split data
     data = raw.split('\t')
@@ -188,8 +213,8 @@ def add_student(raw: str):
 
 
 def add_students(raw: str):
-    """Add students from a given raw string dump, assuming all students being
-    separated by newlines. Each line is handled by add_student().
+    """Add students from a given raw string dump, assuming all students
+    being separated by newlines. Each line is handled by add_student().
     """
     for data in raw.split('\n'):
         if len(data) > 0:
@@ -197,12 +222,14 @@ def add_students(raw: str):
 
 
 def get_students_like(name: str = "", firstname: str = ""):
-    """Return a list of students by name and firstname using partial matching.
-    Both parameters default to an empty string if not specified.
+    """Return a list of students by name and firstname using partial
+    matching. Both parameters default to an empty string if not
+    specified.
     """
     return select(
         s for s in db.Student
-        if name.lower() in s.person.name.lower() and firstname.lower() in s.person.firstname.lower()
+        if name.lower() in s.person.name.lower() 
+        and firstname.lower() in s.person.firstname.lower()
     ).order_by(
         lambda s: s.person.firstname
     ).order_by(
@@ -245,14 +272,15 @@ def add_teacher(raw: str):
 
     try:
         # create actual teacher
-        db.Teacher(person=db.Person(name=name, firstname=firstname), tag=tag)
+        db.Teacher(person=db.Person(name=name, firstname=firstname), 
+                   tag=tag)
     except ValueError as e:
         raise orm.core.ConstraintError(e)
 
 
 def add_teachers(raw: str):
-    """Add teachers from a given raw string dump, assuming all teachers being
-    separated by newlines. Each line is handled by add_teacher().
+    """Add teachers from a given raw string dump, assuming all teachers
+    being separated by newlines. Each line is handled by add_teacher().
     """
     for data in raw.split('\n'):
         if len(data) > 0:
@@ -261,12 +289,14 @@ def add_teachers(raw: str):
 # -----------------------------------------------------------------------------
 
 
-def advance_school_year(last_grade: int, first_grade: int, new_tags: list):
+def advance_school_year(last_grade: int, first_grade: int, 
+                        new_tags: list):
     """Advance all students and classes to the next school year.
-    All classes of the last_grade are dropped, so those students remain without
-    any class. All remaining classes advance one grade and a new set of classes
-    is created for the first_grade using a list of new_tags. Those classes are
-    created without a teacher being assigned.
+    All classes of the last_grade are dropped, so those students remain
+    without any class. All remaining classes advance one grade and a new
+    set of classes is created for the first_grade using a list of
+    new_tags. Those classes are created without a teacher being
+    assigned.
     """
     # drop last grade's classes
     for c in get_classes_by_grade(last_grade):

@@ -46,9 +46,9 @@ class Class(db.Entity):
             g = '0%d' % g
         else:
             g = str(g)
-        return "%s%s" % (g,
-                         self.tag.upper() if len(
-                             self.tag) > 1 else self.tag)
+        return "%s%s" % (
+            g, self.tag.upper() if len(self.tag) > 1 else self.tag
+        )
 
 
 class Student(db.Entity):
@@ -99,7 +99,12 @@ class Book(db.Entity):
     request = Set("Request", cascade_delete=False)
 
     def is_available(self):
-        return self.isbn is not None and self.isbn != '' and self.price != None and self.price != 0
+        return (
+            self.isbn is not None
+            and self.isbn != ''
+            and self.price != None
+            and self.price != 0
+        )
 
     def is_long_term(self):
         return self.outGrade - self.inGrade > 1

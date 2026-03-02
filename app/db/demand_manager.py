@@ -9,14 +9,16 @@ from pony.orm import *
 
 class DemandManager(object):
 
-    def __init__(self, grade_query=orga_queries.get_students_count, filename: str = './demand.json'):
+    def __init__(self, grade_query=orga_queries.get_students_count,
+                 filename: str = './demand.json'):
         self.data = dict()
         self.grade_query = grade_query
         self.filename = filename
 
     def parse(self, forms):
         """Parse demand data from a form. The given forms parameter is a
-        function handle with __call__(key), where key is a UI-related name tag.
+        function handle with __call__(key), where key is a UI-related
+        name tag.
         """
         # note: str(grade) because json will dump to str it anyway
         # parse student numbers for elective subjects (until 10th grade)
@@ -41,8 +43,8 @@ class DemandManager(object):
         self.data = tmp
 
     def get_unavailable_books_count(self, book):
-        """Return total amount of books that are continued to be in use during
-        the next school year.
+        """Return total amount of books that are continued to be in use
+        during the next school year.
         """
         continued = 0
         for l in book.loan:
@@ -55,9 +57,9 @@ class DemandManager(object):
         return continued
 
     def count_books_in_use(self, book):
-        """Return total amount of books that will be used after the end of this
-        school year. Expected returns are not included, as well as requested
-        book_queries.
+        """Return total amount of books that will be used after the end
+        of this school year. Expected returns are not included, as well
+        as requested book_queries.
         """
         in_use = 0
         for l in book.loan:
@@ -75,8 +77,9 @@ class DemandManager(object):
             grade: int,
             subject: db.Subject,
             level: str = None):
-        """Return total number of students for the given grade and subject.
-        Optionally specified novice and/or advanced courses are considered.
+        """Return total number of students for the given grade and
+        subject. Optionally specified novice and/or advanced courses
+        are considered.
         """
         # note: str(grade) because json will dump to str it anyway
         assert level in [None, 'novices', 'advanced']
@@ -85,8 +88,8 @@ class DemandManager(object):
             # no such grade (maybe there is not 8th grade this year)
             return 0
         if subject.tag not in self.data[str(grade)]:
-            # no such subject (maybe there is no french class in this grade)
-            # note that the n th grade is currently (n-1)th grade
+            # no such subject (maybe there is no french class in this
+            # grade). note that the n-th grade is currently (n-1)th grade
             return self.grade_query(grade - 1)
 
         if level is None:
@@ -99,8 +102,8 @@ class DemandManager(object):
     # @TODO für Klassensätze nutzen?!
     def get_max_demand(self, book: db.Book):
         """Calculate worst case demand of the given book assuming.
-        Note that this calculates the demand for the NEXT year, so all grades
-        are considerd -1.
+        Note that this calculates the demand for the NEXT year, so all
+        grades are considerd -1.
         E.g. the new 10th grade is currently 9th grade now.
         """
         total = 0
@@ -115,9 +118,11 @@ class DemandManager(object):
             else:
                 # consider course level
                 if book.novices:
-                    total += self.get_student_number(grade, book.subject, 'novices')
+                    total += self.get_student_number(grade, book.subject,
+                                                     'novices')
                 if book.advanced:
-                    total += self.get_student_number(grade, book.subject, 'advanced')
+                    total += self.get_student_number(grade, book.subject,
+                                                     'advanced')
         return total
 
     def load_from_file(self):

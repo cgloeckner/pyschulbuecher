@@ -11,9 +11,9 @@ def get_publishers():
 
 
 def get_subjects(elective=None):
-    """Return a list of all subjects. If elective is provided, only elective
-    or non-elective subjects are returned. If elective is not provided, all
-    subjects are returned (default).
+    """Return a list of all subjects. If elective is provided, only
+    elective or non-elective subjects are returned. If elective is not
+    provided, all subjects are returned (default).
     """
     if elective is not None:
         ret = select(s for s in db.Subject if s.elective == elective)
@@ -24,73 +24,101 @@ def get_subjects(elective=None):
 
 def order_books_index(bks):
     # 1st: subject, 2nd: inGrade, 3rd: title
-    bks = list(bks.order_by(db.Book.title).order_by(db.Book.inGrade).order_by(db.Book.classsets))
-    bks.sort(key=lambda b: b.subject.tag if b.subject is not None else '')
+    bks = list(bks.order_by(db.Book.title).order_by(db.Book.inGrade)
+               .order_by(db.Book.classsets))
+    bks.sort(key=lambda b: b.subject.tag
+             if b.subject is not None
+             else '')
     return bks
 
 
 def order_books_list(bks):
     # 1st: subject, 2rd: title, 3rd: publisher
-    bks = list(
-        bks.order_by(lambda b: b.publisher.name).order_by(db.Book.title))
-    bks.sort(key=lambda b: b.subject.tag if b.subject is not None else '')
-    bks.sort(key=lambda b: b.subject.elective if b.subject is not None else False)
+    bks = list(bks.order_by(lambda b: b.publisher.name)
+               .order_by(db.Book.title))
+    bks.sort(key=lambda b: b.subject.tag 
+             if b.subject is not None 
+             else '')
+    bks.sort(key=lambda b: b.subject.elective 
+             if b.subject is not None 
+             else False)
     return bks
 
 
 def get_all_books():
-    """Return a list of all books sorted by subject.tag, inGrade and title.
-    """
+    """Return a list of all books sorted by subject.tag, inGrade and
+    title."""
     return select(b for b in db.Book)
 
 
 def get_books_without_subject():
-    """Return a list of books which are not assigned to a specific subject.
-    Those books are supposed to be used across subjects.
+    """Return a list of books which are not assigned to a specific
+    subject. Those books are supposed to be used across subjects.
     """
     return select(b for b in db.Book if b.subject is None)
 
 
 def get_books_used_in(grade: int, booklist: bool = False):
     """Return a list of books which are used in the given grade.
-    This includes books which are used across multiple grades, as well as books
-    that are only used by this grade.
-    The optional booklist parameter specifies if only books which are for loan
-    are queried.
+    This includes books which are used across multiple grades, as well
+    as books that are only used by this grade.
+    The optional booklist parameter specifies if only books which are
+    for loan are queried.
     """
     if booklist:
         return select(
-            b for b in db.Book if b.inGrade <= grade
-            and grade <= b.outGrade and b.for_loan
+            b
+            for b in db.Book
+            if b.inGrade <= grade and grade <= b.outGrade and b.for_loan
         )
     else:
-        return select(b for b in db.Book if b.inGrade <= grade and grade <= b.outGrade)
+        return select(
+            b
+            for b in db.Book
+            if b.inGrade <= grade and grade <= b.outGrade
+        )
 
 
 def get_books_started_in(grade: int, booklist: bool = False):
     """Return a list of books which are introduced in the given grade.
-    This includes books which are used across multiple grades (from that grade)
-    on, as well as books which are only used by this grade.
-    The optional booklist parameter specifies if only books which are for loan
-    are queried.
+    This includes books which are used across multiple grades (from
+    that grade) on, as well as books which are only used by this grade.
+    The optional booklist parameter specifies if only books which are
+    for loan are queried.
     """
     if booklist:
-        return select(b for b in db.Book if b.inGrade == grade and b.for_loan)
+        return select(
+            b
+            for b in db.Book
+            if b.inGrade == grade and b.for_loan
+        )
     else:
-        return select(b for b in db.Book if b.inGrade == grade)
+        return select(
+            b
+            for b in db.Book
+            if b.inGrade == grade
+        )
 
 
 def get_books_finished_in(grade: int, booklist: bool = False):
-    """Return a list of books which are used in the given grade for the last
-    time. This includes books which are used across multiple grades (up to this
-    grade), as well as books that are only used by this grade.
-    The optional booklist parameter specifies if only books which are for loan
-    are queried.
+    """Return a list of books which are used in the given grade for the
+    last time. This includes books which are used across multiple grades
+    (up to this grade), as well as books that are only used by this
+    grade. The optional booklist parameter specifies if only books which
+    are for loan are queried.
     """
     if booklist:
-        return select(b for b in db.Book if b.outGrade == grade and b.for_loan)
+        return select(
+            b
+            for b in db.Book
+            if b.outGrade == grade and b.for_loan
+        )
     else:
-        return select(b for b in db.Book if b.outGrade == grade)
+        return select(
+            b
+            for b in db.Book
+            if b.outGrade == grade
+        )
 
 
 def get_books_by_title(title: str):
@@ -101,9 +129,10 @@ def get_books_by_title(title: str):
 
 def get_books_by_isbn(isbn: str):
     """Returns a list of books with this exact isbn.
-    Note that most commonly, only one or none will be returned. If an empty
-    string is given as isbn, all books without isbn are returned. Note that
-    this is mostly used for books which are not longer available in market.
+    Note that most commonly, only one or none will be returned. If an
+    empty string is given as isbn, all books without isbn are returned.
+    Note that this is mostly used for books which are not longer
+    available in market.
     """
     return select(b for b in db.Book if isbn == b.isbn)
 
@@ -115,14 +144,22 @@ def get_real_books():
 
 
 def get_real_books_by_subject(subject: db.Subject, classsets: bool):
-    """Returns a list of books used in the given subject. If classsets is
-    provided with `false`, now classset books are included.
+    """Returns a list of books used in the given subject. If classsets
+    is provided with `false`, now classset books are included.
     Note that only real books (no workbooks) are queried
     """
     if classsets:
-        return select(b for b in db.Book if not b.workbook and b.subject == subject)
+        return select(
+            b
+            for b in db.Book
+            if not b.workbook and b.subject == subject
+        )
     else:
-        return select(b for b in db.Book if not b.workbook and b.subject == subject and not b.classsets)
+        return select(
+            b
+            for b in db.Book
+            if not b.workbook and b.subject == subject and not b.classsets
+        )
 
 
 def get_real_books_by_grade(grade: int, classsets: bool):
@@ -131,30 +168,45 @@ def get_real_books_by_grade(grade: int, classsets: bool):
     Note that only real books (no workbooks) are queried
     """
     if classsets:
-        return select(b for b in db.Book if not b.workbook and b.inGrade <= grade and grade <= b.outGrade)
+        return select(
+            b
+            for b in db.Book
+            if not b.workbook and b.inGrade <= grade and grade <= b.outGrade
+        )
     else:
         return select(
-            b for b in db.Book
-            if not b.workbook and b.inGrade <= grade and grade <= b.outGrade and not b.classsets
+            b
+            for b in db.Book
+            if not b.workbook and b.inGrade <= grade 
+            and grade <= b.outGrade and not b.classsets
         )
 
 
 def get_workbooks_by_subject(subject: db.Subject):
     """Returns a list of workbooks used in the given subject."""
-    return select(b for b in db.Book if b.workbook and b.subject == subject)
+    return select(
+        b
+        for b in db.Book
+        if b.workbook and b.subject == subject
+    )
 
 
 def get_classsets_by_subject(subject: db.Subject):
     """Returns a list of workbooks used in the given subject."""
-    return select(b for b in db.Book if not b.workbook and b.classsets and b.subject == subject)
+    return select(
+        b
+        for b in db.Book
+        if not b.workbook and b.classsets and b.subject == subject
+    )
 
 # -----------------------------------------------------------------------------
 
 
 def add_subjects(raw: str):
-    """Add subjects from a given raw string dump, assuming subjects being
-    separated by newlines. Name and tag are assumed to be separated by a tab.
-    A new subject is declared as non-elective by default.
+    """Add subjects from a given raw string dump, assuming subjects
+    being separated by newlines. Name and tag are assumed to be
+    separated by a tab. A new subject is declared as non-elective by
+    default.
     """
     for data in raw.split("\n"):
         res = data.split("\t")
@@ -163,21 +215,22 @@ def add_subjects(raw: str):
 
 
 def add_publishers(raw: str):
-    """Add publishers from a given raw string dump, assuming publishers being
-    separated by newlines
+    """Add publishers from a given raw string dump, assuming publishers
+    being separated by newlines
     """
     for data in raw.split("\n"):
         db.Publisher(name=data)
 
 
 def add_book(raw: str):
-    """Add book from a given raw string dump, assuming all information being
-    separated by tabs in the following order:
+    """Add book from a given raw string dump, assuming all information
+    being separated by tabs in the following order:
         Title, ISBN, Price, Publisher, inGrade, outGrade
     Optional: Subject, Novices, Advanced, Workbook, Classsets, Comment
-    Earlier optional data must be provided (at least as empty strings) if a
-    later parameter is given.
-    Note that the stock is always set to zero and must be specified later.
+    Earlier optional data must be provided (at least as empty strings)
+    if a later parameter is given.
+    Note that the stock is always set to zero and must be specified
+    later.
     """
     # split data
     data = raw.split('\t')
