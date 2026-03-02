@@ -35,7 +35,7 @@ def use_remote_latex_compiler(remote_latex: str, tex_code: str, path: str) -> No
     
 
 def compile_pdf(remote_latex: str, tex_code: str, path: str) -> None:
-    if remote_latex == '':
+    if remote_latex == '' or remote_latex is None:
         use_local_latex_compiler(tex_code, path)
     else:
         use_remote_latex_compiler(remote_latex, tex_code, path)

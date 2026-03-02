@@ -207,7 +207,7 @@ def booklist_generate():
     print('Generating Booklists')
     d = time.time()
     yield 'Bitte warten...'
-    for g in ranging():
+    for g in ranging:
         yield '<br>Klasse %d\n' % g
         booklist(g, exclude)
         if g > 5:
