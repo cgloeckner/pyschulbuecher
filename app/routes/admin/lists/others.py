@@ -37,12 +37,14 @@ def booklist_preview():
 
         # fetch and order books
         bks_new = book_queries.get_books_used_in(grade, booklist=True)
-        bks_old = book_queries.get_books_started_in(grade, booklist=True)
+        bks_old = book_queries.get_books_started_in(grade,
+                                                    booklist=True)
 
         key = f'{grade:02d}'
         all_books[key] = book_queries.order_books_list(bks_old)
         if grade > 5:
-            all_books[f'{key}_neu'] = book_queries.order_books_list(bks_new)
+            all_books[f'{key}_neu'] = \
+                book_queries.order_books_list(bks_new)
 
     return dict(all_books=all_books)
 

@@ -24,7 +24,8 @@ def demand_form():
 def demand_report():
     s = Settings()
     
-    # percentage of lowering the stock to gain buffer (e.g. for damaged books)
+    # percentage of lowering the stock to gain buffer (e.g. for
+    # damaged books)
     lowering = int(bottle.request.forms.lowering)
 
     # fetch demand from UI input
@@ -55,12 +56,12 @@ def demand_report():
         required = raw_demand - available
 
         if required > 0:
-            # calculate how many books will be bought by school / by parents.
-            # if enough books are available, the number of actually required
-            # books might be lower as the number requested books, hence the
-            # number of required books will be bought by the school.
-            # if the requested number is lower, more books are bought by
-            # parents
+            # calculate how many books will be bought by school / by
+            # parents. if enough books are available, the number of
+            # actually required books might be lower as the number
+            # requested books, hence the number of required books will
+            # be bought by the school. if the requested number is lower,
+            # more books are bought by parents
             by_school = min(required, requested)
             by_parents = required - by_school
         else:

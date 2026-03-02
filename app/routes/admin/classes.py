@@ -31,8 +31,12 @@ def classes_edit(id):
 @app.post('/admin/classes/edit/<id:int>')
 @errorhandler
 def classes_edit_post(id):
-    orga_queries.update_class(id, int(bottle.request.forms.grade), bottle.request.forms.tag,
-                     int(bottle.request.forms.teacher_id))
+    orga_queries.update_class(
+        id,
+        int(bottle.request.forms.grade),
+        bottle.request.forms.tag,
+        int(bottle.request.forms.teacher_id)
+    )
 
     db.commit()
     bottle.redirect('/admin/classes')

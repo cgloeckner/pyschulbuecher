@@ -22,10 +22,14 @@ def settings_form_post():
     current_year = s.data['general']['school_year']
 
     s = Settings()
-    s.data['general']['school_year'] = bottle.request.forms.school_year
-    s.data['deadline']['booklist_changes'] = bottle.request.forms.deadline_booklist_changes
-    s.data['deadline']['booklist_return'] = bottle.request.forms.deadline_booklist_return
-    s.data['deadline']['bookreturn_graduate'] = bottle.request.forms.bookreturn_graduate
+    s.data['general']['school_year'] = \
+        bottle.request.forms.school_year
+    s.data['deadline']['booklist_changes'] = \
+        bottle.request.forms.deadline_booklist_changes
+    s.data['deadline']['booklist_return'] = \
+        bottle.request.forms.deadline_booklist_return
+    s.data['deadline']['bookreturn_graduate'] = \
+        bottle.request.forms.bookreturn_graduate
     s.save()
 
     db.commit()
@@ -40,8 +44,8 @@ def settings_form_post():
 
         # notify admin about restart
         print('=' * 80)
-        print(
-            '\nPlease Restart Application and browse http://localhost:8080/admin/advance\n')
+        print('\nPlease Restart Application and browse '
+              + 'http://localhost:8080/admin/advance\n')
         print('=' * 80)
         sys.exit(0)
 

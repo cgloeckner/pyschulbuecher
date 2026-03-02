@@ -26,19 +26,29 @@ def books_add_post():
 @app.post('/admin/books/addSingle')
 @errorhandler
 def books_add_post():
-    args = [bottle.request.forms.title, bottle.request.forms.isbn, bottle.request.forms.price]
+    args = [bottle.request.forms.title,
+            bottle.request.forms.isbn,
+            bottle.request.forms.price]
 
-    args.append(db.Publisher[int(bottle.request.forms.publisher_id)].name)
+    args.append(db.Publisher[
+        int(bottle.request.forms.publisher_id)
+    ].name)
     args.append(bottle.request.forms.inGrade)
     args.append(bottle.request.forms.outGrade)
-    args.append(db.Subject[int(bottle.request.forms.subject_id)
-                           ].tag if bottle.request.forms.subject_id != "" else "")
+    args.append(db.Subject[
+        int(bottle.request.forms.subject_id)
+    ].tag if bottle.request.forms.subject_id != "" else "")
 
-    args.append("True" if bottle.request.forms.novices == 'on' else "False")
-    args.append("True" if bottle.request.forms.advanced == 'on' else "False")
-    args.append("True" if bottle.request.forms.workbook == 'on' else "False")
-    args.append("True" if bottle.request.forms.classsets == 'on' else "False")
-    args.append("True" if bottle.request.forms.for_loan == 'on' else "False")
+    args.append("True" if bottle.request.forms.novices == 'on'
+                else "False")
+    args.append("True" if bottle.request.forms.advanced == 'on'
+                else "False")
+    args.append("True" if bottle.request.forms.workbook == 'on'
+                else "False")
+    args.append("True" if bottle.request.forms.classsets == 'on'
+                else "False")
+    args.append("True" if bottle.request.forms.for_loan == 'on'
+                else "False")
     args.append(bottle.request.forms.comment)
 
     print(args)

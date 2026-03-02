@@ -41,7 +41,10 @@ def students_add_post():
 @errorhandler
 @bottle.view('admin/students_search')
 def students_search_post():
-    data = orga_queries.get_students_like(bottle.request.forms.name, bottle.request.forms.firstname)
+    data = orga_queries.get_students_like(
+        bottle.request.forms.name,
+        bottle.request.forms.firstname
+    )
     return dict(data=data)
 
 

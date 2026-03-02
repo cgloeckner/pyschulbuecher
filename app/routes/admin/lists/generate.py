@@ -34,7 +34,8 @@ def db_dump_generate():
     print('Done')
     d = time.time() - d
 
-    yield '<hr /><br />Erledigt in %f Sekunden<hr /><pre>%s</pre>' % (d, xlsx.getPath())
+    yield '<hr /><br />Erledigt in %f Sekunden<hr /><pre>%s</pre>' \
+          % (d, xlsx.getPath())
 
 
 @app.get('/admin/lists/generate/inventory')
@@ -122,7 +123,8 @@ def studentloans_selection():
             lambda c: c.tag).order_by(
             lambda c: c.grade))
 
-    return dict(classes=classes, sort_students=orga_queries.sort_students)
+    return dict(classes=classes,
+                sort_students=orga_queries.sort_students)
 
 
 @app.post('/admin/lists/generate/studentloans')
@@ -151,14 +153,16 @@ def studentsloans_generate():
         # start new pdf
         if split_pdf:
             s = Settings()
-            loancontract = LoanContractPdf(c.to_string(), s, advance=next_year)
+            loancontract = LoanContractPdf(c.to_string(), s,
+                                           advance=next_year)
 
         n = 0
         yield '<ul>'
         for s in students:
             # add student if selected
             if bottle.request.forms.get(str(s.person.id)) == 'on':
-                yield '<li>{0}, {1}</li>'.format(s.person.name, s.person.firstname)
+                yield '<li>{0}, {1}</li>'.format(s.person.name,
+                                                 s.person.firstname)
                 n += 1
                 loancontract(
                     s,
