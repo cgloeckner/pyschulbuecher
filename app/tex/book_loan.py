@@ -32,8 +32,9 @@ class BookloanPdf(object):
         return os.path.join(self.export, 'Ausgaben.pdf')
 
     def __call__(self, class_, request=False, inc_grade=False):
-        """Generate requestlist pdf file for the given class. If `requests` is
-        provided with true, the request list for this year is used.
+        """Generate requestlist pdf file for the given class. If
+        `requests` is provided with true, the request list for this
+        year is used.
         """
         grade = class_.grade
         if inc_grade:
@@ -47,7 +48,8 @@ class BookloanPdf(object):
         spec_bks = book_queries.get_books_used_in(0, True)
 
         # query students
-        students = orga_queries.get_students_in(class_.grade, class_.tag)
+        students = orga_queries.get_students_in(class_.grade, 
+                                                class_.tag)
 
         if request:
             query_func = loan_queries.get_request_count
@@ -56,7 +58,8 @@ class BookloanPdf(object):
 
         # render template
         self.tex += bottle.template(
-            self.content, s=self.s, class_=class_, bks=bks, students=students, spec_bks=spec_bks,
+            self.content, s=self.s, class_=class_, bks=bks,
+            students=students, spec_bks=spec_bks,
             query_func=query_func, advance=inc_grade
         )
 
@@ -70,4 +73,5 @@ class BookloanPdf(object):
 
         # export PDF
         fname = self.getPath()
-        compile_pdf(self.s.data['hosting']['remote_latex'], self.tex, fname)
+        compile_pdf(self.s.data['hosting']['remote_latex'], self.tex, 
+                    fname)

@@ -11,7 +11,8 @@ def use_local_latex_compiler(tex_code: str, path: str) -> None:
     pdf.save_to(path)
 
 
-def use_remote_latex_compiler(remote_latex: str, tex_code: str, path: str) -> None:
+def use_remote_latex_compiler(remote_latex: str, tex_code: str, 
+                              path: str) -> None:
     # write tex code to main.tex inside a tar file
     tar_buffer = io.BytesIO()
     with tarfile.open(fileobj=tar_buffer, mode='w') as tar:

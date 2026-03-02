@@ -32,14 +32,16 @@ class BookreturnPdf(object):
         return os.path.join(self.export, 'Rückgaben.pdf')
 
     def addOverview(self, grade):
-        """Generate overviews for class teachers about returning book_queries.
+        """Generate overviews for class teachers about returning
+        book_queries.
         """
         # fetch and order books that are used next year by this class
         bks = book_queries.get_books_finished_in(grade)
         bks = book_queries.order_books_list(bks)
 
         # render template
-        self.tex += bottle.template(self.overview, s=self.s, grade=grade, bks=bks)
+        self.tex += bottle.template(self.overview, s=self.s, 
+                                    grade=grade, bks=bks)
 
     def __call__(self, class_):
         """Generate requestlist pdf file for the given class.
@@ -49,10 +51,13 @@ class BookreturnPdf(object):
         bks = book_queries.order_books_list(bks)
 
         # query students
-        students = orga_queries.get_students_in(class_.grade, class_.tag)
+        students = orga_queries.get_students_in(class_.grade, 
+                                                class_.tag)
 
         # render template
-        self.tex += bottle.template(self.content, s=self.s, class_=class_, bks=bks, students=students)
+        self.tex += bottle.template(self.content, s=self.s, 
+                                    class_=class_, bks=bks, 
+                                    students=students)
 
     def saveToFile(self):
         self.tex += bottle.template(self.footer)
@@ -64,5 +69,6 @@ class BookreturnPdf(object):
 
         # export PDF
         fname = self.getPath()
-        compile_pdf(self.s.data['hosting']['remote_latex'], self.tex, fname)
+        compile_pdf(self.s.data['hosting']['remote_latex'], self.tex, 
+                    fname)
 

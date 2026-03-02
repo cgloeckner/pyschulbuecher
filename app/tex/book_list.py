@@ -33,13 +33,14 @@ class BooklistPdf(object):
         # load settings
         self.s = settings
 
-    def __call__(self, grade: int, exclude: set, new_students: bool = False):
-        """Generate booklist pdf file for the given grade. A separate booklist
-        can be generated for new_students, which include additional books other
-        students already have from earlier classes.
-        The provided exclude set can be used to exclude books from the
-        booklist. The keys are built from <grade>_<bookid>, if excluded this
-        key's value is set to false.
+    def __call__(self, grade: int, exclude: set,
+                 new_students: bool = False):
+        """Generate booklist pdf file for the given grade. A separate
+        booklist can be generated for new_students, which include
+        additional books other students already have from earlier
+        classes. The provided exclude set can be used to exclude books
+        from the booklist. The keys are built from <grade>_<bookid>,
+        if excluded this key's value is set to false.
         """
         # fetch special books
         spec_bks = book_queries.get_books_used_in(0, True)
@@ -50,7 +51,8 @@ class BooklistPdf(object):
             suffix = '_Neuzugänge'
             deadline = 'Abgabe bei Anmeldung'
         else:
-            bks = book_queries.get_books_started_in(grade, booklist=True)
+            bks = book_queries.get_books_started_in(grade,
+                                                    booklist=True)
             suffix = ''
             date = self.s.data['deadline']['booklist_return']
             year = int(self.s.data['general']['school_year'])
@@ -63,22 +65,29 @@ class BooklistPdf(object):
         num_books = sum(1 for b in bks if not b.workbook)
 
         # render templates
-        tex = bottle.template(self.header, s=self.s, grade=grade, new_students=new_students, deadline=deadline)
+        tex = bottle.template(self.header, s=self.s, grade=grade,
+                              new_students=new_students,
+                              deadline=deadline)
         # render pure books
         if num_books > 0:
             tex += bottle.template(
-                self.select, grade=grade, bs=bks, workbook=False, exclude=exclude, new_students=new_students
+                self.select, grade=grade, bs=bks, workbook=False,
+                exclude=exclude, new_students=new_students
             )
         else:
-            tex += bottle.template(self.empty, workbook=False, new_students=new_students)
+            tex += bottle.template(self.empty, workbook=False,
+                                   new_students=new_students)
         # render pure workbooks
         if num_books < len(bks):
             tex += bottle.template(
-                self.select, grade=grade, bs=bks, workbook=True, exclude=exclude, new_students=new_students
+                self.select, grade=grade, bs=bks, workbook=True,
+                exclude=exclude, new_students=new_students
             )
         else:
-            tex += bottle.template(self.empty, workbook=True, new_students=new_students)
-        tex += bottle.template(self.special, grade=grade, s=self.s, spec_bks=spec_bks)
+            tex += bottle.template(self.empty, workbook=True,
+                                   new_students=new_students)
+        tex += bottle.template(self.special, grade=grade, s=self.s,
+                               spec_bks=spec_bks)
         tex += bottle.template(self.footer, s=self.s)
 
         # export tex (debug purpose)
@@ -87,7 +96,8 @@ class BooklistPdf(object):
             h.write(tex)
 
         # export PDF
-        fname = os.path.join(self.export, f'Bücherzettel{grade}{suffix}.pdf')
+        fname = os.path.join(self.export,
+                             f'Bücherzettel{grade}{suffix}.pdf')
         compile_pdf(self.s.data['hosting']['remote_latex'], tex, fname)
 
     def infosheet(self):
@@ -100,5 +110,6 @@ class BooklistPdf(object):
             h.write(tex)
 
         # export PDF
-        fname = os.path.join(self.export, 'Bücherzettel_Information.pdf')
+        fname = os.path.join(self.export,
+                             'Bücherzettel_Information.pdf')
         compile_pdf(self.s.data['hosting']['remote_latex'], tex, fname)

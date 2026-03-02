@@ -27,7 +27,8 @@ class RequestlistPdf(object):
         self.tex = bottle.template(self.header)
 
     def getPath(self):
-        return os.path.join(self.export, 'Bücherzettel_Erfassungsliste.pdf')
+        return os.path.join(self.export,
+                            'Bücherzettel_Erfassungsliste.pdf')
 
     def __call__(self, class_):
         """Generate requestlist pdf file for the given class.
@@ -36,16 +37,18 @@ class RequestlistPdf(object):
         spec_bks = book_queries.get_books_used_in(0, True)
 
         # fetch and order books that are used next year by this class
-        bks = book_queries.get_books_started_in(class_.grade + 1, booklist=True)
+        bks = book_queries.get_books_started_in(class_.grade + 1, 
+                                                booklist=True)
         bks = book_queries.order_books_list(bks)
 
         # query students
-        students = orga_queries.get_students_in(class_.grade, class_.tag)
+        students = orga_queries.get_students_in(class_.grade, 
+                                                class_.tag)
 
         # render template
         self.tex += bottle.template(
-            self.content, s=self.s, class_=class_, bks=bks, students=students,
-            spec_bks=spec_bks
+            self.content, s=self.s, class_=class_, bks=bks, 
+            students=students, spec_bks=spec_bks
         )
 
     def saveToFile(self):
@@ -58,4 +61,5 @@ class RequestlistPdf(object):
 
         # export PDF
         fname = self.getPath()
-        compile_pdf(self.s.data['hosting']['remote_latex'], self.tex, fname)
+        compile_pdf(self.s.data['hosting']['remote_latex'], 
+                    self.tex, fname)

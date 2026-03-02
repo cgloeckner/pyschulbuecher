@@ -37,9 +37,12 @@ class InventoryReport(object):
 
         loan_count = dict()
         for b in all_bks:
-            loan_count[b] = loan_queries.get_loan_count(person=None, book=b)
+            loan_count[b] = loan_queries.get_loan_count(person=None, 
+                                                        book=b)
 
-        self.tex += bottle.template(self.content, s=self.s, all_bks=all_bks, loan_count=loan_count)
+        self.tex += bottle.template(self.content, s=self.s, 
+                                    all_bks=all_bks, 
+                                    loan_count=loan_count)
 
     def saveToFile(self):
         self.tex += bottle.template(self.footer)
@@ -51,4 +54,5 @@ class InventoryReport(object):
 
         # export PDF
         fname = self.getPath()
-        compile_pdf(self.s.data['hosting']['remote_latex'], self.tex, fname)
+        compile_pdf(self.s.data['hosting']['remote_latex'], self.tex, 
+                    fname)

@@ -8,8 +8,9 @@ from app.tex.compiler import compile_pdf
 
 class ClasssetsPdf(object):
     def __init__(self, prefix, settings, threshold, export='export'):
-        """ All books, that are either class sets or if more than `threshold`
-        pieces are loaned by a person, are written to the PDF. """
+        """ All books, that are either class sets or if more than 
+        `threshold` pieces are loaned by a person, are written to the 
+        PDF. """
         # load LaTeX templates
         with open('docs/classsets/header.tpl') as f:
             self.header = f.read()
@@ -33,11 +34,12 @@ class ClasssetsPdf(object):
         self.page_count = 0
 
     def getPath(self):
-        return os.path.join(self.export, 'Klassensätze_%s.pdf' % self.prefix)
+        return os.path.join(self.export, 
+                            'Klassensätze_%s.pdf' % self.prefix)
 
     def __call__(self, person):
-        """Generate loan report pdf file for the given person. This will contain
-        all books that are currently given to this person
+        """Generate loan report pdf file for the given person. This will
+        contain all books that are currently given to this person
         """
         # count books before running template
         lns = loan_queries.order_loan_overview(person.loan)
@@ -50,7 +52,8 @@ class ClasssetsPdf(object):
             self.page_count += 1
             # run template only if books are relevant
             self.tex += bottle.template(
-                self.content, s=self.s, p=person, lns=lns, threshold=self.threshold,
+                self.content, s=self.s, p=person, lns=lns, 
+                threshold=self.threshold,
                 pagebreak=self.page_count % 2 == 0
             )
 
@@ -67,4 +70,5 @@ class ClasssetsPdf(object):
 
         # export PDF
         fname = self.getPath()
-        compile_pdf(self.s.data['hosting']['remote_latex'], self.tex, fname)
+        compile_pdf(self.s.data['hosting']['remote_latex'], self.tex, 
+                    fname)

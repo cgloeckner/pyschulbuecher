@@ -27,14 +27,16 @@ class LoanReportPdf(object):
         self.tex = bottle.template(self.header)
 
     def getPath(self):
-        return os.path.join(self.export, 'Leihübersicht_%s.pdf' % self.prefix)
+        return os.path.join(self.export, 
+                            'Leihübersicht_%s.pdf' % self.prefix)
 
     def __call__(self, person):
-        """Generate loan report pdf file for the given person. This will contain
-        all books that are currently given to this person
+        """Generate loan report pdf file for the given person. This will
+        contain all books that are currently given to this person
         """
         lns = loan_queries.order_loan_overview(person.loan)
-        self.tex += bottle.template(self.content, s=self.s, p=person, lns=lns)
+        self.tex += bottle.template(self.content, s=self.s, p=person, 
+                                    lns=lns)
 
     def saveToFile(self):
         self.tex += bottle.template(self.footer)
@@ -49,4 +51,5 @@ class LoanReportPdf(object):
 
         # export PDF
         fname = self.getPath()
-        compile_pdf(self.s.data['hosting']['remote_latex'], self.tex, fname)
+        compile_pdf(self.s.data['hosting']['remote_latex'], self.tex, 
+                    fname)

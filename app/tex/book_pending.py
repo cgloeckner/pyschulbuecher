@@ -72,7 +72,9 @@ class BookpendingPdf(object):
 
         ext = ''
         if with_date:
-            ext = '_%s' % datetime.datetime.now().strftime('%Y_%m_%d__%H_%M_%S')
+            ext = '_%s' % datetime.datetime.now().strftime(
+                '%Y_%m_%d__%H_%M_%S'
+            )
         pdfname = 'AusstehendeBücher_%s%s' % (suffix, ext)
 
         # export tex (debug purpose)
@@ -82,6 +84,7 @@ class BookpendingPdf(object):
 
         # export PDF
         fname = os.path.join(self.export, '%s.pdf' % pdfname)
-        compile_pdf(self.s.data['hosting']['remote_latex'], self.tex, fname)
+        compile_pdf(self.s.data['hosting']['remote_latex'], self.tex, 
+                    fname)
 
         return pdfname

@@ -33,20 +33,24 @@ class LoanContractPdf(object):
         self.advance = advance
 
     def getPath(self):
-        return os.path.join(self.export, 'Leihverträge_%s.pdf' % self.prefix)
+        return os.path.join(self.export, 
+                            'Leihverträge_%s.pdf' % self.prefix)
 
-    def __call__(self, student, include_requests=False, loan_report=False):
-        """Generate loan contract pdf file for the given student. This contains
-        all books that are currently given to him or her. With 'loan_report'
-        all books are listed as "you loan these books"
+    def __call__(self, student, include_requests=False, 
+                 loan_report=False):
+        """Generate loan contract pdf file for the given student. This
+        contains all books that are currently given to him or her. With
+        'loan_report' all books are listed as "you loan these books"
         """
         lns = loan_queries.order_loan_overview(student.person.loan)
         rqs = list()
         if include_requests:
-            rqs = loan_queries.order_request_overview(student.person.request)
+            rqs = loan_queries.order_request_overview(
+                student.person.request
+            )
         self.tex += bottle.template(
-            self.content, s=self.s, student=student, lns=lns, rqs=rqs, advance=self.advance,
-            loan_report=loan_report
+            self.content, s=self.s, student=student, lns=lns, rqs=rqs,
+            advance=self.advance, loan_report=loan_report
         )
 
     def saveToFile(self):
@@ -62,4 +66,5 @@ class LoanContractPdf(object):
 
         # export PDF
         fname = self.getPath()
-        compile_pdf(self.s.data['hosting']['remote_latex'], self.tex, fname)
+        compile_pdf(self.s.data['hosting']['remote_latex'], self.tex,
+                    fname)

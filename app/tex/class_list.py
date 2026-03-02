@@ -29,7 +29,8 @@ class ClassListPdf(object):
     def __call__(self, classes):
         """Add classes to the listing
         """
-        self.tex += bottle.template(self.content, s=self.s, classes=classes)
+        self.tex += bottle.template(self.content, s=self.s, 
+                                    classes=classes)
 
     def saveToFile(self):
         self.tex += bottle.template(self.footer)
@@ -41,4 +42,5 @@ class ClassListPdf(object):
 
         # export PDF
         fname = self.getPath()
-        compile_pdf(self.s.data['hosting']['remote_latex'], self.tex, fname) 
+        compile_pdf(self.s.data['hosting']['remote_latex'], self.tex, 
+                    fname) 
