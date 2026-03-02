@@ -1,7 +1,7 @@
 
 def shortify_name(firstname: str) -> str:
-    """Abbreviate first name by reducing secondary first names to a single
-    letter."""
+    """Abbreviate first name by reducing secondary first names to a
+    single letter."""
     parts = firstname.split(' ')
     more = parts[0].split('-')
     out = more[0]
