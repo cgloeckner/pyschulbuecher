@@ -13,7 +13,7 @@
 
 \begin{longtable}{ | >{\centering}p{1cm} | p{5cm} | p{2.25cm} | c | r |
 %if not workbook:
-p{0.4cm} | p{0.4cm} | p{0.4cm} |
+>{\raggedright\arraybackslash}p{0.4cm} | m{0.4cm} | m{0.4cm} |
 %end
 } \hline
 \textbf{Fach} & \textbf{Titel} & \textbf{Verlag} & \textbf{ISBN} & \textbf{Preis}

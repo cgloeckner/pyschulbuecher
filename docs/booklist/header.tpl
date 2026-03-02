@@ -48,16 +48,45 @@
 \newcounter{textfieldcounter}
 
 \newcommand{\textinput}[1] {
-    \refstepcounter{textfieldcounter} 
-    \raisebox{-0.2cm}{\TextField[width=#1, height=0.75cm, bordercolor=black!25!white, name={Field\thetextfieldcounter}]{\null}}
+    \refstepcounter{textfieldcounter}
+    \raisebox{-0.2cm}{
+        \TextField[
+            width=#1,
+            height=0.75cm,
+            bordercolor=black!25!white,
+            name={Field\thetextfieldcounter}
+        ]
+        {\null}
+    }
 }
 
 \newcommand{\checkinput} {
-    \raisebox{-0.125cm}{\CheckBox[width=0.3cm, height=0.3cm, bordercolor=black!25!white, checkboxsymbol=\ding{53}]{\null}}
+    \raisebox{-0.125cm}{
+        \refstepcounter{textfieldcounter}
+        \CheckBox[
+            width=0.3cm,
+            height=0.3cm,
+            bordercolor=black!25!white,
+            checkboxsymbol=\ding{53},
+            name={Field\thetextfieldcounter}
+        ]
+        {}
+    }
 }
 
 \newcommand{\checkedinput} {
-    \raisebox{-0.125cm}{\CheckBox[width=0.3cm, height=0.3cm, bordercolor=black!25!white, checkboxsymbol=\ding{53}, checked]{\null}}
+    \refstepcounter{textfieldcounter}
+    \raisebox{-0.125cm}{
+        \CheckBox[
+            width=0.3cm, 
+            height=0.3cm, 
+            bordercolor=black!25!white, 
+            checkboxsymbol=\ding{53}, 
+            checked,
+            name={Field\thetextfieldcounter}
+        ]
+        {\null}
+    }
 }
 
 \newcommand{\infoInput}[2][4in]{%
@@ -70,7 +99,7 @@
     \dotfill
 }
 
-\begin{tabular}{ r p{4cm} r p{4cm} r c}
+\begin{tabular}{ r m{4cm} r m{4cm} r c}
 	Name: & \textinput{4cm} & Vorname: & \textinput{4cm} & Klasse: & {{grade}} \quad
 	%if grade > 5 and not new_students:
 		\textinput{1.5cm}

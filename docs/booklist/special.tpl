@@ -2,7 +2,7 @@
 
 %from app.db import Currency
 
-\begin{longtable}{ | p{5cm} | c | c | c |}
+\begin{longtable}{ | m{5cm} | c | c | c |}
     \hline
 	& Preis & Erwerb ja & Erwerb nein \\ \hline
 %for bk in spec_bks:
