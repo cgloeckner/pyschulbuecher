@@ -22,13 +22,9 @@ class SubjectCouncilXls(object):
     def __call__(self, subject):
         self.data = xlsxwriter.Workbook(self.getPath(subject))
 
-        """items = {
-            'Leihbuch': book_queries.get_real_books_by_subject(subject, False),
-            'AH': book_queries.get_workbooks_by_subject(subject),
-            'Klassensatz': book_queries.get_classsets_by_subject(subject)
-        }"""
-        
-        all_books = book_queries.order_books_index(book_queries.get_all_books())
+        all_books = book_queries.order_books_index(
+            book_queries.get_all_books()
+        )
 
         title_format = self.data.add_format()
         title_format.set_bold()
@@ -52,7 +48,8 @@ class SubjectCouncilXls(object):
         tab.set_column(6, 6, 25)
 
         for col, caption in enumerate(
-                ['Titel', 'Verlag', 'ISBN', 'Preis', 'Klasse', 'Art', 'Bemerkungen']):
+                ['Titel', 'Verlag', 'ISBN', 'Preis', 'Klasse', 'Art', 
+                 'Bemerkungen']):
             tab.write(0, col, caption, title_format)
 
         row = 0

@@ -48,7 +48,8 @@ class DatabaseDumpXls(object):
 
         fields = ['Name', 'Vorname']
         for col, b in enumerate(bks):
-            fields.append(b.subject.tag if b.subject is not None else '')
+            fields.append(b.subject.tag if b.subject is not None
+                          else '')
             tab.write(0, col + 2, b.title)  # todo: 90° rotated format
         for col, caption in enumerate(fields):
             tab.write(1, col, caption, title_format)
