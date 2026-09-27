@@ -4,6 +4,11 @@ from pony.orm import *
 from pony import orm
 
 
+def get_shorthand(book: db.Book):
+    grade = f"{book.inGrade}-{book.outGrade}" if book.inGrade < book.outGrade else f"{book.inGrade}"
+    return f"{book.title} (Klasse {grade})"
+
+
 def get_publishers():
     """Return a list of all publishers.
     """

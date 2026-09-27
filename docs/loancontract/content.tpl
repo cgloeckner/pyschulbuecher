@@ -6,7 +6,7 @@
 {\Large Schulbuchübersicht } \hfill {\large {{!tex_escape(student.person.name)}}, {{!tex_escape(shortify_name(student.person.firstname))}} ({{student.class_.to_string(advance=advance)}}) }
 
 %if loan_report:
-	Ihnen wurden folgende Lehrbücher als Leihexemplare überlassen. Vermerken Sie die Inventarnummer und bewerten Sie den \linebreak Zustand des Buchs: \hfill neu \textbf{++} \quad gut \textbf{+} \quad mittel \textbf{$\circ$} \quad schlecht \textbf{-}
+	Ihnen wurden folgende Lehrbücher als Leihexemplare überlassen. Vermerken Sie die Inventarnummer und notieren Sie die Anzahl \linebreak der vorherigen Leihen des Buchs (siehe Ausleihstempel).
 
 	\rowcolors{1}{white}{black!10}
 	\begin{tabular}[c]{ | p{0.75cm} | c | p{6.5cm} | c | c | }
@@ -16,7 +16,7 @@
 		\textbf{\small Klasse} &
 		\textbf{\small Lehrbuch} &
 		\textbf{\small Inv.-Nr.} &
-		\textbf{\small Zustand}
+		\textbf{\small Anz. Leihen}
 		\\ \hline
 
 	%bks = set()
@@ -57,11 +57,11 @@
 	\vspace{1cm}
 
 	\rule{4.5cm}{0.4pt} \hfill \rule{4.5cm}{0.4pt} \\
-	Datum, Ort \hfill Unterschrift Klassenleitung \\
+	Datum \hfill Unterschrift Klassenleitung \\
 
 % else:
 
-	Ihnen wurden folgende Lehrbücher als Leihexemplare überlassen. Vermerken Sie die Inventarnummer und bewerten Sie den \linebreak Zustand des Buchs: \hfill neu \textbf{++} \quad gut \textbf{+} \quad mittel \textbf{$\circ$} \quad schlecht \textbf{-}
+	Ihnen wurden folgende Lehrbücher als Leihexemplare überlassen. Vermerken Sie die Inventarnummer und notieren Sie die Anzahl \linebreak der vorherigen Leihen des Buchs (siehe Ausleihstempel).
 
 	\rowcolors{1}{white}{black!10}
 	\begin{tabular}[c]{ | p{0.75cm} | c | p{6.5cm} | c | c | }
@@ -71,7 +71,7 @@
 		\textbf{\small Klasse} &
 		\textbf{\small Lehrbuch} &
 		\textbf{\small Inv.-Nr.} &
-		\textbf{\small Zustand}
+		\textbf{\small Anz. Leihen}
 		\\ \hline
 
 	%bks = set()
@@ -156,21 +156,20 @@
 	\vspace{1cm}
 
 	\rule{4.5cm}{0.4pt} \hfill \rule{4.5cm}{0.4pt} \\
-	Datum, Ort \hfill Unterschrift Klassenleitung \\
+	Datum \hfill Unterschrift Klassenleitung \\
 	
 	{ \large Bereits ausgeliehene Bücher }
 
-	Bitte überprüfen Sie den Zustand folgender Lehrbücher:
+	Bitte überprüfen Sie folgende bereits ausgeliehene Lehrbücher:
 
 	\rowcolors{1}{white}{black!10}
-	\begin{tabular}[c]{ | p{0.75cm} | c | p{6.5cm} | c | c | }
+	\begin{tabular}[c]{ | p{0.75cm} | c | p{6.5cm} | c | }
 		\hline
 		
 		\textbf{\small Fach} &
 		\textbf{\small Klasse} &
 		\textbf{\small Lehrbuch} &
-		\textbf{\small Inv.-Nr.} &
-		\textbf{\small Zustand}
+		\textbf{\small Inv.-Nr.}
 		\\ \hline
 
 		%i = 0
@@ -188,7 +187,6 @@
 				%end
 		{{!tex_escape(l.book.title)}} &
 		%#------------ note this will be used next year
-		&
 		\\ \hline
 		
 				%i += 1
@@ -202,7 +200,7 @@
 		%end
 		
 		%if i == 0:
-		\multicolumn{5}{c}{ keine Lehrbücher }
+		\multicolumn{4}{c}{ keine Lehrbücher }
 		%end
 
 	\end{tabular}
@@ -215,7 +213,7 @@ Hiermit bestätige ich im Besitz der oben genannten Bücher zu sein.
 \vspace{1cm}
 
 \rule{4.5cm}{0.4pt} \hfill \rule{4.5cm}{0.4pt} \\
-Datum, Ort \hfill Unterschrift Eltern \\
+Datum \hfill Unterschrift Eltern \\
 
 \null\vfill
 

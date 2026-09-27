@@ -156,3 +156,34 @@ def apply_request(student: db.Student):
     # drop as requests
     for b in bks:
         update_request(student, b, False)
+
+
+def is_pending(student: db.Student, book: db.Book):
+    """Return True if the given student should return this book
+    soon."""
+    return book.outGrade <= student.class_.grade
+
+def get_pending_by_student(student):
+    """Return list of all pending books of this student."""
+    return [
+        l.book
+        for l in student.person.loan
+        if is_pending(student, l.book)
+    ]
+
+def get_pending_by_class(class_):
+    """Return dict with students and pending books (if some are pending)."""
+    return {
+        student: books
+        for student in class_.student
+        if len(books := get_pending_by_student(student)) > 0
+    }
+
+def get_all_pending(classes):
+    """Return dict with classes and their students with pending books (if some are pending)."""
+    return {
+        class_: students
+        for class_ in classes
+        if len(students := get_pending_by_class(class_)) > 0
+    }
+

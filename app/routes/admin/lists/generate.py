@@ -1,7 +1,7 @@
 import time
 import bottle
 
-from app.db import db, Settings, orga_queries, book_queries
+from app.db import db, Settings, orga_queries, book_queries, get_all_pending
 from app.xls import *
 from app.tex import *
 
@@ -372,6 +372,16 @@ def bookpending_generate(mode):
         else:
             yield '<li>keine in Klasse {0}</li>'.format(grade)
     yield '</ul><hr />Fertig'
+
+
+@app.get("/admin/lists/generate/pendingxls")
+def bookpending_generate_xls():
+    classes = orga_queries.get_classes()
+    pending = get_all_pending(classes)
+    xls = PendingDumpXls()
+    xls(pending)
+    xls.saveToFile()
+    return xls.getPath()
 
 
 @app.get('/admin/lists/generate/loanlist/<grade>')
