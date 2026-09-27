@@ -163,13 +163,14 @@
 	Bitte überprüfen Sie folgende bereits ausgeliehene Lehrbücher:
 
 	\rowcolors{1}{white}{black!10}
-	\begin{tabular}[c]{ | p{0.75cm} | c | p{6.5cm} | c | }
+	\begin{tabular}[c]{ | p{0.75cm} | c | p{6.5cm} | c | c | }
 		\hline
 		
 		\textbf{\small Fach} &
 		\textbf{\small Klasse} &
 		\textbf{\small Lehrbuch} &
-		\textbf{\small Inv.-Nr.}
+		\textbf{\small Inv.-Nr.} &
+		\textbf{\small seit}
 		\\ \hline
 
 		%i = 0
@@ -186,7 +187,8 @@
 		{{l.book.inGrade}}-{{l.book.outGrade}} &
 				%end
 		{{!tex_escape(l.book.title)}} &
-		%#------------ note this will be used next year
+		&
+		{{l.getSchoolYear()}}
 		\\ \hline
 		
 				%i += 1
@@ -200,7 +202,7 @@
 		%end
 		
 		%if i == 0:
-		\multicolumn{4}{c}{ keine Lehrbücher }
+		\multicolumn{5}{c}{ keine Lehrbücher }
 		%end
 
 	\end{tabular}

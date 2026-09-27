@@ -172,6 +172,17 @@ class Loan(db.Entity):
             return False
         return self.person.student.class_.grade > self.book.outGrade
 
+    def getSchoolYear(self) -> str:
+        """Return school year string since which the loan entry exists.
+        Assumption: Each schoolyear ended prior August 1st and starts
+        during August or later."""
+        y = self.given.year
+        if self.given.month < 8:
+            # 2nd half of the school year
+            y -= 1
+        # return e.g. 2026/27
+        return f"{y}/{str(y+1)[2:]}"
+
 
 class Request(db.Entity):
     id = PrimaryKey(int, auto=True)
